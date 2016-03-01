@@ -13,11 +13,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * This is an example on how to remove all text from PDF document.
- *
- * @author Ben Litchfield
- */
 public final class PdfToImage
 {
 
