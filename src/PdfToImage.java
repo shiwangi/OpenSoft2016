@@ -29,7 +29,7 @@ public final class PdfToImage
         PDDocument document = null;
         try
         {
-            document = PDDocument.load( new File("/home/shiwangi/OpenSoft_Problem_February_23_2016.pdf") );
+            document = PDDocument.load( new File("./resources/OpenSoft_Problem_February_23_2016.pdf") );
             if( document.isEncrypted() )
             {
                 System.err.println( "Error: Encrypted documents are not supported for this example." );
@@ -62,7 +62,7 @@ public final class PdfToImage
                 out.close();
                 page.setContents( newContents );
             }
-            document.save( "/home/shiwangi/output.pdf");
+            document.save( "./output/output.pdf");
         }
         finally
         {

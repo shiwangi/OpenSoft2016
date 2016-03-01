@@ -30,7 +30,7 @@ public class Main {
     public static void main(String args[]) throws IOException {
         InputStreamReader input = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(input);
-        String fname = "/home/shiwangi/try3.png";
+        String fname = "./resources/image1.png";
 
 
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
