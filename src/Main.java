@@ -12,11 +12,17 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.cert.PolicyNode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.Math.scalb;
 import static org.opencv.imgcodecs.Imgcodecs.imread;
-import static org.opencv.imgproc.Imgproc.drawContours;
+import static org.opencv.imgproc.Imgproc.*;
 
 /**
  * Created by shiwangi on 26/2/16.
@@ -47,48 +53,77 @@ public class Main {
         MatOfPoint contour = rectangleDetection.detectRectangle(mRgba);
         List<MatOfPoint> contours = new ArrayList<>();
         contours.add(contour);
-        if(contour!=null)
+        if (contour != null)
             drawContours(mRgba, contours, 0, new Scalar(0, 255, 0), 10);
-        else{
+        else {
             System.out.println("Could not find border axes");
         }
-        List<Point> lines = contour.toList();
-        List<Point> corners = new ArrayList<>();
-        int sz = lines.size();
-        Point pt = lines.get(0);
-        corners.add(pt);
-        for(int i=1;i<sz;i++){
-            if(dist(pt,lines.get(i))<10){
-
-            }
-            else {
-                pt = lines.get(i);
-                corners.add(pt);
-            }
-        }
-
-        //Find lower x-line
-        double minY = Double.MAX_VALUE;
-        for(Point point:corners){
-            if(point.y<minY){
-                minY = point.y;
-            }
-        }
-        List<Point> lowerXAxis = new ArrayList<>();
-        for(Point point:corners){
-            if(dist(point,new Point(point.x,minY))<10){
-                lowerXAxis.add(point);
-            }
-        }
-        displayImage(Mat2BufferedImage(mRgba));
-
+        List<Point> corners = getCornersFromRect(contour);
+        AxisDetection axisDetection = new AxisDetection();
+        List<String> labels = axisDetection.getAxis(corners, mRgba);
+        System.out.println(labels.toString());
         //manipulate the axes found to clip the image
 
         //  findHouglines(mRgba);
     }
 
+    private static List<Point> getCornersFromRect(MatOfPoint contour) {
+        List<Point> lines = contour.toList();
+        List<Point> corners = new ArrayList<>();
+        int sz = lines.size();
+        Point pt = lines.get(0);
+        corners.add(pt);
+        for (int i = 1; i < sz; i++) {
+            if (dist(pt, lines.get(i)) < 10) {
+
+            } else {
+                pt = lines.get(i);
+                corners.add(pt);
+            }
+        }
+        return corners;
+
+    }
+
+    private static int isColWhite(int i, Mat imgROI) {
+        for (int j = 0; j < imgROI.rows(); j++) {
+            double[] color = imgROI.get(j, i);
+            if (!isWhite(color)) return 0;
+        }
+        return 1;
+    }
+
+    private static boolean isWhite(double[] color) {
+        if (color[0] == 255 && color[1] == 255 && color[2] == 255) return true;
+        return false;
+    }
+
+//    private static String cleanlabel(String ylabel) {
+//        ArrayList<String> yscale = new ArrayList<>();
+//        for(String eachline: ylabel.split("\n"))
+//        {
+//
+//            String[] numbers = eachline.split(" ");
+//            double d = 0;
+//            if(isDouble(numbers[numbers.length-1])) {
+//
+//                yscale.add(numbers[numbers.length - 1]);
+//            }
+//
+//        }
+//    }
+
+    private static boolean isDouble(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     private static double dist(Point pt, Point point) {
-        return (pt.x-point.x)*(pt.x-point.x) + (pt.y-point.y)*(pt.y-point.y);
+        return (pt.x - point.x) * (pt.x - point.x) + (pt.y - point.y) * (pt.y - point.y);
     }
 
     private static void removeColorFulPixel(Mat mRgba) {
@@ -124,15 +159,17 @@ public class Main {
     }
 
 
-    private static void ocrOnImage(String fname) {
-        File imageFile = new File(fname);
+    private static String ocrOnImage(BufferedImage bimage) {
+        //File imageFile = new File(fname);
         ITesseract instance = new Tesseract();  // JNA Interface Mapping
         instance.setDatapath("/usr/share/tesseract-ocr");
         try {
-            String result = instance.doOCR(imageFile);
-            System.out.println(result);
+            String result = instance.doOCR(bimage);
+            //System.out.println(result);
+            return result;
         } catch (TesseractException e) {
             System.err.println(e.getMessage());
+            return null;
         }
 
     }

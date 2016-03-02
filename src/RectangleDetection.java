@@ -79,7 +79,7 @@ public class RectangleDetection {
 
         thisContour.convertTo(thisContour2f, CvType.CV_32FC2);
 
-        Imgproc.approxPolyDP(thisContour2f, approxContour2f, 2, true);
+        Imgproc.approxPolyDP(thisContour2f, approxContour2f, 25, true);
 
         approxContour2f.convertTo(approxContour, CvType.CV_32S);
 
