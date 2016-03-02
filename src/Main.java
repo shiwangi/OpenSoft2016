@@ -1,28 +1,21 @@
 
 
-import com.sun.org.apache.xalan.internal.xsltc.dom.ArrayNodeListIterator;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
-import net.sourceforge.tess4j.Tesseract1;
 import net.sourceforge.tess4j.TesseractException;
-import org.apache.commons.logging.Log;
 import org.opencv.core.*;
 import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.utils.Converters;
-import sun.org.mozilla.javascript.tools.shell.Environment;
 
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.awt.image.RescaleOp;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,15 +27,14 @@ import static org.opencv.imgproc.Imgproc.*;
  * Created by shiwangi on 26/2/16.
  */
 public class Main {
-    //Loads image and apply houghline detection.
     public static void main(String args[]) throws IOException {
         InputStreamReader input = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(input);
-        String fname = "./resources/image3.png";
+        String fname = "./resources/image1.png";
 
 
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        // ocrOnImage(fname);
+
 
         //read the image file.
         Mat mRgba = imread(fname);
@@ -51,95 +43,27 @@ public class Main {
             System.out.println("Cannot load image!");
             return;
         }
+        ocrOnImage(fname);
         //get rid of colourful elements
-      //  removeColorFulPixel(mRgba);
+        //  removeColorFulPixel(mRgba);
 
-       tryelse(mRgba);
-      //  findHouglines(mRgba);
-    }
-
-    private static void tryelse(Mat mRgba) {
-        //convert the image to black and white does (8 bit)
-
-        //find the contours
-
-        Mat mIntermediateMat = new Mat(mRgba.height(), mRgba.width(), CvType.CV_8UC1);
-
-        Imgproc.cvtColor(mRgba, mIntermediateMat, Imgproc.COLOR_RGB2GRAY);
-        threshold(mIntermediateMat, mIntermediateMat, 0.1 * 255, 255.0, THRESH_BINARY); //GRAY 2 Binary based on threshold
-      //  displayImage(Mat2BufferedImage(mIntermediateMat));
-        //    Imgproc.Canny(mIntermediateMat, mIntermediateMat, 80, 100);
-        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Imgproc.findContours(mIntermediateMat, contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
-
-        List<MatOfPoint> squareContours = getSquareContours(contours);
-
-        // Filter contours by area and resize to fit the original image size
-        List<MatOfPoint> mContours = new ArrayList<>();
-        // Find max contour area
-        double maxArea = 0;
-        Iterator<MatOfPoint> each = contours.iterator();
-        while (each.hasNext()) {
-            MatOfPoint wrapper = each.next();
-            double area = Imgproc.contourArea(wrapper);
-            if (area > maxArea)
-                maxArea = area;
-        }
-        each = squareContours.iterator();
-        int idx = 0;
-        while (each.hasNext()) {
-            MatOfPoint contour = each.next();
-            if (Imgproc.contourArea(contour) > .1*maxArea)
-            {
-                mContours.add(contour);
-                drawContours(mRgba, mContours, idx, new Scalar(0, 255, 0), 20);
-
-                idx++;
-            }
-
-
-
-        }
+//        //detect the axes
+//        RectangleDetection rectangleDetection = new RectangleDetection();
+//        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba);
+//        List<MatOfPoint> contours = new ArrayList<>();
+//        contours.add(contour);
+//        if(contour!=null)
+//            drawContours(mRgba, contours, 0, new Scalar(0, 255, 0), 10);
+//        else{
+//            System.out.println("Could not find border axes");
+//        }
 
 
         displayImage(Mat2BufferedImage(mRgba));
-    }
 
-    public static boolean isContourSquare(MatOfPoint thisContour) {
+        //manipulate the axes found to clip the image
 
-        Rect ret = null;
-
-        MatOfPoint2f thisContour2f = new MatOfPoint2f();
-        MatOfPoint approxContour = new MatOfPoint();
-        MatOfPoint2f approxContour2f = new MatOfPoint2f();
-
-        thisContour.convertTo(thisContour2f, CvType.CV_32FC2);
-
-        Imgproc.approxPolyDP(thisContour2f, approxContour2f, 2, true);
-
-        approxContour2f.convertTo(approxContour, CvType.CV_32S);
-
-        if (approxContour.size().height == 4) {
-            ret = Imgproc.boundingRect(approxContour);
-        }
-
-        return (ret != null);
-    }
-
-    private static List<MatOfPoint> getSquareContours(List<MatOfPoint> contours) {
-        List<MatOfPoint> squares = null;
-
-        for (MatOfPoint c : contours) {
-
-            if ((isContourSquare(c))) {
-
-                if (squares == null)
-                    squares = new ArrayList<MatOfPoint>();
-                squares.add(c);
-            }
-        }
-
-        return squares;
+        //  findHouglines(mRgba);
     }
 
     private static void removeColorFulPixel(Mat mRgba) {
@@ -161,84 +85,19 @@ public class Main {
     }
 
 
-
-    private static void findHouglines(Mat mRgba) {
-        Mat mIntermediateMat = new Mat(mRgba.height(), mRgba.width(), CvType.CV_8UC1);
-
-        Imgproc.cvtColor(mRgba, mIntermediateMat, Imgproc.COLOR_RGB2GRAY);
-
-        Imgproc.Canny(mIntermediateMat, mIntermediateMat, 80, 100);
-        int rows = mRgba.rows();
-        int cols = mRgba.cols();
-        displayImage(Mat2BufferedImage(mIntermediateMat));
-        Mat lines = new Mat();
-        int threshold = 10;
-
-        //The minimum line size should be 80% of the width / height of the plot image
-        int minLineSize =(int) (80.0/100.0 * Math.min(rows,cols));
-        //int minLineSize = 30;
-        int lineGap = 30;
-
-
-        Imgproc.HoughLinesP(mIntermediateMat, lines, 1, Math.PI / 180, threshold, minLineSize, lineGap);
-
-//        for (int x = 0; x < lines.height(); x++)
-//        {
-//            double[] vec = lines.get(x,0);
-//            double x1 = vec[0],
-//                    y1 = vec[1],
-//                    x2 = vec[2],
-//                    y2 = vec[3];
-//            if((y1-y2)/(x1-x2)<0.01 ||(x1-x2)==0|| (y1-y2)/(x1-x2)>100000) {
-//                Point start = new Point(x1, y1);
-//                Point end = new Point(x2, y2);
-//
-//                line(mRgba, start, end, new Scalar(255, 0, 0), 3);
-//            }
-//
-//        }
-        ArrayList<Point> corners = new ArrayList<>();
-        for (int x = 0; x < lines.height(); x++) {
-
-            for (int y = x + 1; y < lines.height(); y++) {
-                double[] a = lines.get(x, 0);
-
-                double b[] = lines.get(y, 0);
-
-
-                Point pt=   computeIntersect(a,b);
-                if (pt.x >= 0 && pt.y >= 0)
-                    corners.add(pt);
-                circle(mRgba,pt,4, new Scalar(255, 0, 0));
-                }
-            }
-new MatOfPoint2f()
-;
-
-        displayImage(Mat2BufferedImage(mRgba));
-    }
-
-    static Point computeIntersect(double a[], double b[])
-    {
+    static Point computeIntersect(double a[], double b[]) {
         double x1 = a[0], y1 = a[1], x2 = a[2], y2 = a[3];
         double x3 = b[0], y3 = b[1], x4 = b[2], y4 = b[3];
-        float d = (float) ((x1-x2) * (y3-y4) - ((y1-y2) * (x3-x4)));
-        if (d!=0)
-        {
-            Point pt=new Point(0,0);
-            pt.x = ((x1*y2 - y1*x2) * (x3-x4) - (x1-x2) * (x3*y4 - y3*x4)) / d;
-            pt.y = ((x1*y2 - y1*x2) * (y3-y4) - (y1-y2) * (x3*y4 - y3*x4)) / d;
+        float d = (float) ((x1 - x2) * (y3 - y4) - ((y1 - y2) * (x3 - x4)));
+        if (d != 0) {
+            Point pt = new Point(0, 0);
+            pt.x = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / d;
+            pt.y = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / d;
             return pt;
-        }
-        else
-        return new Point(-1, -1);
+        } else
+            return new Point(-1, -1);
     }
 
-
-
-    private static double dist(double x1, double y1, double centroidX, double centroidY) {
-        return (x1 - centroidX) * (x1 - centroidX) + (y1 - centroidY) * (y1 - centroidY);
-    }
 
     private static void ocrOnImage(String fname) {
         File imageFile = new File(fname);
