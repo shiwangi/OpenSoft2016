@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import static org.opencv.imgproc.Imgproc.THRESH_BINARY;
-import static org.opencv.imgproc.Imgproc.drawContours;
 import static org.opencv.imgproc.Imgproc.threshold;
 
 /**

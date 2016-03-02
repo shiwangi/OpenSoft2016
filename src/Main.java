@@ -1,12 +1,8 @@
-
-
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.opencv.core.*;
 import org.opencv.core.Point;
-import org.opencv.imgproc.Imgproc;
-
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,11 +13,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
-import static org.opencv.imgproc.Imgproc.*;
+import static org.opencv.imgproc.Imgproc.drawContours;
 
 /**
  * Created by shiwangi on 26/2/16.
@@ -43,27 +38,57 @@ public class Main {
             System.out.println("Cannot load image!");
             return;
         }
-        ocrOnImage(fname);
+        //ocrOnImage(fname);
         //get rid of colourful elements
         //  removeColorFulPixel(mRgba);
 
-//        //detect the axes
-//        RectangleDetection rectangleDetection = new RectangleDetection();
-//        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba);
-//        List<MatOfPoint> contours = new ArrayList<>();
-//        contours.add(contour);
-//        if(contour!=null)
-//            drawContours(mRgba, contours, 0, new Scalar(0, 255, 0), 10);
-//        else{
-//            System.out.println("Could not find border axes");
-//        }
+        //detect the axes
+        RectangleDetection rectangleDetection = new RectangleDetection();
+        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba);
+        List<MatOfPoint> contours = new ArrayList<>();
+        contours.add(contour);
+        if(contour!=null)
+            drawContours(mRgba, contours, 0, new Scalar(0, 255, 0), 10);
+        else{
+            System.out.println("Could not find border axes");
+        }
+        List<Point> lines = contour.toList();
+        List<Point> corners = new ArrayList<>();
+        int sz = lines.size();
+        Point pt = lines.get(0);
+        corners.add(pt);
+        for(int i=1;i<sz;i++){
+            if(dist(pt,lines.get(i))<10){
 
+            }
+            else {
+                pt = lines.get(i);
+                corners.add(pt);
+            }
+        }
 
+        //Find lower x-line
+        double minY = Double.MAX_VALUE;
+        for(Point point:corners){
+            if(point.y<minY){
+                minY = point.y;
+            }
+        }
+        List<Point> lowerXAxis = new ArrayList<>();
+        for(Point point:corners){
+            if(dist(point,new Point(point.x,minY))<10){
+                lowerXAxis.add(point);
+            }
+        }
         displayImage(Mat2BufferedImage(mRgba));
 
         //manipulate the axes found to clip the image
 
         //  findHouglines(mRgba);
+    }
+
+    private static double dist(Point pt, Point point) {
+        return (pt.x-point.x)*(pt.x-point.x) + (pt.y-point.y)*(pt.y-point.y);
     }
 
     private static void removeColorFulPixel(Mat mRgba) {
@@ -102,6 +127,7 @@ public class Main {
     private static void ocrOnImage(String fname) {
         File imageFile = new File(fname);
         ITesseract instance = new Tesseract();  // JNA Interface Mapping
+        instance.setDatapath("/usr/share/tesseract-ocr");
         try {
             String result = instance.doOCR(imageFile);
             System.out.println(result);
