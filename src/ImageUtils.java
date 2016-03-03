@@ -74,15 +74,17 @@ public class ImageUtils {
     }
 
 
-    public static String ocrOnImage(BufferedImage bimage) {
+    public static String ocrOnImage(BufferedImage bimage,int i) {
         //File imageFile = new File(fname);
         ITesseract instance = new Tesseract();  // JNA Interface Mapping
 
         instance.setDatapath("/usr/share/tesseract-ocr");
-        instance.setTessVariable("tessedit_char_whitelist", ".0123456789");
+        if(i==0) instance.setTessVariable("tessedit_char_whitelist", ".0123456789");
+        if(i==1) instance.setTessVariable("tessedit_char_whitelist", "()ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-/%");
 
         try {
             String result = instance.doOCR(bimage);
+           // if(i!=0)
             //System.out.println(result);
             return result;
         } catch (TesseractException e) {
@@ -91,6 +93,7 @@ public class ImageUtils {
         }
 
     }
+
 
     public Mat convertToBinary(Mat mRgba) {
         Mat mIntermediateMat = new Mat(mRgba.height(), mRgba.width(), CvType.CV_8UC1);

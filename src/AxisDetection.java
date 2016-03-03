@@ -7,10 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.max;
+import static org.opencv.core.Core.BORDER_DEFAULT;
 import static org.opencv.core.Core.addWeighted;
-import static org.opencv.imgproc.Imgproc.GaussianBlur;
-import static org.opencv.imgproc.Imgproc.getRotationMatrix2D;
-import static org.opencv.imgproc.Imgproc.warpAffine;
+import static org.opencv.imgproc.Imgproc.*;
 
 /**
  * Created by rajitha on 3/3/16.
@@ -63,17 +62,20 @@ public class AxisDetection {
         rectCrop = new Rect((int) (min_idx - max / 2), 0, (image_roi.cols() - (int) (min_idx - max / 2)), image_roi.rows());
         Mat scaleImage = new Mat(image_roi, rectCrop);
         scaleImage =  imageUtils.convertToBinary(scaleImage);
-       GaussianBlur(scaleImage, scaleImage, new Size(0, 0), 3);
-        addWeighted(scaleImage, 1.5, scaleImage, -0.5, 0, scaleImage);
+//        GaussianBlur(scaleImage, scaleImage, new Size(0, 0), 3);
+//        addWeighted(scaleImage, 1.5, scaleImage, -0.5, 0, scaleImage);
        // fourierTransform(scaleImage);
+        //bilateralFilter(scaleImage, scaleImage,5,20,20,BORDER_DEFAULT);
+
         imageUtils.displayImage(scaleImage);
-        String YScale = imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(scaleImage));
+        String YScale = imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(scaleImage),0);
         YScale = YScale.replaceAll("\n", " ");
+
         labels.add(YScale);
 
         Mat rotatedImage = getRotated(labelImage_roi);
         imageUtils.displayImage(rotatedImage);
-        String Ylabel = imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(rotatedImage));
+        String Ylabel = imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(rotatedImage),1);
         Ylabel = Ylabel.replaceAll("\n", " ");
         labels.add(Ylabel);
 
@@ -99,11 +101,18 @@ public class AxisDetection {
 
         Mat image_roi = xscaleImage;
         //displayImage(Mat2BufferedImage(image_roi));
+//        Mat resizeimage = new Mat();
+//        Size sz = new Size(1400,150);
+//        resize( image_roi, resizeimage, sz );
+//        imageUtils.displayImage(resizeimage);
+//        image_roi = imageUtils.convertToBinary(image_roi);
 
-        image_roi = imageUtils.convertToBinary(image_roi);
 
-        String Xpart = imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(image_roi));
+        String Xpart = imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(image_roi),0);
         String Xscale = Xpart.split("\n")[0];
+
+
+        Xpart = imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(image_roi),1);
         String Xlabel = Xpart.substring(Xpart.indexOf('\n') + 1);
         Xlabel = Xlabel.replaceAll("\n"," ");
         labels.add(Xscale);

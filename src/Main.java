@@ -2,6 +2,8 @@ import org.opencv.core.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.DoubleSummaryStatistics;
 import java.util.List;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
@@ -63,7 +65,9 @@ public class Main {
             List<Point> corners = getCornersFromRect(contour);
             AxisDetection axisDetection = new AxisDetection(XscaleImage,YscaleImage);
             List<String> labels = axisDetection.getAxis(corners, mRgba);
-            System.out.println(labels.toString());
+
+            List<Double> minmaxValues = getminmaxValues(labels);
+            System.out.println(minmaxValues.toString());
         } else {
             System.out.println("Could not find border axes");
 
@@ -75,6 +79,58 @@ public class Main {
 
         PlotValue plotValue = new PlotValue(graphImage,0,100,0,100);
         plotValue.populateTable();
+    }
+
+    private static List<Double> getminmaxValues(List<String> labels) {
+        List<Double> values = new ArrayList<>();
+
+        String[] xscale = labels.get(0).split(" ");
+        try {
+            values.add(Double.parseDouble(xscale[0]));
+            values.add(Double.parseDouble(xscale[xscale.length-1]));
+        }
+        catch (NumberFormatException e)
+        {
+            values.add(0.0);values.add(100.0);
+        }
+
+        String[] yscale = labels.get(2).split(" ");
+        try{
+            values.add(Double.parseDouble(yscale[yscale.length-1]));
+            values.add(Double.parseDouble(yscale[0]));
+        }
+        catch (NumberFormatException e)
+        {
+            values.add(0.0);values.add(100.0);
+        }
+        return values;
+
+    }
+
+    private static boolean isAP(String[] scale) {
+        if(!isValidscale(scale)) return false;
+        else return true;
+
+    }
+
+    private static boolean isValidscale(String[] scale) { //checks very bad scales.
+        int count = 0;
+        for(int i= 0;i<scale.length;i++)
+        {
+            if(count>scale.length/3) return false;
+            if(!isDouble(scale[i])) count++;
+
+        }
+        return true;
+    }
+
+    private static boolean isDouble(String s) {
+        try {
+            Double.parseDouble(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     private static Point findLastBlackRowAndCol(Mat mIntermediateMat) {
