@@ -120,7 +120,15 @@ public class ImageUtils {
         return count>reqBlackpixels;
     }
 
-    private boolean isPixelBlack(double[] color) {
+    public boolean isPixelBlack(double[] color) {
+        if(color.length==3){
+            if(color[0]<20 &&color[1]<20 && color[2]<50){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
         if (color[0] == 0) return true;
         return false;
     }
