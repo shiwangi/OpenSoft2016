@@ -16,9 +16,12 @@ import static org.opencv.imgproc.Imgproc.warpAffine;
 public class AxisDetection {
     static double maxY = Double.MIN_VALUE;
     static ImageUtils imageUtils;
+    static Mat xscaleImage,yscaleImage;
 
-    public AxisDetection(){
+    public AxisDetection(Mat xscaleImage, Mat yscaleImage){
         imageUtils = new ImageUtils();
+        this.xscaleImage = xscaleImage;
+        this.yscaleImage = yscaleImage;
     }
 
     public List<String> getAxis(List<Point> corners, Mat mRgba) {
@@ -35,16 +38,9 @@ public class AxisDetection {
 
     private List<String> getYaxisLabels(List<Point> corners, Mat mRgba) {
         List<String> labels = new ArrayList<>();
-        double minX = findMinX(corners);
-
-        List<Point> YAxis = getYAxisPoints(minX,corners);
 
 
-        Point rightcorner = (YAxis.get(0).x > YAxis.get(1).x) ? YAxis.get(0) : YAxis.get(1);
-        Rect rectCrop = new Rect(0, 0, (int) rightcorner.x, mRgba.rows());
-
-
-        Mat image_roi = new Mat(mRgba, rectCrop);
+        Mat image_roi = yscaleImage;
         //displayImage(Mat2BufferedImage(image_roi));
         int count = 0;
         double min_idx = image_roi.cols() + 1;
@@ -59,7 +55,7 @@ public class AxisDetection {
             } else count = count + 1;
         }
 
-        rectCrop = new Rect(0, 0, (int) (min_idx - max / 2), image_roi.rows());
+        Rect rectCrop = new Rect(0, 0, (int) (min_idx - max / 2), image_roi.rows());
         Mat labelImage_roi = new Mat(image_roi, rectCrop);
 
         rectCrop = new Rect((int) (min_idx - max / 2), 0, (image_roi.cols() - (int) (min_idx - max / 2)), image_roi.rows());
@@ -109,13 +105,10 @@ public class AxisDetection {
     }
 
     private List<String> getXaxislabels(List<Point> corners, Mat mRgba) {
-        List<Point> lowerXAxis = getLowerAxisPoints(corners);
         List<String> labels = new ArrayList<>();
 
-        //fetches roi for x-label ad scale
-        Point left_corner = (lowerXAxis.get(0).x < lowerXAxis.get(1).x) ? lowerXAxis.get(0) : lowerXAxis.get(1);
-        Rect rectCrop = new Rect((int) left_corner.x, (int) maxY, mRgba.cols() - (int) (left_corner.x) - 1, mRgba.rows() - (int) maxY);
-        Mat image_roi = new Mat(mRgba, rectCrop);
+
+        Mat image_roi = xscaleImage;
         //displayImage(Mat2BufferedImage(image_roi));
 
         String Xpart = imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(image_roi));
