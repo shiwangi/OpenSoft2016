@@ -9,15 +9,17 @@ import java.util.List;
  * Created by shiwangi on 2/3/16.
  */
 public class RectangleDetection {
-
+    static ImageUtils imageUtils;
+    public RectangleDetection(){
+        imageUtils = new ImageUtils();
+    }
     public MatOfPoint detectRectangle(Mat mRgba) {
 
         //convert the image to black and white does (8 bit)
 
 
-        Mat mIntermediateMat = new Mat(mRgba.height(), mRgba.width(), CvType.CV_8UC1);
-        Imgproc.cvtColor(mRgba, mIntermediateMat, Imgproc.COLOR_RGB2GRAY);
 
+        Mat mIntermediateMat = imageUtils.convertToBinary(mRgba);
 
         //  displayImage(Mat2BufferedImage(mIntermediateMat));
 

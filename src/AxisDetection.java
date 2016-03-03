@@ -20,14 +20,14 @@ public class AxisDetection {
         imageUtils = new ImageUtils();
     }
     public List<String> getAxis(List<Point> corners, Mat mRgba) {
+
         //Find lower x-line
         List<String> labels = getXaxislabels(corners, mRgba);
 
-
         //Find left y-line
         List<String> ylabels = getYaxisLabels(corners, mRgba);
-        labels.addAll(ylabels);
 
+        labels.addAll(ylabels);
         return labels;
     }
 
@@ -81,7 +81,6 @@ public class AxisDetection {
 
     private Mat getRotated(Mat labelImage_roi) {
 
-
         double len = max(labelImage_roi.cols(), labelImage_roi.rows());
         Point center = new Point(len / 2.0, len / 2.0);
 
@@ -104,12 +103,10 @@ public class AxisDetection {
 
         String Xpart = imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(image_roi));
         String Xscale = Xpart.split("\n")[0];
-        String Xlabel = Xpart.substring(Xpart.charAt('\n') + 1);
+        String Xlabel = Xpart.substring(Xpart.indexOf('\n') + 1);
         labels.add(Xscale);
         labels.add(Xlabel);
-
-
-        System.out.println("Xlablel, Xsale" + Xlabel + Xscale);
+        
         return labels;
 
 

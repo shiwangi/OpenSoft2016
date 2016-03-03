@@ -1,6 +1,7 @@
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
@@ -101,5 +102,24 @@ public class ImageUtils {
             return null;
         }
 
+    }
+
+    public Mat convertToBinary(Mat mRgba) {
+        Mat mIntermediateMat = new Mat(mRgba.height(), mRgba.width(), CvType.CV_8UC1);
+        for(int i=0;i<mRgba.rows();i++){
+            for(int j=0;j<mRgba.cols();j++){
+
+                double[] color = mRgba.get(i, j);
+                if(isPixelWhite(color)){
+                    double[] newC = {255};
+                    mIntermediateMat.put(i, j, newC);
+                }
+                else{
+                    double[] newC = {0};
+                    mIntermediateMat.put(i, j, newC);
+                }
+            }
+        }
+        return mIntermediateMat;
     }
 }

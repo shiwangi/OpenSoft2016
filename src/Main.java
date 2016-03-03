@@ -1,7 +1,10 @@
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
-import org.opencv.core.*;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -11,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
-import static org.opencv.imgproc.Imgproc.drawContours;
 
 /**
  * Created by shiwangi on 26/2/16.
@@ -19,13 +21,11 @@ import static org.opencv.imgproc.Imgproc.drawContours;
 public class Main {
     static ImageUtils imageUtils;
 
-    public Main() {
-        imageUtils = new ImageUtils();
-    }
 
     public static void main(String args[]) throws IOException {
         InputStreamReader input = new InputStreamReader(System.in);
         BufferedReader br = new BufferedReader(input);
+        imageUtils = new ImageUtils();
         String fname = "./resources/image1.png";
 
 
@@ -34,12 +34,12 @@ public class Main {
 
         //read the image file.
         Mat mRgba = imread(fname);
-        imageUtils.displayImage(mRgba);
         if (mRgba.empty()) {
             System.out.println("Cannot load image!");
             return;
         }
 
+        imageUtils.displayImage(mRgba);
         //get rid of colourful elements
         //  removeColorFulPixel(mRgba);
 
@@ -48,18 +48,16 @@ public class Main {
         MatOfPoint contour = rectangleDetection.detectRectangle(mRgba);
         List<MatOfPoint> contours = new ArrayList<>();
         contours.add(contour);
-        if (contour != null)
-            drawContours(mRgba, contours, 0, new Scalar(0, 255, 0), 10);
-        else {
+        if (contour != null) {
+            imageUtils.drawContoursOnImage(contours, mRgba);
+            List<Point> corners = getCornersFromRect(contour);
+            AxisDetection axisDetection = new AxisDetection();
+            List<String> labels = axisDetection.getAxis(corners, mRgba);
+            System.out.println(labels.toString());
+        } else {
             System.out.println("Could not find border axes");
-        }
-        List<Point> corners = getCornersFromRect(contour);
-        AxisDetection axisDetection = new AxisDetection();
-        List<String> labels = axisDetection.getAxis(corners, mRgba);
-        System.out.println(labels.toString());
-        //manipulate the axes found to clip the image
 
-        //  findHouglines(mRgba);
+        }
     }
 
     private static List<Point> getCornersFromRect(MatOfPoint contour) {
