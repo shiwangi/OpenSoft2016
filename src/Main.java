@@ -36,6 +36,10 @@ public class Main {
         Point pt = findfirstBlackRowwAndCol(mIntermediateMat);
         int x = (int) pt.x;
         int y = (int) pt.y;
+
+        Point pt2 = findLastBlackRowAndCol(mIntermediateMat);
+        int lastx = (int) pt2.x;
+        int lasty = (int) pt2.y;
         Rect rectCrop = new Rect(0, 0, x,  mIntermediateMat.rows());
         Mat YscaleImage = new Mat(mRgba, rectCrop);
         imageUtils.displayImage(YscaleImage);
@@ -46,11 +50,11 @@ public class Main {
         imwrite("/home/rajitha/Desktop/result.png",XscaleImage);
         imageUtils.displayImage(XscaleImage);
 
-        Mat graphImage = getGraphImage(x,y,mIntermediateMat);
+        Mat graphImageBnW = getGraphImage(x,y,mIntermediateMat);
 
         //detect the axes
         RectangleDetection rectangleDetection = new RectangleDetection();
-        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba,graphImage);
+        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba,graphImageBnW);
         List<MatOfPoint> contours = new ArrayList<>();
         contours.add(contour);
         if (contour != null) {
@@ -64,6 +68,29 @@ public class Main {
             System.out.println("Could not find border axes");
 
         }
+
+        rectCrop = new Rect(x+1,lasty+1, lastx-x-1, y-lasty-1);
+        Mat graphImage = new Mat(mRgba, rectCrop);
+        imageUtils.displayImage(graphImage);
+
+        PlotValue plotValue = new PlotValue(graphImage,0,100,0,100);
+        plotValue.populateTable();
+    }
+
+    private static Point findLastBlackRowAndCol(Mat mIntermediateMat) {
+        int x=0;
+        int y=0;
+        for(int i=0;i<mIntermediateMat.cols();i++){
+            if(imageUtils.isColBlack(mIntermediateMat,i)){
+                x = i;
+            }
+        }
+        for(int i=mIntermediateMat.rows()-1;i>=0;i--){
+            if(imageUtils.isRowBlack(mIntermediateMat, i)){
+                y = i;
+            }
+        }
+        return new Point(x,y);
     }
 
     private static Mat getGraphImage(int x, int y,Mat mIntermediateMat) {

@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.max;
+import static org.opencv.core.Core.addWeighted;
+import static org.opencv.imgproc.Imgproc.GaussianBlur;
 import static org.opencv.imgproc.Imgproc.getRotationMatrix2D;
 import static org.opencv.imgproc.Imgproc.warpAffine;
 
@@ -60,8 +62,11 @@ public class AxisDetection {
 
         rectCrop = new Rect((int) (min_idx - max / 2), 0, (image_roi.cols() - (int) (min_idx - max / 2)), image_roi.rows());
         Mat scaleImage = new Mat(image_roi, rectCrop);
-        imageUtils.displayImage(scaleImage);
         scaleImage =  imageUtils.convertToBinary(scaleImage);
+       GaussianBlur(scaleImage, scaleImage, new Size(0, 0), 3);
+        addWeighted(scaleImage, 1.5, scaleImage, -0.5, 0, scaleImage);
+       // fourierTransform(scaleImage);
+        imageUtils.displayImage(scaleImage);
         String YScale = imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(scaleImage));
         YScale = YScale.replaceAll("\n", " ");
         labels.add(YScale);
@@ -75,7 +80,6 @@ public class AxisDetection {
         return labels;
 
     }
-
 
 
     private Mat getRotated(Mat labelImage_roi) {
