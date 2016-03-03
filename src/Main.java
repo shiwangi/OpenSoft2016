@@ -33,8 +33,6 @@ public class Main {
         }
 
         imageUtils.displayImage(mRgba);
-        //get rid of colourful elements
-        //  removeColorFulPixel(mRgba);
 
         //detect the axes
         RectangleDetection rectangleDetection = new RectangleDetection();
@@ -43,6 +41,7 @@ public class Main {
         contours.add(contour);
         if (contour != null) {
             imageUtils.drawContoursOnImage(contours, mRgba);
+            imageUtils.displayImage(mRgba);
             List<Point> corners = getCornersFromRect(contour);
             AxisDetection axisDetection = new AxisDetection();
             List<String> labels = axisDetection.getAxis(corners, mRgba);
@@ -75,7 +74,7 @@ public class Main {
     private static double dist(Point pt, Point point) {
         return (pt.x - point.x) * (pt.x - point.x) + (pt.y - point.y) * (pt.y - point.y);
     }
-    
+
 
 
 }

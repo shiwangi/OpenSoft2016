@@ -16,9 +16,11 @@ import static org.opencv.imgproc.Imgproc.warpAffine;
 public class AxisDetection {
     static double maxY = Double.MIN_VALUE;
     static ImageUtils imageUtils;
+
     public AxisDetection(){
         imageUtils = new ImageUtils();
     }
+
     public List<String> getAxis(List<Point> corners, Mat mRgba) {
 
         //Find lower x-line
@@ -111,7 +113,6 @@ public class AxisDetection {
         List<String> labels = new ArrayList<>();
 
         //fetches roi for x-label ad scale
-        Rect rect_Crop = null;
         Point left_corner = (lowerXAxis.get(0).x < lowerXAxis.get(1).x) ? lowerXAxis.get(0) : lowerXAxis.get(1);
         Rect rectCrop = new Rect((int) left_corner.x, (int) maxY, mRgba.cols() - (int) (left_corner.x) - 1, mRgba.rows() - (int) maxY);
         Mat image_roi = new Mat(mRgba, rectCrop);
@@ -125,7 +126,6 @@ public class AxisDetection {
         labels.add(Xlabel);
 
         return labels;
-
 
     }
 
@@ -144,8 +144,6 @@ public class AxisDetection {
         }
         return lowerXAxis;
     }
-
-
 
 
     private static double dist(Point pt, Point point) {

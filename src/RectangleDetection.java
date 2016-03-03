@@ -21,13 +21,49 @@ public class RectangleDetection {
         //convert the image to black and white does (8 bit)
 
         Mat mIntermediateMat = imageUtils.convertToBinary(mRgba);
+        int x=0;
+        int y=0;
+        for(int i=0;i<mIntermediateMat.cols();i++){
+            if(imageUtils.isColBlack(mIntermediateMat,i)){
+                 x = i;
+                break;
+            }
+        }
+        Rect rectCrop = new Rect(0, 0, x,  mIntermediateMat.rows());
+        Mat YscaleImage = new Mat(mRgba, rectCrop);
+        imageUtils.displayImage(YscaleImage);
 
-        //  displayImage(Mat2BufferedImage(mIntermediateMat));
+        for(int i=mIntermediateMat.rows()-1;i>=0;i--){
+            if(imageUtils.isRowBlack(mIntermediateMat,i)){
+                y = i;
+                break;
+            }
+        }
+        rectCrop = new Rect(0, y+1, mIntermediateMat.cols(),  mIntermediateMat.rows()-y-1);
+        Mat XscaleImage = new Mat(mRgba, rectCrop);
+        imageUtils.displayImage(XscaleImage);
+
+        Mat graphImage = mIntermediateMat.clone();
+        for(int i=0;i<graphImage.rows();i++){
+            for(int j=0;j<graphImage.cols();j++){
+                if(j<x){
+                    double[] newC = {255};
+                    graphImage.put(i, j, newC);
+                }
+                if(i>y){
+                    double[] newC = {255};
+                    graphImage.put(i, j, newC);
+                }
+            }
+        }
+//        imageUtils.displayImage(mIntermediateMat);
 
         //find the contours
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Imgproc.findContours(mIntermediateMat, contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
-
+        Imgproc.findContours(graphImage, contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
+//        imageUtils.drawContoursOnImage(contours,mRgba);
+//
+//        imageUtils.displayImage(mRgba);
 
         //get Square Contours
         List<MatOfPoint> squareContours = getSquareContours(contours);
@@ -41,14 +77,16 @@ public class RectangleDetection {
         while (each.hasNext()) {
             MatOfPoint wrapper = each.next();
             double area = Imgproc.contourArea(wrapper);
-            if (area > maxArea)
+            if (area > maxArea) {
                 maxArea = area;
+            }
         }
 
-        //Find the Border contour and draw it on the image
+       // Find the Border contour and draw it on the image
         each = squareContours.iterator();
         int idx = 0;
         double secondMax = 0;
+
         MatOfPoint borderContour = null;
         while (each.hasNext()) {
             MatOfPoint contour = each.next();
