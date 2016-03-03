@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.opencv.imgproc.Imgproc.THRESH_BINARY;
-import static org.opencv.imgproc.Imgproc.threshold;
-
 /**
  * Created by shiwangi on 2/3/16.
  */
@@ -18,10 +15,8 @@ public class RectangleDetection {
         //convert the image to black and white does (8 bit)
 
 
-
         Mat mIntermediateMat = new Mat(mRgba.height(), mRgba.width(), CvType.CV_8UC1);
         Imgproc.cvtColor(mRgba, mIntermediateMat, Imgproc.COLOR_RGB2GRAY);
-        threshold(mIntermediateMat, mIntermediateMat, 0.1 * 255, 255.0, THRESH_BINARY); //GRAY 2 Binary based on threshold
 
 
         //  displayImage(Mat2BufferedImage(mIntermediateMat));
@@ -29,11 +24,7 @@ public class RectangleDetection {
         //find the contours
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
         Imgproc.findContours(mIntermediateMat, contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
-//        int i=0;
-//        for(MatOfPoint cont:contours){
-//            drawContours(mRgba, contours, i, new Scalar(0, 255, 0), 10);
-//            i++;
-//        }
+
 
         //get Square Contours
         List<MatOfPoint> squareContours = getSquareContours(contours);
@@ -69,6 +60,7 @@ public class RectangleDetection {
         return borderContour;
     }
 
+
     public boolean isContourSquare(MatOfPoint thisContour) {
 
         Rect ret = null;
@@ -90,7 +82,7 @@ public class RectangleDetection {
         return (ret != null);
     }
 
-    public  List<MatOfPoint> getSquareContours(List<MatOfPoint> contours) {
+    public List<MatOfPoint> getSquareContours(List<MatOfPoint> contours) {
         List<MatOfPoint> squares = null;
 
         for (MatOfPoint c : contours) {

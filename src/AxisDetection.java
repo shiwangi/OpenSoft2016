@@ -1,11 +1,8 @@
-import net.sourceforge.tess4j.ITesseract;
-import net.sourceforge.tess4j.Tesseract;
-import net.sourceforge.tess4j.TesseractException;
-import org.opencv.core.*;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Size;
 
-import javax.sql.XAConnection;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +15,10 @@ import static org.opencv.imgproc.Imgproc.warpAffine;
  */
 public class AxisDetection {
     static double maxY = Double.MIN_VALUE;
-
+    static ImageUtils imageUtils;
+    public AxisDetection(){
+        imageUtils = new ImageUtils();
+    }
     public List<String> getAxis(List<Point> corners, Mat mRgba) {
         //Find lower x-line
         List<String> labels = getXaxislabels(corners, mRgba);
@@ -57,7 +57,7 @@ public class AxisDetection {
         double min_idx = image_roi.cols() + 1;
         int max = Integer.MIN_VALUE;
         for (int i = 0; i < image_roi.cols(); i++) {
-            if (isColWhite(i, image_roi) == 0) {
+            if (imageUtils.isColWhite(i, image_roi) == 0) {
                 if (max < count) {
                     max = count;
                     min_idx = i - 1;
@@ -71,10 +71,10 @@ public class AxisDetection {
 
         rectCrop = new Rect((int) (min_idx - max / 2), 0, (image_roi.cols() - (int) (min_idx - max / 2)), image_roi.rows());
         Mat scaleImage = new Mat(image_roi, rectCrop);
-        labels.add(ocrOnImage(Mat2BufferedImage(scaleImage)));
+        labels.add(imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(scaleImage)));
 
         Mat rotatedImage = getRotated(labelImage_roi);
-        labels.add(ocrOnImage(Mat2BufferedImage(rotatedImage)));
+        labels.add(imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(rotatedImage)));
         return labels;
 
     }
@@ -102,7 +102,7 @@ public class AxisDetection {
         Mat image_roi = new Mat(mRgba, rectCrop);
         //displayImage(Mat2BufferedImage(image_roi));
 
-        String Xpart = ocrOnImage(Mat2BufferedImage(image_roi));
+        String Xpart = imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(image_roi));
         String Xscale = Xpart.split("\n")[0];
         String Xlabel = Xpart.substring(Xpart.charAt('\n') + 1);
         labels.add(Xscale);
@@ -132,53 +132,10 @@ public class AxisDetection {
     }
 
 
-    private static String ocrOnImage(BufferedImage bimage) {
-        //File imageFile = new File(fname);
-        ITesseract instance = new Tesseract();  // JNA Interface Mapping
-        instance.setDatapath("/usr/share/tesseract-ocr");
-        try {
-            String result = instance.doOCR(bimage);
-            //System.out.println(result);
-            return result;
-        } catch (TesseractException e) {
-            System.err.println(e.getMessage());
-            return null;
-        }
-
-    }
-
-    public static BufferedImage Mat2BufferedImage(Mat m) {
-
-        int type = BufferedImage.TYPE_BYTE_GRAY;
-        if (m.channels() > 1) {
-            type = BufferedImage.TYPE_3BYTE_BGR;
-        }
-        int bufferSize = m.channels() * m.cols() * m.rows();
-        byte[] b = new byte[bufferSize];
-        m.get(0, 0, b); // get all the pixels
-        BufferedImage image = new BufferedImage(m.cols(), m.rows(), type);
-        final byte[] targetPixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
-        System.arraycopy(b, 0, targetPixels, 0, b.length);
-        return image;
-
-    }
-
 
 
     private static double dist(Point pt, Point point) {
         return (pt.x - point.x) * (pt.x - point.x) + (pt.y - point.y) * (pt.y - point.y);
     }
 
-    private static int isColWhite(int i, Mat imgROI) {
-        for (int j = 0; j < imgROI.rows(); j++) {
-            double[] color = imgROI.get(j, i);
-            if (!isWhite(color)) return 0;
-        }
-        return 1;
-    }
-
-    private static boolean isWhite(double[] color) {
-        if (color[0] == 255 && color[1] == 255 && color[2] == 255) return true;
-        return false;
-    }
 }
