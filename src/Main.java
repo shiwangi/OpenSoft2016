@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
+import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 
 /**
  * Created by shiwangi on 26/2/16.
@@ -40,8 +41,9 @@ public class Main {
         imageUtils.displayImage(YscaleImage);
 
 
-        rectCrop = new Rect(0, y+1, mIntermediateMat.cols(),  mIntermediateMat.rows()-y-1);
+        rectCrop = new Rect(x-3, y+1, mIntermediateMat.cols()-x+3,  mIntermediateMat.rows()-y-1);
         Mat XscaleImage = new Mat(mRgba, rectCrop);
+        imwrite("/home/rajitha/Desktop/result.png",XscaleImage);
         imageUtils.displayImage(XscaleImage);
 
         Mat graphImage = getGraphImage(x,y,mIntermediateMat);
@@ -52,8 +54,8 @@ public class Main {
         List<MatOfPoint> contours = new ArrayList<>();
         contours.add(contour);
         if (contour != null) {
-            imageUtils.drawContoursOnImage(contours, mRgba);
-            imageUtils.displayImage(mRgba);
+//            imageUtils.drawContoursOnImage(contours, mRgba);
+//            imageUtils.displayImage(mRgba);
             List<Point> corners = getCornersFromRect(contour);
             AxisDetection axisDetection = new AxisDetection(XscaleImage,YscaleImage);
             List<String> labels = axisDetection.getAxis(corners, mRgba);

@@ -60,11 +60,14 @@ public class AxisDetection {
 
         rectCrop = new Rect((int) (min_idx - max / 2), 0, (image_roi.cols() - (int) (min_idx - max / 2)), image_roi.rows());
         Mat scaleImage = new Mat(image_roi, rectCrop);
+        imageUtils.displayImage(scaleImage);
+        scaleImage =  imageUtils.convertToBinary(scaleImage);
         String YScale = imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(scaleImage));
         YScale = YScale.replaceAll("\n", " ");
         labels.add(YScale);
 
         Mat rotatedImage = getRotated(labelImage_roi);
+        imageUtils.displayImage(rotatedImage);
         String Ylabel = imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(rotatedImage));
         Ylabel = Ylabel.replaceAll("\n", " ");
         labels.add(Ylabel);
@@ -73,25 +76,7 @@ public class AxisDetection {
 
     }
 
-    private List<Point> getYAxisPoints(double minX, List<Point> corners) {
-        List<Point> YAxis = new ArrayList<>();
-        for (Point point : corners) {
-            if (dist(point, new Point(minX, point.y)) < 10) {
-                YAxis.add(point);
-            }
-        }
-        return YAxis;
-    }
 
-    private double findMinX(List<Point> corners) {
-        double minX = Double.MAX_VALUE;
-        for (Point point : corners) {
-            if (point.x < minX) {
-                minX = point.x;
-            }
-        }
-        return  minX;
-    }
 
     private Mat getRotated(Mat labelImage_roi) {
 
@@ -111,6 +96,8 @@ public class AxisDetection {
         Mat image_roi = xscaleImage;
         //displayImage(Mat2BufferedImage(image_roi));
 
+        image_roi = imageUtils.convertToBinary(image_roi);
+
         String Xpart = imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(image_roi));
         String Xscale = Xpart.split("\n")[0];
         String Xlabel = Xpart.substring(Xpart.indexOf('\n') + 1);
@@ -122,21 +109,7 @@ public class AxisDetection {
 
     }
 
-    private List<Point> getLowerAxisPoints(List<Point> corners) {
 
-        for (Point point : corners) {
-            if (point.y > maxY) {
-                maxY = point.y;
-            }
-        }
-        List<Point> lowerXAxis = new ArrayList<>();
-        for (Point point : corners) {
-            if (dist(point, new Point(point.x, maxY)) < 10) {
-                lowerXAxis.add(point);
-            }
-        }
-        return lowerXAxis;
-    }
 
 
     private static double dist(Point pt, Point point) {

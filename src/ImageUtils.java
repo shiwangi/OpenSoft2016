@@ -1,10 +1,8 @@
+import net.sourceforge.tess4j.ITessAPI;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.Scalar;
+import org.opencv.core.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -77,7 +75,10 @@ public class ImageUtils {
     public static String ocrOnImage(BufferedImage bimage) {
         //File imageFile = new File(fname);
         ITesseract instance = new Tesseract();  // JNA Interface Mapping
+
         instance.setDatapath("/usr/share/tesseract-ocr");
+        instance.setTessVariable("tessedit_char_whitelist", ".0123456789");
+
         try {
             String result = instance.doOCR(bimage);
             //System.out.println(result);
