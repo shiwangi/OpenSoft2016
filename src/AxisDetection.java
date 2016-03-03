@@ -33,18 +33,9 @@ public class AxisDetection {
 
     private List<String> getYaxisLabels(List<Point> corners, Mat mRgba) {
         List<String> labels = new ArrayList<>();
-        double minX = Double.MAX_VALUE;
-        for (Point point : corners) {
-            if (point.x < minX) {
-                minX = point.x;
-            }
-        }
-        List<Point> YAxis = new ArrayList<>();
-        for (Point point : corners) {
-            if (dist(point, new Point(minX, point.y)) < 10) {
-                YAxis.add(point);
-            }
-        }
+        double minX = findMinX(corners);
+
+        List<Point> YAxis = getYAxisPoints(minX,corners);
 
 
         Point rightcorner = (YAxis.get(0).x > YAxis.get(1).x) ? YAxis.get(0) : YAxis.get(1);
@@ -71,12 +62,37 @@ public class AxisDetection {
 
         rectCrop = new Rect((int) (min_idx - max / 2), 0, (image_roi.cols() - (int) (min_idx - max / 2)), image_roi.rows());
         Mat scaleImage = new Mat(image_roi, rectCrop);
-        labels.add(imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(scaleImage)));
+        String YScale = imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(scaleImage));
+        YScale = YScale.replaceAll("\n", " ");
+        labels.add(YScale);
 
         Mat rotatedImage = getRotated(labelImage_roi);
-        labels.add(imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(rotatedImage)));
+        String Ylabel = imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(rotatedImage));
+        Ylabel = Ylabel.replaceAll("\n", " ");
+        labels.add(Ylabel);
+
         return labels;
 
+    }
+
+    private List<Point> getYAxisPoints(double minX, List<Point> corners) {
+        List<Point> YAxis = new ArrayList<>();
+        for (Point point : corners) {
+            if (dist(point, new Point(minX, point.y)) < 10) {
+                YAxis.add(point);
+            }
+        }
+        return YAxis;
+    }
+
+    private double findMinX(List<Point> corners) {
+        double minX = Double.MAX_VALUE;
+        for (Point point : corners) {
+            if (point.x < minX) {
+                minX = point.x;
+            }
+        }
+        return  minX;
     }
 
     private Mat getRotated(Mat labelImage_roi) {
@@ -104,9 +120,10 @@ public class AxisDetection {
         String Xpart = imageUtils.ocrOnImage(imageUtils.Mat2BufferedImage(image_roi));
         String Xscale = Xpart.split("\n")[0];
         String Xlabel = Xpart.substring(Xpart.indexOf('\n') + 1);
+        Xlabel = Xlabel.replaceAll("\n"," ");
         labels.add(Xscale);
         labels.add(Xlabel);
-        
+
         return labels;
 
 
