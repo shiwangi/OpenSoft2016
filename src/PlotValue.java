@@ -14,13 +14,14 @@ import static org.opencv.imgproc.Imgproc.cvtColor;
  */
 public class PlotValue {
 
-    public static int rangeY, dy;
-    public static int rangeX, dx;
+    public static double rangeY;
+    public static double rangeX;
+    public static int dx , dy;
     public ImageUtils imageUtils;
     Mat graph;
     List<Colour> colourOfPlotsHSV;
 
-    PlotValue(Mat graph, int minX, int maxX, int minY, int maxY) {
+    PlotValue(Mat graph, double minX, double maxX, double minY, double maxY) {
         rangeX = maxX - minX;
         this.graph = graph;
         rangeY = maxY - minY;

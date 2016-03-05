@@ -5,6 +5,7 @@ import java.util.List;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgproc.Imgproc.rectangle;
+import static org.opencv.imgproc.Imgproc.resize;
 
 /**
  * Created by shiwangi on 5/3/16.
@@ -25,7 +26,7 @@ public class LegendDetection {
         Mat img = graphImage.clone();
         Mat templ = imread("/home/shiwangi/pic1.png");
         System.out.print(imageUtils.ocrOnImage(templ,2));
-//resize(img,img,new Size(templ.cols()*4,templ.rows()*4));
+        resize(img, img, new Size(templ.cols() * 4, templ.rows() * 3));
         imageUtils.displayImage(templ);
         System.out.println("\nRunning Template Matching");
 
@@ -61,7 +62,7 @@ public class LegendDetection {
         imageUtils.displayImage(img);
        Rect rectCrop = new Rect((int)matchLoc.x,(int)matchLoc.y,(int)templ.cols(),(int)templ.rows());
         Mat legendimage = new Mat(img, rectCrop);
-      //  System.out.print(imageUtils.ocrOnImage(legendimage, 2));
+        System.out.print(imageUtils.ocrOnImage(legendimage, 2));
 //        Mat cleanlegend = imageUtils.removecolorpixels(graphImage);
 //         imageUtils.displayImage(cleanlegend);
 //        cleanlegend = imageUtils.convertToBinary(cleanlegend);

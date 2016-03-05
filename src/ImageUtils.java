@@ -4,7 +4,6 @@ import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.opencv.core.*;
 import org.opencv.core.Point;
-import org.opencv.imgproc.Imgproc;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +11,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.List;
 
-import static org.opencv.imgproc.Imgproc.cvtColor;
 import static org.opencv.imgproc.Imgproc.drawContours;
 import static org.opencv.imgproc.Imgproc.rectangle;
 
@@ -90,7 +88,6 @@ public class ImageUtils {
     }
 
 
-
     public String ocrOnImage(Mat img, int i) {
         //File imageFile = new File(fname);
         BufferedImage bimage = Mat2BufferedImage(img);
@@ -98,25 +95,26 @@ public class ImageUtils {
         ITesseract instance = new Tesseract();  // JNA Interface Mapping
 
         instance.setDatapath("/usr/share/tesseract-ocr");
-        if(i==0) instance.setTessVariable("tessedit_char_whitelist", ".0123456789");
-        if(i==1) instance.setTessVariable("tessedit_char_whitelist", "()ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-/%");
+        if (i == 0) instance.setTessVariable("tessedit_char_whitelist", ".0123456789");
+        if (i == 1)
+            instance.setTessVariable("tessedit_char_whitelist", "()ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-/%");
 
         //instance.setPageSegMode(ITessAPI.TessPageSegMode.PSM_SINGLE_BLOCK);
         try {
             String result = instance.doOCR(bimage);
 
             List<Rectangle> rects = instance.getSegmentedRegions(bimage, ITessAPI.TessPageIteratorLevel.RIL_TEXTLINE);
-            for(Rectangle rect : rects){
+            for (Rectangle rect : rects) {
                 int h = rect.height;
                 int w = rect.width;
                 int x = (int) rect.getX();
                 int y = (int) rect.getY();
 
-               System.out.println(instance.doOCR(bimage,rect));
-                rectangle(img, new Point(x,y), new Point(x+w,y+h),  new Scalar(0, 255, 255));
+                System.out.println(instance.doOCR(bimage, rect));
+                rectangle(img, new Point(x, y), new Point(x + w, y + h), new Scalar(0, 255, 255));
             }
             displayImage(img);
-           // if(i!=0)
+            // if(i!=0)
             //System.out.println(result);
             return result;
         } catch (TesseractException e) {
@@ -125,8 +123,6 @@ public class ImageUtils {
         }
 
     }
-
-
 
 
     public Mat convertToBinary(Mat mRgba) {
@@ -148,21 +144,25 @@ public class ImageUtils {
     }
 
     public boolean isColBlack(Mat mIntermediateMat, int i) {
-        int reqBlackpixels = (int) (mIntermediateMat.rows()*.7);
-        int count=0;
+        int reqBlackpixels = (int) (mIntermediateMat.rows() * .7);
+        int count = 0;
         for (int j = 0; j < mIntermediateMat.rows(); j++) {
             double[] color = mIntermediateMat.get(j, i);
             if (isPixelBlack(color)) count++;
         }
-        return count>reqBlackpixels;
+        return count > reqBlackpixels;
     }
 
+    /*
+
+    * If 3-channel images provided , returns boolean on the basis of hue
+    * Otherwise checks for exactly black in bImage
+     */
     public boolean isPixelBlack(double[] color) {
-        if(color.length==3){
-            if(color[0]<10){
+        if (color.length == 3) {
+            if (color[0] < 10) {
                 return true;
-            }
-            else{
+            } else {
                 return false;
             }
         }
@@ -171,46 +171,39 @@ public class ImageUtils {
     }
 
     public boolean isRowBlack(Mat mIntermediateMat, int i) {
-        int reqBlackpixels = (int) (mIntermediateMat.cols()*.7);
-        int count=0;
+        int reqBlackpixels = (int) (mIntermediateMat.cols() * .7);
+        int count = 0;
         for (int j = 0; j < mIntermediateMat.cols(); j++) {
-            double[] color = mIntermediateMat.get(i,j);
+            double[] color = mIntermediateMat.get(i, j);
             if (isPixelBlack(color)) count++;
         }
-        return count>reqBlackpixels;
+        return count > reqBlackpixels;
     }
 
-    public Mat removecolorpixels(Mat matbox)
-    {
-        Mat hsvImage = matbox.clone();
-        cvtColor(matbox, hsvImage, Imgproc.COLOR_RGB2HSV,3);
-//        int minHvalue = 255;
-//        for(int i = 0; i < hsvImage.rows(); i++) {
-//            for (int j = 0; j < hsvImage.cols(); j++) {
-//
-//
-//            }
-//
-//        }
-        Mat ans= matbox.clone();
-        double[] white = {255,255,255};
-        double[] black = {0,0,0};
-        for(int i = 0; i < hsvImage.rows(); i++)
-        {
-            for(int j=0; j<hsvImage.cols();j++)
-            {
+    public double dist(Point pt, Point point) {
+        return (pt.x - point.x) * (pt.x - point.x) + (pt.y - point.y) * (pt.y - point.y);
+    }
 
-                int thresh = 30;
-                double[] color = hsvImage.get(i,j);
-                if (color[0] > thresh)
-                {
-                    ans.put(i,j, white);
-                    continue;
-                }
+    public String ocrOnImageForYScale(Mat image_roi, int i) {
+        BufferedImage bimage = Mat2BufferedImage(image_roi);
+        bimage = Mat2BufferedImage(convertToBinary(image_roi));
+        ITesseract instance = new Tesseract();  // JNA Interface Mapping
 
-            }
+        instance.setDatapath("/usr/share/tesseract-ocr");
+        if (i == 0) instance.setTessVariable("tessedit_char_whitelist", ".0123456789");
+        if (i == 1)
+            instance.setTessVariable("tessedit_char_whitelist", "()ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-/%");
+        instance.setPageSegMode(ITessAPI.TessPageSegMode.PSM_SINGLE_BLOCK_VERT_TEXT);
+        try {
+            String result = instance.doOCR(bimage);
+            System.out.println("Vertical Text \n"+result);
+            return result;
+        } catch (TesseractException e) {
+            System.err.println(e.getMessage());
+            return null;
         }
-        return ans;
+        //instance.setPageSegMode(ITessAPI.TessPageSegMode.PSM_SINGLE_BLOCK);
+
 
     }
 }

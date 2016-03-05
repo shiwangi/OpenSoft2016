@@ -1,80 +1,102 @@
 import org.opencv.core.*;
+import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.max;
-import static org.opencv.core.Core.BORDER_DEFAULT;
-import static org.opencv.core.Core.addWeighted;
+import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgproc.Imgproc.*;
 
 /**
  * Created by rajitha on 3/3/16.
  */
 public class AxisDetection {
-    static double maxY = Double.MIN_VALUE;
     static ImageUtils imageUtils;
-    static Mat xscaleImage,yscaleImage;
+    static Mat xscaleImage, yscaleImage;
 
-    public AxisDetection(Mat xscaleImage, Mat yscaleImage){
+    public AxisDetection(Mat xscaleImage, Mat yscaleImage) {
         imageUtils = new ImageUtils();
         this.xscaleImage = xscaleImage;
         this.yscaleImage = yscaleImage;
     }
 
-    public List<String> getAxis(List<Point> corners, Mat mRgba) {
+    public List<String> getAxis() {
 
         //Find lower x-line
-        List<String> labels = getXaxislabels(corners, mRgba);
+        List<String> labels = getXaxislabels();
 
         //Find left y-line
-        List<String> ylabels = getYaxisLabels(corners, mRgba);
+        List<String> ylabels = getYaxisLabels();
 
         labels.addAll(ylabels);
         return labels;
     }
 
-    private List<String> getYaxisLabels(List<Point> corners, Mat mRgba) {
+    private List<String> getYaxisLabels() {
         List<String> labels = new ArrayList<>();
 
 
         Mat image_roi = yscaleImage;
-        //displayImage(Mat2BufferedImage(image_roi));
-        int count = 0;
-        double min_idx = image_roi.cols() + 1;
-        int max = Integer.MIN_VALUE;
-        for (int i = 0; i < image_roi.cols(); i++) {
-            if (imageUtils.isColWhite(i, image_roi) == 0) {
-                if (max < count) {
-                    max = count;
-                    min_idx = i - 1;
-                    count = 0;
-                }
-            } else count = count + 1;
-        }
 
-        Rect rectCrop = new Rect(0, 0, (int) (min_idx - max / 2), image_roi.rows());
-        Mat labelImage_roi = new Mat(image_roi, rectCrop);
-
-        rectCrop = new Rect((int) (min_idx - max / 2), 0, (image_roi.cols() - (int) (min_idx - max / 2)), image_roi.rows());
-        Mat scaleImage = new Mat(image_roi, rectCrop);
-        scaleImage =  imageUtils.convertToBinary(scaleImage);
-//        GaussianBlur(scaleImage, scaleImage, new Size(0, 0), 3);
-//        addWeighted(scaleImage, 1.5, scaleImage, -0.5, 0, scaleImage);
-       // fourierTransform(scaleImage);
-        //bilateralFilter(scaleImage, scaleImage,5,20,20,BORDER_DEFAULT);
-
-        imageUtils.displayImage(scaleImage);
-        String YScale = imageUtils.ocrOnImage(scaleImage,0);
+        String YScale = imageUtils.ocrOnImage(image_roi, 0);
         YScale = YScale.replaceAll("\n", " ");
 
         labels.add(YScale);
 
-        Mat rotatedImage = getRotated(labelImage_roi);
-        imageUtils.displayImage(rotatedImage);
-        String Ylabel = imageUtils.ocrOnImage(rotatedImage,1);
-        Ylabel = Ylabel.replaceAll("\n", " ");
-        labels.add(Ylabel);
+//        String Ylabel = imageUtils.ocrOnImage(getRotated(image_roi), 1);
+//        Ylabel = Ylabel.replaceAll("\n", " ");
+//        labels.add(Ylabel);
+//
+//
+
+
+
+
+        Mat img = image_roi.clone();
+        Mat templ = imread("/home/shiwangi/scaley.png");
+        System.out.print(imageUtils.ocrOnImage(templ, 2));
+        resize(img, img, new Size(templ.cols()*2,templ.rows()));
+        imageUtils.displayImage(templ);
+        System.out.println("\nRunning Template Matching");
+
+        // / Create the result matrix
+        int result_cols = img.cols() - templ.cols() + 1;
+        int result_rows = img.rows() - templ.rows() + 1;
+        Mat result = new Mat(result_rows, result_cols, CvType.CV_32FC1);
+
+        // / Do the Matching and Normalize
+        int match_method = Imgproc.TM_CCORR_NORMED;
+        Imgproc.matchTemplate(img, templ, result, Imgproc.TM_CCOEFF);
+        //    Core.normalize(result, result, 0, 1, Core.NORM_MINMAX, -1, new Mat());
+        //imwrite("./resources/out2.png", result);
+
+        // / Localizing the best match with minMaxLoc
+        Core.MinMaxLocResult mmr = Core.minMaxLoc(result);
+
+        Point matchLoc;
+        if (match_method == Imgproc.TM_SQDIFF
+                || match_method == Imgproc.TM_SQDIFF_NORMED) {
+            matchLoc = mmr.minLoc;
+            System.out.println(mmr.minVal);
+        } else {
+            matchLoc = mmr.maxLoc;
+            System.out.println(mmr.maxVal);
+        }
+
+        // / Show me what you got
+        rectangle(img, matchLoc, new Point(matchLoc.x + templ.cols() + 15,
+                matchLoc.y + templ.rows() + 15), new Scalar(0, 255, 0));
+
+        // Save the visualized detection.
+        imageUtils.displayImage(img);
+        Rect rectCrop = new Rect((int)matchLoc.x,(int)matchLoc.y,(int)templ.cols(),(int)templ.rows());
+        Mat legendimage = new Mat(img, rectCrop);
+        YScale = imageUtils.ocrOnImage(legendimage, 0);
+        YScale = YScale.replaceAll("\n", " ");
+
+        labels.add(YScale);
+
 
         return labels;
 
@@ -92,50 +114,20 @@ public class AxisDetection {
 
     }
 
-    private List<String> getXaxislabels(List<Point> corners, Mat mRgba) {
+    private List<String> getXaxislabels() {
         List<String> labels = new ArrayList<>();
 
 
         Mat image_roi = xscaleImage;
-        //displayImage(Mat2BufferedImage(image_roi));
-        Mat resizeimage = new Mat();
-        Size sz = new Size(1600,100);
-        resize( image_roi, resizeimage, sz );
-        //imageUtils.displayImage(resizeimage);
-        resizeimage = imageUtils.convertToBinary(resizeimage);
-        Mat dest_img_roi = new Mat(image_roi.rows()*2,image_roi.cols()*2,image_roi.type());
-        resize(image_roi,dest_img_roi,dest_img_roi.size(),2,2,INTER_NEAREST);
-        imageUtils.displayImage(dest_img_roi);
 
 
-        Mat destination = new Mat(resizeimage.rows(),resizeimage.cols(),resizeimage.type());
-
-        Mat kernel = new Mat(3,3, CvType.CV_8S){
-            {
-                put(0,-1,0);
-                put(-1,6,-1);
-                put(0,-1,0);
-
-//                put(1,0-1);
-//                put(1,1,4);
-//                put(1,2,-1);
-//
-//                put(2,0,0);
-//                put(2,1,-1);
-//                put(2,2,0);
-            }
-        };
-
-        filter2D(dest_img_roi, destination, -1, kernel);
-
-        imageUtils.displayImage(destination);
-        String Xpart = imageUtils.ocrOnImage(destination,0);
+        String Xpart = imageUtils.ocrOnImage(image_roi, 0);
         String Xscale = Xpart.split("\n")[0];
 
 
-        Xpart = imageUtils.ocrOnImage(image_roi,1);
+        Xpart = imageUtils.ocrOnImage(image_roi, 1);
         String Xlabel = Xpart.substring(Xpart.indexOf('\n') + 1);
-        Xlabel = Xlabel.replaceAll("\n"," ");
+        Xlabel = Xlabel.replaceAll("\n", " ");
         labels.add(Xscale);
         labels.add(Xlabel);
 
@@ -144,10 +136,74 @@ public class AxisDetection {
     }
 
 
-
-
     private static double dist(Point pt, Point point) {
         return (pt.x - point.x) * (pt.x - point.x) + (pt.y - point.y) * (pt.y - point.y);
     }
+
+    public List<Double> getMinMaxValues(List<String> labels) {
+        List<Double> values = new ArrayList<>();
+
+        String[] xscale = labels.get(0).split(" ");
+        try {
+            values.add(Double.parseDouble(xscale[0]));
+            values.add(Double.parseDouble(xscale[xscale.length - 1]));
+        } catch (NumberFormatException e) {
+            values.add(0.0);
+            values.add(100.0);
+        }
+
+        String[] yscale = labels.get(2).split(" ");
+        try {
+            values.add(Double.parseDouble(yscale[yscale.length - 1]));
+            values.add(Double.parseDouble(yscale[0]));
+        } catch (NumberFormatException e) {
+            values.add(0.0);
+            values.add(100.0);
+        }
+        return values;
+    }
+
+    private static boolean isAP(String[] scale) {
+        if (!isValidscale(scale)) return false;
+        ArrayList<Double> scaleNum = new ArrayList<>();
+        for (int i = 0; i < scale.length; i++) {
+            if (isDouble(scale[i])) {
+                double num = Double.parseDouble(scale[i]);
+                scaleNum.add(num);
+            }
+        }
+
+        List<Double> possibleRValues = new ArrayList<>();
+        int i = 0;
+        double num = scaleNum.get(i);
+        for (i = 1; i < scaleNum.size(); i++) {
+            double r = scaleNum.get(i) - num;
+            num = scaleNum.get(i);
+            possibleRValues.add(r);
+        }
+        return true;
+
+
+    }
+
+    private static boolean isValidscale(String[] scale) { //checks very bad scales.
+        int count = 0;
+        for (int i = 0; i < scale.length; i++) {
+            if (count > scale.length / 3) return false;
+            if (!isDouble(scale[i])) count++;
+
+        }
+        return true;
+    }
+
+    private static boolean isDouble(String s) {
+        try {
+            Double.parseDouble(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
 
 }
