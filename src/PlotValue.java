@@ -77,7 +77,7 @@ public class PlotValue {
                 double[] newC = {0, 0, 0};
                 circle(img, new Point(i, point.x), 5, new Scalar(0, 0, 0));
                 img.put((int) point.x, i, newC);
-                System.out.println(point.x + "\t" + point.y);
+              //  System.out.println(point.x + "\t" + point.y);
             }
         }
         imageUtils.displayImage(img);

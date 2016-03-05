@@ -42,43 +42,50 @@ public class Main {
         Point pt2 = findLastBlackRowAndCol(mIntermediateMat);
         int lastx = (int) pt2.x;
         int lasty = (int) pt2.y;
-        Rect rectCrop = new Rect(0, 0, x,  mIntermediateMat.rows());
+        Rect rectCrop = new Rect(0, 0, x, mIntermediateMat.rows());
         Mat YscaleImage = new Mat(mRgba, rectCrop);
         imageUtils.displayImage(YscaleImage);
 
 
-        rectCrop = new Rect(x-3, y+1, mIntermediateMat.cols()-x+3,  mIntermediateMat.rows()-y-1);
+        rectCrop = new Rect(x - 3, y + 1, mIntermediateMat.cols() - x + 3, mIntermediateMat.rows() - y - 1);
         Mat XscaleImage = new Mat(mRgba, rectCrop);
-        imwrite("/home/rajitha/Desktop/result.png",XscaleImage);
+        imwrite("/home/rajitha/Desktop/result.png", XscaleImage);
         imageUtils.displayImage(XscaleImage);
 
-        Mat graphImageBnW = getGraphImage(x,y,mIntermediateMat);
+        Mat graphImageBnW = getGraphImage(x, y, mIntermediateMat);
 
         //detect the axes
         RectangleDetection rectangleDetection = new RectangleDetection();
-        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba,graphImageBnW);
+        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba, graphImageBnW);
         List<MatOfPoint> contours = new ArrayList<>();
         contours.add(contour);
         if (contour != null) {
 //            imageUtils.drawContoursOnImage(contours, mRgba);
 //            imageUtils.displayImage(mRgba);
             List<Point> corners = getCornersFromRect(contour);
-            AxisDetection axisDetection = new AxisDetection(XscaleImage,YscaleImage);
+            AxisDetection axisDetection = new AxisDetection(XscaleImage, YscaleImage);
             List<String> labels = axisDetection.getAxis(corners, mRgba);
 
-            List<Double> minmaxValues = getminmaxValues(labels);
-            System.out.println(minmaxValues.toString());
+//            List<Double> minmaxValues = getminmaxValues(labels);
+//            System.out.println(labels.toString());
         } else {
             System.out.println("Could not find border axes");
 
         }
 
-        rectCrop = new Rect(x+1,lasty+1, lastx-x-1, y-lasty-1);
+        rectCrop = new Rect(x + 5, lasty + 5, lastx - x - 10, y - lasty - 10);
         Mat graphImage = new Mat(mRgba, rectCrop);
         imageUtils.displayImage(graphImage);
 
-        PlotValue plotValue = new PlotValue(graphImage,0,100,0,100);
-        plotValue.populateTable();
+//        PlotValue plotValue = new PlotValue(graphImage, 0, 100, 0, 100);
+//        plotValue.populateTable();
+
+
+
+
+        LegendDetect ld = new LegendDetect();
+        String legend = ld.getLegendlabel(graphImage);
+        //System.out.println(legend);
     }
 
     private static List<Double> getminmaxValues(List<String> labels) {
@@ -87,38 +94,52 @@ public class Main {
         String[] xscale = labels.get(0).split(" ");
         try {
             values.add(Double.parseDouble(xscale[0]));
-            values.add(Double.parseDouble(xscale[xscale.length-1]));
-        }
-        catch (NumberFormatException e)
-        {
-            values.add(0.0);values.add(100.0);
+            values.add(Double.parseDouble(xscale[xscale.length - 1]));
+        } catch (NumberFormatException e) {
+            values.add(0.0);
+            values.add(100.0);
         }
 
         String[] yscale = labels.get(2).split(" ");
-        try{
-            values.add(Double.parseDouble(yscale[yscale.length-1]));
+        try {
+            values.add(Double.parseDouble(yscale[yscale.length - 1]));
             values.add(Double.parseDouble(yscale[0]));
-        }
-        catch (NumberFormatException e)
-        {
-            values.add(0.0);values.add(100.0);
+        } catch (NumberFormatException e) {
+            values.add(0.0);
+            values.add(100.0);
         }
         return values;
 
     }
 
     private static boolean isAP(String[] scale) {
-        if(!isValidscale(scale)) return false;
-        else return true;
+        if (!isValidscale(scale)) return false;
+        ArrayList<Double> scaleNum = new ArrayList<>();
+        for (int i = 0; i < scale.length; i++) {
+            if (isDouble(scale[i])) {
+                double num = Double.parseDouble(scale[i]);
+                scaleNum.add(num);
+            }
+        }
+
+        List<Double> possibleRValues = new ArrayList<>();
+        int i = 0;
+        double num = scaleNum.get(i);
+        for (i = 1; i < scaleNum.size(); i++) {
+            double r = scaleNum.get(i) - num;
+            num = scaleNum.get(i);
+            possibleRValues.add(r);
+        }
+        return true;
+
 
     }
 
     private static boolean isValidscale(String[] scale) { //checks very bad scales.
         int count = 0;
-        for(int i= 0;i<scale.length;i++)
-        {
-            if(count>scale.length/3) return false;
-            if(!isDouble(scale[i])) count++;
+        for (int i = 0; i < scale.length; i++) {
+            if (count > scale.length / 3) return false;
+            if (!isDouble(scale[i])) count++;
 
         }
         return true;
@@ -134,30 +155,30 @@ public class Main {
     }
 
     private static Point findLastBlackRowAndCol(Mat mIntermediateMat) {
-        int x=0;
-        int y=0;
-        for(int i=0;i<mIntermediateMat.cols();i++){
-            if(imageUtils.isColBlack(mIntermediateMat,i)){
+        int x = 0;
+        int y = 0;
+        for (int i = 0; i < mIntermediateMat.cols(); i++) {
+            if (imageUtils.isColBlack(mIntermediateMat, i)) {
                 x = i;
             }
         }
-        for(int i=mIntermediateMat.rows()-1;i>=0;i--){
-            if(imageUtils.isRowBlack(mIntermediateMat, i)){
+        for (int i = mIntermediateMat.rows() - 1; i >= 0; i--) {
+            if (imageUtils.isRowBlack(mIntermediateMat, i)) {
                 y = i;
             }
         }
-        return new Point(x,y);
+        return new Point(x, y);
     }
 
-    private static Mat getGraphImage(int x, int y,Mat mIntermediateMat) {
+    private static Mat getGraphImage(int x, int y, Mat mIntermediateMat) {
         Mat graphImage = mIntermediateMat.clone();
-        for(int i=0;i<graphImage.rows();i++){
-            for(int j=0;j<graphImage.cols();j++){
-                if(j<x){
+        for (int i = 0; i < graphImage.rows(); i++) {
+            for (int j = 0; j < graphImage.cols(); j++) {
+                if (j < x) {
                     double[] newC = {255};
                     graphImage.put(i, j, newC);
                 }
-                if(i>y){
+                if (i > y) {
                     double[] newC = {255};
                     graphImage.put(i, j, newC);
                 }
@@ -167,21 +188,21 @@ public class Main {
     }
 
     private static Point findfirstBlackRowwAndCol(Mat mIntermediateMat) {
-        int x=0;
-        int y=0;
-        for(int i=0;i<mIntermediateMat.cols();i++){
-            if(imageUtils.isColBlack(mIntermediateMat,i)){
+        int x = 0;
+        int y = 0;
+        for (int i = 0; i < mIntermediateMat.cols(); i++) {
+            if (imageUtils.isColBlack(mIntermediateMat, i)) {
                 x = i;
                 break;
             }
         }
-        for(int i=mIntermediateMat.rows()-1;i>=0;i--){
-            if(imageUtils.isRowBlack(mIntermediateMat, i)){
+        for (int i = mIntermediateMat.rows() - 1; i >= 0; i--) {
+            if (imageUtils.isRowBlack(mIntermediateMat, i)) {
                 y = i;
                 break;
             }
         }
-        return new Point(x,y);
+        return new Point(x, y);
     }
 
     private static List<Point> getCornersFromRect(MatOfPoint contour) {
@@ -206,7 +227,6 @@ public class Main {
     private static double dist(Point pt, Point point) {
         return (pt.x - point.x) * (pt.x - point.x) + (pt.y - point.y) * (pt.y - point.y);
     }
-
 
 
 }

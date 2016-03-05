@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.lang.Math.abs;
+
 /**
  * Created by shiwangi on 2/3/16.
  */
@@ -54,7 +56,7 @@ public class RectangleDetection {
         while (each.hasNext()) {
             MatOfPoint contour = each.next();
             double area = Imgproc.contourArea(contour);
-            if (area > secondMax && Imgproc.contourArea(contour) < maxArea) {
+            if (area>secondMax && Imgproc.contourArea(contour) < maxArea) {
                 mContours.add(contour);
                 secondMax = area;
                 borderContour = contour;

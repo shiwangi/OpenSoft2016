@@ -1,10 +1,10 @@
+import net.sourceforge.tess4j.ITessAPI;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.Scalar;
+import org.opencv.core.*;
+import org.opencv.core.Point;
+import org.opencv.imgproc.Imgproc;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +12,9 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.List;
 
+import static org.opencv.imgproc.Imgproc.cvtColor;
 import static org.opencv.imgproc.Imgproc.drawContours;
+import static org.opencv.imgproc.Imgproc.rectangle;
 
 /**
  * Created by shiwangi on 3/3/16.
@@ -73,17 +75,46 @@ public class ImageUtils {
 
     }
 
+    public void displaybuffImage(BufferedImage img2) {
 
-    public static String ocrOnImage(BufferedImage bimage,int i) {
+        ImageIcon icon = new ImageIcon(img2);
+        JFrame frame = new JFrame();
+        frame.setLayout(new FlowLayout());
+        frame.setSize(img2.getWidth(null) + 50, img2.getHeight(null) + 50);
+        JLabel lbl = new JLabel();
+        lbl.setIcon(icon);
+        frame.add(lbl);
+        frame.setVisible(true);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+    }
+
+
+
+    public String ocrOnImage(Mat img, int i) {
         //File imageFile = new File(fname);
+        BufferedImage bimage = Mat2BufferedImage(img);
         ITesseract instance = new Tesseract();  // JNA Interface Mapping
 
         instance.setDatapath("/usr/share/tesseract-ocr");
         if(i==0) instance.setTessVariable("tessedit_char_whitelist", ".0123456789");
         if(i==1) instance.setTessVariable("tessedit_char_whitelist", "()ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-/%");
 
+        instance.setPageSegMode(ITessAPI.TessPageSegMode.PSM_SINGLE_BLOCK);
         try {
             String result = instance.doOCR(bimage);
+
+            List<Rectangle> rects = instance.getSegmentedRegions(bimage, ITessAPI.TessPageIteratorLevel.RIL_TEXTLINE);
+            for(Rectangle rect : rects){
+                int h = rect.height;
+                int w = rect.width;
+                int x = (int) rect.getX();
+                int y = (int) rect.getY();
+
+               System.out.println(instance.doOCR(bimage,rect));
+                rectangle(img, new Point(x,y), new Point(x+w,y+h),  new Scalar(0, 255, 255));
+            }
+            displayImage(img);
            // if(i!=0)
             //System.out.println(result);
             return result;
@@ -93,6 +124,8 @@ public class ImageUtils {
         }
 
     }
+
+
 
 
     public Mat convertToBinary(Mat mRgba) {
@@ -125,7 +158,7 @@ public class ImageUtils {
 
     public boolean isPixelBlack(double[] color) {
         if(color.length==3){
-            if(color[0]<20 &&color[1]<20 && color[2]<50){
+            if(color[0]<10){
                 return true;
             }
             else{
@@ -144,5 +177,32 @@ public class ImageUtils {
             if (isPixelBlack(color)) count++;
         }
         return count>reqBlackpixels;
+    }
+
+    public Mat removecolorpixels(Mat matbox)
+    {
+        Mat hsvImage = matbox.clone();
+        cvtColor(matbox, hsvImage, Imgproc.COLOR_RGB2HSV,3);
+
+        Mat ans= matbox.clone();
+        double[] white = {255,255,255};
+        double[] black = {0,0,0};
+        for(int i = 0; i < hsvImage.rows(); i++)
+        {
+            for(int j=0; j<hsvImage.cols();j++)
+            {
+
+                int thresh = 150;
+                double[] color = hsvImage.get(i,j);
+                if (color[0] > thresh || color[1] > thresh || color[2] > thresh)
+                {
+                    ans.put(i,j, white);
+                    continue;
+                }
+
+            }
+        }
+        return ans;
+
     }
 }
