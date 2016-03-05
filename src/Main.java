@@ -83,8 +83,8 @@ public class Main {
 
 
 
-        LegendDetect ld = new LegendDetect();
-        String legend = ld.getLegendlabel(graphImage);
+        LegendDetection legendDetection = new LegendDetection(graphImage);
+        String legend = legendDetection.detectLegend();
         //System.out.println(legend);
     }
 
