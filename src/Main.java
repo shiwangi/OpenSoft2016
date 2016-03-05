@@ -2,12 +2,9 @@ import org.opencv.core.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.DoubleSummaryStatistics;
 import java.util.List;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
-import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 
 /**
  * Created by shiwangi on 26/2/16.
@@ -19,7 +16,7 @@ public class Main {
     public static void main(String args[]) throws IOException {
 
         imageUtils = new ImageUtils();
-        String fname = "./resources/image3.png";
+        String fname = "./resources/image1.png";
 
 
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -49,7 +46,7 @@ public class Main {
 
         rectCrop = new Rect(x - 3, y + 1, mIntermediateMat.cols() - x + 3, mIntermediateMat.rows() - y - 1);
         Mat XscaleImage = new Mat(mRgba, rectCrop);
-        imwrite("/home/rajitha/Desktop/result.png", XscaleImage);
+       // imwrite("/home/rajitha/Desktop/result.png", XscaleImage);
         imageUtils.displayImage(XscaleImage);
 
         Mat graphImageBnW = getGraphImage(x, y, mIntermediateMat);
@@ -60,11 +57,9 @@ public class Main {
         List<MatOfPoint> contours = new ArrayList<>();
         contours.add(contour);
         if (contour != null) {
-//            imageUtils.drawContoursOnImage(contours, mRgba);
-//            imageUtils.displayImage(mRgba);
             List<Point> corners = getCornersFromRect(contour);
             AxisDetection axisDetection = new AxisDetection(XscaleImage, YscaleImage);
-            List<String> labels = axisDetection.getAxis(corners, mRgba);
+          //  List<String> labels = axisDetection.getAxis(corners, mRgba);
 
 //            List<Double> minmaxValues = getminmaxValues(labels);
 //            System.out.println(labels.toString());
@@ -81,11 +76,12 @@ public class Main {
 //        plotValue.populateTable();
 
 
+        PlotValue plotValue = new PlotValue(graphImage,0,100,0,100);
+   //     List<Colour> colourOfPlotsHSV =  plotValue.populateTable();
 
 
-        LegendDetection legendDetection = new LegendDetection(graphImage);
-        String legend = legendDetection.detectLegend();
-        //System.out.println(legend);
+        LegendDetection legendDetection = new LegendDetection(graphImage,null);
+        legendDetection.detectLegend();
     }
 
     private static List<Double> getminmaxValues(List<String> labels) {

@@ -94,13 +94,14 @@ public class ImageUtils {
     public String ocrOnImage(Mat img, int i) {
         //File imageFile = new File(fname);
         BufferedImage bimage = Mat2BufferedImage(img);
+        bimage = Mat2BufferedImage(convertToBinary(img));
         ITesseract instance = new Tesseract();  // JNA Interface Mapping
 
         instance.setDatapath("/usr/share/tesseract-ocr");
         if(i==0) instance.setTessVariable("tessedit_char_whitelist", ".0123456789");
         if(i==1) instance.setTessVariable("tessedit_char_whitelist", "()ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-/%");
 
-        instance.setPageSegMode(ITessAPI.TessPageSegMode.PSM_SINGLE_BLOCK);
+        //instance.setPageSegMode(ITessAPI.TessPageSegMode.PSM_SINGLE_BLOCK);
         try {
             String result = instance.doOCR(bimage);
 
@@ -183,7 +184,14 @@ public class ImageUtils {
     {
         Mat hsvImage = matbox.clone();
         cvtColor(matbox, hsvImage, Imgproc.COLOR_RGB2HSV,3);
-
+//        int minHvalue = 255;
+//        for(int i = 0; i < hsvImage.rows(); i++) {
+//            for (int j = 0; j < hsvImage.cols(); j++) {
+//
+//
+//            }
+//
+//        }
         Mat ans= matbox.clone();
         double[] white = {255,255,255};
         double[] black = {0,0,0};
@@ -192,9 +200,9 @@ public class ImageUtils {
             for(int j=0; j<hsvImage.cols();j++)
             {
 
-                int thresh = 150;
+                int thresh = 30;
                 double[] color = hsvImage.get(i,j);
-                if (color[0] > thresh || color[1] > thresh || color[2] > thresh)
+                if (color[0] > thresh)
                 {
                     ans.put(i,j, white);
                     continue;
