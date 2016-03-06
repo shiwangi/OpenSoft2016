@@ -35,28 +35,38 @@ public class AxisDetection {
 
     private List<String> getYaxisLabels() {
         List<String> labels = new ArrayList<>();
+        List<Mat> scaleAndLabelMat = getMatsByContourMatching();
 
 
-        Mat image_roi = yscaleImage;
-
-        String YScale = imageUtils.ocrOnImage(image_roi, 0);
+        String YScale = imageUtils.ocrOnImage(legendimage, 0);
         YScale = YScale.replaceAll("\n", " ");
-
         labels.add(YScale);
 
-//        String Ylabel = imageUtils.ocrOnImage(getRotated(image_roi), 1);
-//        Ylabel = Ylabel.replaceAll("\n", " ");
-//        labels.add(Ylabel);
-//
-//
+        rectCrop = new Rect(0,0,((int)matchLoc.x),(int)templ.rows());
+        legendimage = new Mat(img2, rectCrop);
 
+        Mat rotated = getRotated(legendimage);
+        imageUtils.displayImage(rotated);
+        YScale = imageUtils.ocrOnImage(rotated, 1);
+        YScale = YScale.replaceAll("\n", " ");
+        labels.add(YScale);
+        return labels;
 
+    }
 
+    private List<Mat> getMatsByContourMatching() {
+        Mat img2 = yscaleImage.clone();
 
-        Mat img = image_roi.clone();
-        Mat templ = imread("/home/shiwangi/scaley.png");
-        System.out.print(imageUtils.ocrOnImage(templ, 2));
+        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        Imgproc.findContours(imageUtils.convertToBinary(yscaleImage), contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
+        imageUtils.drawContoursOnImage(contours, yscaleImage);
+        imageUtils.displayImage(yscaleImage);
+
+        Mat img = yscaleImage.clone();
+
+        Mat templ = imread("/home/shiwangi/contouryscale.png");
         resize(img, img, new Size(templ.cols()*2,templ.rows()));
+        resize(img2, img2, new Size(templ.cols()*2,templ.rows()));
         imageUtils.displayImage(templ);
         System.out.println("\nRunning Template Matching");
 
@@ -68,8 +78,6 @@ public class AxisDetection {
         // / Do the Matching and Normalize
         int match_method = Imgproc.TM_CCORR_NORMED;
         Imgproc.matchTemplate(img, templ, result, Imgproc.TM_CCOEFF);
-        //    Core.normalize(result, result, 0, 1, Core.NORM_MINMAX, -1, new Mat());
-        //imwrite("./resources/out2.png", result);
 
         // / Localizing the best match with minMaxLoc
         Core.MinMaxLocResult mmr = Core.minMaxLoc(result);
@@ -78,28 +86,19 @@ public class AxisDetection {
         if (match_method == Imgproc.TM_SQDIFF
                 || match_method == Imgproc.TM_SQDIFF_NORMED) {
             matchLoc = mmr.minLoc;
-            System.out.println(mmr.minVal);
         } else {
             matchLoc = mmr.maxLoc;
-            System.out.println(mmr.maxVal);
         }
 
         // / Show me what you got
-        rectangle(img, matchLoc, new Point(matchLoc.x + templ.cols() + 15,
+        rectangle(img2, matchLoc, new Point(matchLoc.x + templ.cols() + 15,
                 matchLoc.y + templ.rows() + 15), new Scalar(0, 255, 0));
 
         // Save the visualized detection.
-        imageUtils.displayImage(img);
+        imageUtils.displayImage(img2);
         Rect rectCrop = new Rect((int)matchLoc.x,(int)matchLoc.y,(int)templ.cols(),(int)templ.rows());
-        Mat legendimage = new Mat(img, rectCrop);
-        YScale = imageUtils.ocrOnImage(legendimage, 0);
-        YScale = YScale.replaceAll("\n", " ");
-
-        labels.add(YScale);
-
-
-        return labels;
-
+        Mat legendimage = new Mat(img2, rectCrop);
+        imageUtils.displayImage(legendimage);
     }
 
 
