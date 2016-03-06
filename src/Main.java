@@ -1,5 +1,6 @@
 import org.opencv.core.*;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ public class Main {
     static ImageUtils imageUtils;
 
 
-    static String FNAME = "./resources/image2.png";
+    static String FNAME = "./resources/try2.png";
     public static void main(String args[]) throws IOException {
 
         imageUtils = new ImageUtils();
@@ -26,7 +27,9 @@ public class Main {
             return;
         }
         imageUtils.displayImage(mRgba);
-
+        BufferedImage trimmedImage = imageUtils.getCroppedImage(imageUtils.mat2BufferedImage(mRgba),.2);
+        mRgba = imageUtils.bufferImageToMat(trimmedImage, mRgba.type());
+        imageUtils.displayImage(mRgba);
         ImageClipper imageClipper = new ImageClipper(mRgba);
         List<Mat> images = imageClipper.clipImage();
         Mat XscaleImage = images.get(0),

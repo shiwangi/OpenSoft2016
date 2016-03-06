@@ -64,9 +64,8 @@ public class AxisDetection {
 
         Mat img = yscaleImage.clone();
 
-        Mat templ = imread("/home/shiwangi/contouryscale.png");
-        resize(img, img, new Size(templ.cols()*2,templ.rows()));
-        resize(img2, img2, new Size(templ.cols()*2,templ.rows()));
+        Mat templ = imread("./resources/scalematch.png");
+        resize(templ, templ, new Size(img.cols()/2.0,img.rows()));
         imageUtils.displayImage(templ);
         System.out.println("\nRunning Template Matching");
 
@@ -90,14 +89,11 @@ public class AxisDetection {
             matchLoc = mmr.maxLoc;
         }
 
-        // / Show me what you got
-        rectangle(img2, matchLoc, new Point(matchLoc.x + templ.cols() + 15,
-                matchLoc.y + templ.rows() + 15), new Scalar(0, 255, 0));
 
-        // Save the visualized detection.
-        imageUtils.displayImage(img2);
         Rect rectCrop = new Rect((int)matchLoc.x,(int)matchLoc.y,(int)templ.cols(),(int)templ.rows());
         Mat legendimage = new Mat(img2, rectCrop);
+
+        imageUtils.displayImage(legendimage);
         List<Mat> results = new ArrayList<>();
         results.add(legendimage);
 
@@ -113,10 +109,11 @@ public class AxisDetection {
     private Mat getRotated(Mat labelImage_roi) {
 
         double len = max(labelImage_roi.cols(), labelImage_roi.rows());
+        double height = (len==labelImage_roi.cols())?labelImage_roi.rows():labelImage_roi.cols();
         Point center = new Point(len / 2.0, len / 2.0);
 
         Mat rot = getRotationMatrix2D(center, -90, 1.0);
-        warpAffine(labelImage_roi, labelImage_roi, rot, new Size(len, len));
+        warpAffine(labelImage_roi, labelImage_roi, rot, new Size(len, height));
         return labelImage_roi;
 
     }
