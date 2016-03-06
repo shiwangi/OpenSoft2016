@@ -3,6 +3,7 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,12 +17,18 @@ public class PlotValue {
 
     public static double rangeY;
     public static double rangeX;
-    public static int dx , dy;
+    public static int dx , dy ;
     public ImageUtils imageUtils;
+    public PdfCreator create = new PdfCreator("./output/graphValues.pdf");
     Mat graph;
+    double minX,minY;
     List<Colour> colourOfPlotsHSV;
 
+
+
     PlotValue(Mat graph, double minX, double maxX, double minY, double maxY) {
+        this.minX = minX;
+        this.minY = minY;
         rangeX = maxX - minX;
         this.graph = graph;
         rangeY = maxY - minY;
@@ -61,9 +68,18 @@ public class PlotValue {
         return colourOfPlotsHSV;
     }
 
+
     private void findGraphValues(Colour colour) {
 
         Mat hsvImage = graph.clone();
+        //Content for PDF
+        List<List<String>> content = new ArrayList<>();
+        List<String> heading = new ArrayList<>();
+        heading.add("Color- "+colour.r + " " + colour.g + " " + colour.b);
+        heading.add("X-Y values");//heading
+        content.add(heading);
+
+
         cvtColor(graph, hsvImage, Imgproc.COLOR_RGB2HSV, 3);
         System.out.println("For Color " + colour.r + " " + colour.g + " " + colour.b);
         Mat img = graph.clone();
@@ -86,15 +102,32 @@ public class PlotValue {
                 double[] newC = {0, 0, 0};
                 circle(img, new Point(i, point.x), 2, new Scalar(0, 0, 0));
                 img.put((int) point.x, i, newC);
+                List<String> element = new ArrayList<>();
+                element.add(String.valueOf(minX+ point.x * rangeX/graph.cols()));
+                element.add(String.valueOf(minY+ point.y * rangeY/graph.rows()));
+                content.add(element);
+
                 //  System.out.println(point.x + "\t" + point.y);
             }
+            else
+            {
+                List<String> element = new ArrayList<>();
+                element.add(String.valueOf(minX+ point.x * rangeX/graph.cols()));
+                element.add("-");
+                content.add(element);
+            }
         }
-       // imageUtils.displayImage(img);
+        try {
+
+            create.drawpdf(content);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+
+        //imageUtils.displayImage(img);
     }
-
-
-    //  imageUtils.displayImage(newG);
-
 
 }
 

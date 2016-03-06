@@ -62,9 +62,9 @@ public class Main {
 //        imageUtils.displayImage(graphImage);
 //
 //
-//        PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), minmaxValues.get(2), minmaxValues.get(3));
-//        List<Colour> colourOfPlotsHSV =  plotValue.populateTable();
-//
+        PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), minmaxValues.get(2), minmaxValues.get(3));
+        List<Colour> colourOfPlotsHSV =  plotValue.populateTable();
+
 //
 //        LegendDetection legendDetection = new LegendDetection(graphImage,colourOfPlotsHSV);
 //        legendDetection.detectLegend();

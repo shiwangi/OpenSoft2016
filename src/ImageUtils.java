@@ -167,7 +167,7 @@ public class ImageUtils {
      */
     public boolean isPixelBlack(double[] color) {
         if (color.length == 3) {
-            if (color[0] < 10) {
+            if (color[2] < 10) {
                 return true;
             } else {
                 return false;

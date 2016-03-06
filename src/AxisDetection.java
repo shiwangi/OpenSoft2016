@@ -2,6 +2,7 @@ import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static java.lang.Math.max;
@@ -93,14 +94,14 @@ public class AxisDetection {
         Rect rectCrop = new Rect((int)matchLoc.x,(int)matchLoc.y,(int)templ.cols(),(int)templ.rows());
         Mat legendimage = new Mat(img2, rectCrop);
 
-        imageUtils.displayImage(legendimage);
+        //imageUtils.displayImage(legendimage);
         List<Mat> results = new ArrayList<>();
         results.add(legendimage);
 
-        rectCrop = new Rect(0,0,((int)matchLoc.x),(int)templ.rows());
+        rectCrop = new Rect(0,0,((int)matchLoc.x), templ.rows());
         Mat legendimage2 = new Mat(img2, rectCrop);
         results.add(legendimage2);
-        imageUtils.displayImage(legendimage2);
+        //imageUtils.displayImage(legendimage2);
 
         return results;
     }
@@ -123,6 +124,8 @@ public class AxisDetection {
 
 
         Mat image_roi = xscaleImage;
+
+        //imageUtils.displayImage(xscaleImage);
 
 
         String Xpart = imageUtils.ocrOnImage(image_roi, 0);
@@ -167,8 +170,22 @@ public class AxisDetection {
         return values;
     }
 
+
+
     private static boolean isAP(String[] scale) {
         if (!isValidscale(scale)) return false;
+        HashMap<Integer ,Integer> dvaluecounts = new HashMap<>();
+//
+//        for (int i = 0;i < scale.length-1;i++)
+//        {
+//            if(isDouble(scale[i])&&isDouble(scale[i+1]))
+//            {
+//                double a1 = Double.parseDouble(scale[i]);
+//                double a2 = Double.parseDouble(scale[i+1]);
+//                count = dvaluecounts.get(a2-a1)
+//                dvaluecounts.put(a2-a1,)
+//            }
+//        }
         ArrayList<Double> scaleNum = new ArrayList<>();
         for (int i = 0; i < scale.length; i++) {
             if (isDouble(scale[i])) {
