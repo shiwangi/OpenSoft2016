@@ -37,15 +37,15 @@ public class AxisDetection {
         List<String> labels = new ArrayList<>();
         List<Mat> scaleAndLabelMat = getMatsByContourMatching();
 
+        Mat legendimage = scaleAndLabelMat.get(0);
+        Mat legendImage2 = scaleAndLabelMat.get(1);
 
         String YScale = imageUtils.ocrOnImage(legendimage, 0);
         YScale = YScale.replaceAll("\n", " ");
         labels.add(YScale);
 
-        rectCrop = new Rect(0,0,((int)matchLoc.x),(int)templ.rows());
-        legendimage = new Mat(img2, rectCrop);
 
-        Mat rotated = getRotated(legendimage);
+        Mat rotated = getRotated(legendImage2);
         imageUtils.displayImage(rotated);
         YScale = imageUtils.ocrOnImage(rotated, 1);
         YScale = YScale.replaceAll("\n", " ");
@@ -98,7 +98,15 @@ public class AxisDetection {
         imageUtils.displayImage(img2);
         Rect rectCrop = new Rect((int)matchLoc.x,(int)matchLoc.y,(int)templ.cols(),(int)templ.rows());
         Mat legendimage = new Mat(img2, rectCrop);
-        imageUtils.displayImage(legendimage);
+        List<Mat> results = new ArrayList<>();
+        results.add(legendimage);
+
+        rectCrop = new Rect(0,0,((int)matchLoc.x),(int)templ.rows());
+        Mat legendimage2 = new Mat(img2, rectCrop);
+        results.add(legendimage2);
+        imageUtils.displayImage(legendimage2);
+
+        return results;
     }
 
 
