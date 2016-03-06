@@ -17,20 +17,21 @@ import static org.opencv.imgproc.Imgproc.drawContours;
  * Created by shiwangi on 3/3/16.
  */
 public class ImageUtils {
-public Mat bufferImageToMat(BufferedImage image, int type){
-    int rows = image.getWidth();
-    int cols = image.getHeight();
+    public Mat bufferImageToMat(BufferedImage image, int type) {
+        int rows = image.getWidth();
+        int cols = image.getHeight();
 
-    Mat newMat = new Mat(rows,cols,type);
+        Mat newMat = new Mat(rows, cols, type);
 
-    int type2 = image.getType();
-    byte[] data = ((DataBufferByte) image.getRaster().getDataBuffer())
-            .getData();
-    Mat mat = new Mat(image.getHeight(), image.getWidth(), type);
-    mat.put(0, 0, data);
-    return mat;
-}
-    public  BufferedImage mat2BufferedImage(Mat m) {
+        int type2 = image.getType();
+        byte[] data = ((DataBufferByte) image.getRaster().getDataBuffer())
+                .getData();
+        Mat mat = new Mat(image.getHeight(), image.getWidth(), type);
+        mat.put(0, 0, data);
+        return mat;
+    }
+
+    public BufferedImage mat2BufferedImage(Mat m) {
 
         int type = BufferedImage.TYPE_BYTE_GRAY;
         if (m.channels() > 1) {
@@ -50,6 +51,14 @@ public Mat bufferImageToMat(BufferedImage image, int type){
     public static int isColWhite(int i, Mat imgROI) {
         for (int j = 0; j < imgROI.rows(); j++) {
             double[] color = imgROI.get(j, i);
+            if (!isPixelWhite(color)) return 0;
+        }
+        return 1;
+    }
+
+    public static int isRowWhite(int i, Mat imgROI) {
+        for (int j = 0; j < imgROI.cols(); j++) {
+            double[] color = imgROI.get(i, j);
             if (!isPixelWhite(color)) return 0;
         }
         return 1;
@@ -194,7 +203,7 @@ public Mat bufferImageToMat(BufferedImage image, int type){
         instance.setPageSegMode(ITessAPI.TessPageSegMode.PSM_SINGLE_BLOCK_VERT_TEXT);
         try {
             String result = instance.doOCR(bimage);
-            System.out.println("Vertical Text \n"+result);
+            System.out.println("Vertical Text \n" + result);
             return result;
         } catch (TesseractException e) {
             System.err.println(e.getMessage());
@@ -205,56 +214,81 @@ public Mat bufferImageToMat(BufferedImage image, int type){
 
     }
 
-    public BufferedImage getCroppedImage(BufferedImage source, double tolerance) {
+    public Mat getCroppedImage(Mat source, double tolerance) {
         // Get our top-left pixel color as our "baseline" for cropping
-        int baseColor = source.getRGB(0, 0);
+        double[] baseColor = source.get(0, 0);
 
-        int width = source.getWidth();
-        int height = source.getHeight();
+        int width = source.width();
+        int height = source.height();
 
         int topY = Integer.MAX_VALUE, topX = Integer.MAX_VALUE;
         int bottomY = -1, bottomX = -1;
-        for(int y=0; y<height; y++) {
-            for(int x=0; x<width; x++) {
-                if (colorWithinTolerance(baseColor, source.getRGB(x, y), tolerance)) {
-                    if (x < topX) topX = x;
-                    if (y < topY) topY = y;
-                    if (x > bottomX) bottomX = x;
-                    if (y > bottomY) bottomY = y;
-                }
+        int flagX = 0;
+        for (int x = 0; x < width; x++) {
+            if (flagX == 0 && isColWhite(x, source) == 1) {
+                topX = x;
+            } else {
+                flagX = 1;
+            }
+        }
+        flagX = 0;
+        for (int x = width - 1; x >= 0; x--) {
+            if (flagX == 0 && isColWhite(x, source) == 1) {
+                bottomX = x;
+            } else {
+                flagX = 1;
+            }
+        }
+        flagX = 0;
+        for (int x = 0; x < height; x++) {
+            if (flagX == 0 && isRowWhite(x, source) == 1) {
+                topY = x;
+            } else {
+                flagX = 1;
+            }
+        }
+        flagX = 0;
+        for (int x = height - 1; x >= 0; x--) {
+            if (flagX == 0 && isRowWhite(x, source) == 1) {
+                bottomY = x;
+            } else {
+                flagX = 1;
             }
         }
 
-        BufferedImage destination = new BufferedImage( (bottomX-topX+1),
-                (bottomY-topY+1), BufferedImage.TYPE_3BYTE_BGR);
+        int startx = Math.max(topX - 10, 0);
+        int starty = Math.max(topY - 10, 0);
+        width = Math.min(bottomX + 10 - startx, width - startx);
+        height = Math.min(bottomY + 10 - starty, height - starty);
 
-        destination.getGraphics().drawImage(source, 0, 0,
-                destination.getWidth(), destination.getHeight(),
-                topX, topY, bottomX, bottomY, null);
+
+        Rect rectCrop = new Rect(startx, starty, width, height);
+        Mat destination = new Mat(source, rectCrop);
+
 
         return destination;
     }
 
-    private boolean colorWithinTolerance(int a, int b, double tolerance) {
-        int aAlpha  = (int)((a & 0xFF000000) >>> 24);   // Alpha level
-        int aRed    = (int)((a & 0x00FF0000) >>> 16);   // Red level
-        int aGreen  = (int)((a & 0x0000FF00) >>> 8);    // Green level
-        int aBlue   = (int)(a & 0x000000FF);            // Blue level
+    private boolean colorWithinTolerance(double[] a, double[] b, double tolerance) {
+//        int aAlpha  = (int)((a & 0xFF000000) >>> 24);   // Alpha level
+//        int aRed    = (int)((a & 0x00FF0000) >>> 16);   // Red level
+//        int aGreen  = (int)((a & 0x0000FF00) >>> 8);    // Green level
+//        int aBlue   = (int)(a & 0x000000FF);            // Blue level
+//
+//        int bAlpha  = (int)((b & 0xFF000000) >>> 24);   // Alpha level
+//        int bRed    = (int)((b & 0x00FF0000) >>> 16);   // Red level
+//        int bGreen  = (int)((b & 0x0000FF00) >>> 8);    // Green level
+//        int bBlue   = (int)(b & 0x000000FF);            // Blue level
+//
+//        double distance = Math.sqrt((aAlpha-bAlpha)*(aAlpha-bAlpha) +
+//                (aRed-bRed)*(aRed-bRed) +
+//                (aGreen-bGreen)*(aGreen-bGreen) +
+//                (aBlue-bBlue)*(aBlue-bBlue));
+//
+//        // 510.0 is the maximum distance between two colors
+//        // (0,0,0,0 -> 255,255,255,255)
+//        double percentAway = distance / 510.0d;
+        return (Math.abs(a[0] - b[0]) < tolerance && Math.abs(a[1] - b[1]) < tolerance && Math.abs(a[2] - b[2]) < tolerance);
 
-        int bAlpha  = (int)((b & 0xFF000000) >>> 24);   // Alpha level
-        int bRed    = (int)((b & 0x00FF0000) >>> 16);   // Red level
-        int bGreen  = (int)((b & 0x0000FF00) >>> 8);    // Green level
-        int bBlue   = (int)(b & 0x000000FF);            // Blue level
-
-        double distance = Math.sqrt((aAlpha-bAlpha)*(aAlpha-bAlpha) +
-                (aRed-bRed)*(aRed-bRed) +
-                (aGreen-bGreen)*(aGreen-bGreen) +
-                (aBlue-bBlue)*(aBlue-bBlue));
-
-        // 510.0 is the maximum distance between two colors
-        // (0,0,0,0 -> 255,255,255,255)
-        double percentAway = distance / 510.0d;
-
-        return (percentAway > tolerance);
     }
 }
