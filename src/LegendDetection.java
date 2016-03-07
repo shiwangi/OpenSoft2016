@@ -24,7 +24,7 @@ public class LegendDetection {
 
     public String detectLegend() {
         Mat img = graphImage.clone();
-        Mat templ = imread("/home/shiwangi/pic1.png");
+        Mat templ = imread("./resources/pic1.png");
         System.out.print(imageUtils.ocrOnImage(templ,2));
         resize(img, img, new Size(templ.cols() * 4, templ.rows() * 3));
         imageUtils.displayImage(templ);

@@ -15,12 +15,12 @@ public class Main {
     static ImageUtils imageUtils;
 
 
-    static String FNAME = "./resources/image1.png";
+    static String FNAME = "./resources/try2.png";
 
     public static void main(String args[]) throws IOException {
         JMagick jMagick = new JMagick();
         jMagick.convert();
-        ;
+//        ;
         imageUtils = new ImageUtils();
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
