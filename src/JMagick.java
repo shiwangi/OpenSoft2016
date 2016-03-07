@@ -2,6 +2,14 @@ import magick.CompressionType;
 import magick.ImageInfo;
 import magick.MagickException;
 import magick.MagickImage;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.imgproc.Imgproc;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.opencv.imgcodecs.Imgcodecs.imread;
 
 
 /**
@@ -9,7 +17,6 @@ import magick.MagickImage;
  */
 public class JMagick {
     public void convert() {
-    //    System.out.p
         String p_inFile = "/home/shiwangi/Downloads/SCANNEDOPactual.pdf";
         String p_outFile = "./resources/images";
         System.out.print(java.io.File.pathSeparatorChar);
@@ -50,11 +57,14 @@ public class JMagick {
     }
 
     private void performImageMatching(String fName) {
-//        Mat img = imread(fName);
-//        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-//        Imgproc.findContours(img, contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
-//        ImageUtils imageUtils = new ImageUtils();
-//        imageUtils.drawContoursOnImage(contours,img);
+
+        ImageUtils imageUtils = new ImageUtils();
+        Mat img = imread(fName);
+        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        Mat binary = imageUtils.convertToBinary(img);
+        Imgproc.findContours(binary, contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
+        imageUtils.drawContoursOnImage(contours,img);
+        imageUtils.displayImage(img);
 
     }
 }

@@ -18,11 +18,12 @@ public class Main {
     static String FNAME = "./resources/try2.png";
 
     public static void main(String args[]) throws IOException {
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         JMagick jMagick = new JMagick();
         jMagick.convert();
 //        ;
+
         imageUtils = new ImageUtils();
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
         //read the image file.
         Mat mRgba = imread(FNAME);
