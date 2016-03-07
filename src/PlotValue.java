@@ -17,13 +17,12 @@ public class PlotValue {
 
     public static double rangeY;
     public static double rangeX;
-    public static int dx , dy ;
+    public static int dx, dy;
     public ImageUtils imageUtils;
     public PdfCreator create = new PdfCreator("./output/graphValues.pdf");
     Mat graph;
-    double minX,minY;
+    double minX, minY;
     List<Colour> colourOfPlotsHSV;
-
 
 
     PlotValue(Mat graph, double minX, double maxX, double minY, double maxY) {
@@ -75,7 +74,7 @@ public class PlotValue {
         //Content for PDF
         List<List<String>> content = new ArrayList<>();
         List<String> heading = new ArrayList<>();
-        heading.add("Color- "+colour.r + " " + colour.g + " " + colour.b);
+        heading.add("Color- " + colour.r + " " + colour.g + " " + colour.b);
         heading.add("X-Y values");//heading
         content.add(heading);
 
@@ -100,25 +99,23 @@ public class PlotValue {
             }
             if (minDist < 20) {
                 double[] newC = {0, 0, 0};
-                circle(img, new Point(i, point.x), 2, new Scalar(0, 0, 0));
+                circle(img, new Point(i, point.x), 5, new Scalar(0, 0, 0));
                 img.put((int) point.x, i, newC);
                 List<String> element = new ArrayList<>();
-                element.add(String.valueOf(minX+ point.x * rangeX/graph.cols()));
-                element.add(String.valueOf(minY+ point.y * rangeY/graph.rows()));
+                element.add(String.valueOf(minX + point.x * rangeX / graph.cols()));
+                element.add(String.valueOf(minY + point.y * rangeY / graph.rows()));
                 content.add(element);
 
                 //  System.out.println(point.x + "\t" + point.y);
-            }
-            else
-            {
+            } else {
                 List<String> element = new ArrayList<>();
-                element.add(String.valueOf(minX+ point.x * rangeX/graph.cols()));
+                element.add(String.valueOf(minX + point.x * rangeX / graph.cols()));
                 element.add("-");
                 content.add(element);
             }
         }
+        imageUtils.displayImage(img);
         try {
-
             create.drawpdf(content);
 
         } catch (IOException e) {

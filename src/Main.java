@@ -16,8 +16,11 @@ public class Main {
 
 
     static String FNAME = "./resources/image1.png";
-    public static void main(String args[]) throws IOException {
 
+    public static void main(String args[]) throws IOException {
+        JMagick jMagick = new JMagick();
+        jMagick.convert();
+        ;
         imageUtils = new ImageUtils();
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
@@ -30,8 +33,8 @@ public class Main {
         imageUtils.displayImage(mRgba);
 
         //trim whitespaces
-         mRgba = imageUtils.getCroppedImage((mRgba),250);
-       // mRgba = imageUtils.bufferImageToMat(trimmedImage, mRgba.type());
+        mRgba = imageUtils.getCroppedImage((mRgba), 250);
+        // mRgba = imageUtils.bufferImageToMat(trimmedImage, mRgba.type());
         imageUtils.displayImage(mRgba);
 
         //clipping for Scales and Plots
@@ -58,18 +61,21 @@ public class Main {
 
         }
 
-
-//        imageUtils.displayImage(graphImage);
 //
-//
-        PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), minmaxValues.get(2), minmaxValues.get(3));
-        List<Colour> colourOfPlotsHSV =  plotValue.populateTable();
-
 //
 //        LegendDetection legendDetection = new LegendDetection(graphImage,colourOfPlotsHSV);
 //        legendDetection.detectLegend();
-    }
 
+        imageUtils.displayImage(graphImage);
+
+
+        PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), minmaxValues.get(2), minmaxValues.get(3));
+        List<Colour> colourOfPlotsHSV = plotValue.populateTable();
+
+
+        LegendDetection legendDetection = new LegendDetection(graphImage, colourOfPlotsHSV);
+        legendDetection.detectLegend();
+    }
 
 
 }
