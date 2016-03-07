@@ -2,7 +2,7 @@ import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 
 import static java.lang.Math.max;
@@ -66,7 +66,7 @@ public class AxisDetection {
         Mat img = yscaleImage.clone();
 
         Mat templ = imread("./resources/scalematch.png");
-        resize(templ, templ, new Size(img.cols()/2.0,img.rows()));
+        resize(templ, templ, new Size(img.cols() / 2.0, img.rows()));
         imageUtils.displayImage(templ);
         System.out.println("\nRunning Template Matching");
 
@@ -91,14 +91,14 @@ public class AxisDetection {
         }
 
 
-        Rect rectCrop = new Rect((int)matchLoc.x,(int)matchLoc.y,(int)templ.cols(),(int)templ.rows());
+        Rect rectCrop = new Rect((int) matchLoc.x, (int) matchLoc.y, (int) templ.cols(), (int) templ.rows());
         Mat legendimage = new Mat(img2, rectCrop);
 
         //imageUtils.displayImage(legendimage);
         List<Mat> results = new ArrayList<>();
         results.add(legendimage);
 
-        rectCrop = new Rect(0,0,((int)matchLoc.x), templ.rows());
+        rectCrop = new Rect(0, 0, ((int) matchLoc.x), templ.rows());
         Mat legendimage2 = new Mat(img2, rectCrop);
         results.add(legendimage2);
         //imageUtils.displayImage(legendimage2);
@@ -110,7 +110,7 @@ public class AxisDetection {
     private Mat getRotated(Mat labelImage_roi) {
 
         double len = max(labelImage_roi.cols(), labelImage_roi.rows());
-        double height = (len==labelImage_roi.cols())?labelImage_roi.rows():labelImage_roi.cols();
+        double height = (len == labelImage_roi.cols()) ? labelImage_roi.rows() : labelImage_roi.cols();
         Point center = new Point(len / 2.0, len / 2.0);
 
         Mat rot = getRotationMatrix2D(center, -90, 1.0);
@@ -171,21 +171,8 @@ public class AxisDetection {
     }
 
 
-
-    private static boolean isAP(String[] scale) {
-        if (!isValidscale(scale)) return false;
-        HashMap<Integer ,Integer> dvaluecounts = new HashMap<>();
-//
-//        for (int i = 0;i < scale.length-1;i++)
-//        {
-//            if(isDouble(scale[i])&&isDouble(scale[i+1]))
-//            {
-//                double a1 = Double.parseDouble(scale[i]);
-//                double a2 = Double.parseDouble(scale[i+1]);
-//                count = dvaluecounts.get(a2-a1)
-//                dvaluecounts.put(a2-a1,)
-//            }
-//        }
+    private static double getRIfAp(String[] scale) {
+        if (!isValidscale(scale)) return -1;
         ArrayList<Double> scaleNum = new ArrayList<>();
         for (int i = 0; i < scale.length; i++) {
             if (isDouble(scale[i])) {
@@ -195,14 +182,40 @@ public class AxisDetection {
         }
 
         List<Double> possibleRValues = new ArrayList<>();
-        int i = 0;
-        double num = scaleNum.get(i);
-        for (i = 1; i < scaleNum.size(); i++) {
-            double r = scaleNum.get(i) - num;
-            num = scaleNum.get(i);
-            possibleRValues.add(r);
+
+        for (int i = 0; i < scaleNum.size(); i++) {
+
+            for (int j = i + 1; j < scaleNum.size(); j++) {
+                double r = scaleNum.get(j) - scaleNum.get(i);
+                r = r / (j - i + 1);
+                possibleRValues.add(r);
+            }
         }
-        return true;
+        Collections.sort(possibleRValues);
+        int maxCount = 0;
+        double mostProbableR = -1;
+        int count = 0;
+        int sz = possibleRValues.size();
+        double num = 0;
+        if (sz > 0) {
+            num = possibleRValues.get(0);
+            count++;
+        }
+
+        for (int j = 1; j < sz; j++) {
+            if (possibleRValues.get(j) == num) {
+                count++;
+            } else {
+                if (count >= maxCount) {
+                    maxCount = count;
+                    mostProbableR = num;
+                }
+                num = possibleRValues.get(j);
+            }
+        }
+        //we have the most probable R - now we need to get the range
+
+        return mostProbableR;
 
 
     }

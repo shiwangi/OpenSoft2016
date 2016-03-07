@@ -2,6 +2,9 @@ import magick.CompressionType;
 import magick.ImageInfo;
 import magick.MagickException;
 import magick.MagickImage;
+import org.opencv.core.Mat;
+
+import static org.opencv.imgcodecs.Imgcodecs.imread;
 
 
 /**
@@ -25,11 +28,13 @@ public class JMagick {
            MagickImage[] subImages = mainImage.breakFrames();
             int i=0;
            for(MagickImage m:subImages) {
-
-               m.setFileName(p_outFile + i + ".png");
+                String fName = p_outFile + i + ".png";
+               m.setFileName(fName);
                i++;
                System.out.println(imageinfo.getQuality());
                m.writeImage(imageinfo);
+
+               performImageMatching(fName);
            }
           //  }
 
@@ -43,4 +48,9 @@ public class JMagick {
 
 
     }
+
+    private void performImageMatching(String fName) {
+        Mat img = imread(fName);
+
     }
+}
