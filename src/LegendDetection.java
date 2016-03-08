@@ -26,13 +26,13 @@ public class LegendDetection {
         Mat img = graphImage.clone();
         Mat templ = imread("./resources/pic1.png");
         System.out.print(imageUtils.ocrOnImage(templ,2));
-        resize(img, img, new Size(templ.cols() * 4, templ.rows() * 3));
+        resize(templ, templ, new Size(img.cols() / 4.0, img.rows() / 3.0));
         imageUtils.displayImage(templ);
         System.out.println("\nRunning Template Matching");
 
         // / Create the result matrix
-        int result_cols = img.cols() - templ.cols() + 1;
-        int result_rows = img.rows() - templ.rows() + 1;
+        int result_cols = templ.cols() + 1;
+        int result_rows = templ.rows() + 1;
         Mat result = new Mat(result_rows, result_cols, CvType.CV_32FC1);
 
         // / Do the Matching and Normalize
