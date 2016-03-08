@@ -4,6 +4,8 @@ import org.opencv.imgproc.Imgproc;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.jar.Pack200;
+import java.util.regex.Pattern;
 
 import static java.lang.Math.max;
 import static org.opencv.imgcodecs.Imgcodecs.imread;
@@ -151,41 +153,73 @@ public class AxisDetection {
         List<Double> values = new ArrayList<>();
 
         String[] xscale = labels.get(0).split(" ");
-        try {
-            values.add(Double.parseDouble(xscale[0]));
-            values.add(Double.parseDouble(xscale[xscale.length - 1]));
-        } catch (NumberFormatException e) {
-            values.add(0.0);
-            values.add(100.0);
-        }
+        double[] minmax = getRIfAp(xscale);
+        values.add(minmax[0]);
+        values.add(minmax[1]);
 
         String[] yscale = labels.get(2).split(" ");
-        try {
-            values.add(Double.parseDouble(yscale[yscale.length - 1]));
-            values.add(Double.parseDouble(yscale[0]));
-        } catch (NumberFormatException e) {
-            values.add(0.0);
-            values.add(100.0);
-        }
+        minmax = getRIfAp(yscale);
+        values.add(minmax[0]);
+        values.add(minmax[1]);
+
         return values;
     }
 
+    private static double[] getMaxMin(ArrayList<Double> scaleNum,double r)
+    {
+        double Patternmatch[] = {0};
+        double maxPatternmatch = Double.MIN_VALUE,minV=0,maxV=100;
+        for(int i =0;i<scaleNum.size();i++)
+        {
+            double d = scaleNum.get(i);
+            Patternmatch = getMatchCount(d,r,i,scaleNum);
+            maxPatternmatch = max(Patternmatch[0],maxPatternmatch);
+            if(maxPatternmatch==Patternmatch[0]){
+                minV = Patternmatch[1];
+                maxV = Patternmatch[2];
+            }
+        }
+        double[] ans = {minV,maxV};
+        return ans;
+    }
 
-    private static double getRIfAp(String[] scale) {
-        if (!isValidscale(scale)) return -1;
+    private static double[] getMatchCount(double d, double r, int index,ArrayList<Double> scaleNum) {
+        double count = 0;
+        for(int i=0;i<scaleNum.size();i++)
+        {
+            if(scaleNum.get(i) == d+(i-index)*r) count++;
+        }
+        double[] ans = {count,d-(index*r),d+((scaleNum.size()-1-index)*r)};
+        return ans ;
+
+    }
+
+    private static double[] getRIfAp(String[] scale) {
+        if (!isValidscale(scale))
+        {
+            double[] ans  = {0.0,100.0};
+            return ans;
+        }
         ArrayList<Double> scaleNum = new ArrayList<>();
         for (int i = 0; i < scale.length; i++) {
             if (isDouble(scale[i])) {
                 double num = Double.parseDouble(scale[i]);
                 scaleNum.add(num);
+            }else{
+                scaleNum.add((double) -1);
             }
         }
 
         List<Double> possibleRValues = new ArrayList<>();
 
         for (int i = 0; i < scaleNum.size(); i++) {
-
+            if(scaleNum.get(i)==-1){
+                continue;
+            }
             for (int j = i + 1; j < scaleNum.size(); j++) {
+                if(scaleNum.get(i)==-1){
+                    continue;
+                }
                 double r = scaleNum.get(j) - scaleNum.get(i);
                 r = r / (j - i + 1);
                 possibleRValues.add(r);
@@ -215,7 +249,8 @@ public class AxisDetection {
         }
         //we have the most probable R - now we need to get the range
 
-        return mostProbableR;
+        return getMaxMin(scaleNum,mostProbableR);
+        //return mostProbableR;
 
 
     }

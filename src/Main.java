@@ -19,9 +19,9 @@ public class Main {
 
     public static void main(String args[]) throws IOException {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-//        JMagick jMagick = new JMagick();
-//        jMagick.convert();
-//        ;
+
+        JMagick jMagick = new JMagick();
+        jMagick.convert();
 
         imageUtils = new ImageUtils();
 

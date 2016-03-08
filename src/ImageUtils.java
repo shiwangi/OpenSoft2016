@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.List;
 
+import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 import static org.opencv.imgproc.Imgproc.*;
 
 /**
@@ -155,21 +156,18 @@ public class ImageUtils {
 
                 double[] color = mIntermediateMat.get(i, j);
                 if (color[0] < 20 && color[1] < 20 && color[2] < 20) {
-                    double[] newC = {255};
+                    double[] newC = {0};
                     newMat.put(i, j, newC);
                 } else {
-                    double[] newC = {0};
+                    double[] newC = {255};
                     newMat.put(i, j, newC);
                 }
             }
         }
         Mat Kernel = new Mat(new Size(2, 2), CvType.CV_8UC1, Scalar.all(255));
         Mat temp = newMat.clone();
-        morphologyEx(newMat, temp, Imgproc.MORPH_OPEN, Kernel);
-        morphologyEx(temp, newMat, Imgproc.MORPH_CLOSE, Kernel);
-
-        //imwrite("./resources/binary" + i2 + ".png", newMat);
-        //displayImage(newMat);
+       // morphologyEx(newMat, temp, Imgproc.MORPH_OPEN, Kernel);
+     //   morphologyEx(temp, newMat, Imgproc.MORPH_CLOSE, Kernel);
         return newMat;
     }
 
@@ -296,5 +294,26 @@ public class ImageUtils {
 
         return (Math.abs(a[0] - b[0]) < tolerance && Math.abs(a[1] - b[1]) < tolerance && Math.abs(a[2] - b[2]) < tolerance);
 
+    }
+
+    public Mat cleanborders(Mat binary) {
+        int rows = binary.rows();
+        int cols = binary.cols();
+        double newc[]={0};
+        for(int i=0;i<50;i++){
+            for(int j=0;j<rows;j++){
+                binary.put(j,i,newc);
+
+                binary.put(j,cols-1-i,newc);
+            }
+        }
+        for(int i=0;i<50;i++){
+            for(int j=0;j<cols;j++){
+                binary.put(i,j,newc);
+                binary.put(rows-1-i,j,newc);
+            }
+        }
+
+        return binary;
     }
 }
