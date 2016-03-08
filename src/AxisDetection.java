@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import static java.lang.Math.max;
 import static org.opencv.imgcodecs.Imgcodecs.imread;
+import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 import static org.opencv.imgproc.Imgproc.*;
 
 /**
@@ -61,7 +62,7 @@ public class AxisDetection {
         Mat img2 = yscaleImage.clone();
 
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Imgproc.findContours(imageUtils.convertToBinary(yscaleImage), contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(imageUtils.convertToBinary(yscaleImage,255), contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
         imageUtils.drawContoursOnImage(contours, yscaleImage);
         imageUtils.displayImage(yscaleImage);
 
@@ -128,9 +129,9 @@ public class AxisDetection {
         Mat image_roi = xscaleImage;
 
         //imageUtils.displayImage(xscaleImage);
+        imwrite("/home/rajitha/Desktop/xscale.png",image_roi);
 
-
-        String Xpart = imageUtils.ocrOnImage(image_roi, 0);
+        String Xpart = imageUtils.ocrOnImage(image_roi, 255);
         String Xscale = Xpart.split("\n")[0];
 
 

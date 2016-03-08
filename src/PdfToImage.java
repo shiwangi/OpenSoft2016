@@ -90,7 +90,7 @@ public final class PdfToImage {
             System.out.println("Cannot load image!");
             return;
         }
-        Mat bimage = imageUtils.convertToBinary(mRgba);
+        Mat bimage = imageUtils.convertToBinary(mRgba,0);
         imageUtils.displayImage(bimage);
         RectangleDetection rectangleDetection = new RectangleDetection();
         MatOfPoint contour = rectangleDetection.detectRectangle(mRgba, bimage);

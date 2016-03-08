@@ -67,7 +67,10 @@ public class ImageUtils {
     }
 
     public static boolean isPixelWhite(double[] color) {
-        if (color[0] >= 240 && color[1] >= 240 && color[2] >= 240) return true;
+        if(color.length==1){
+            return color[0]>=245;
+        }
+        if (color[0] >= 200 && color[1] >= 200 && color[2] >= 200) return true;
         return false;
     }
 
@@ -82,11 +85,14 @@ public class ImageUtils {
 
 
     public void displayImage(Mat mRgba) {
-        BufferedImage img2 = mat2BufferedImage(mRgba);
+
+        Image img2 = mat2BufferedImage(mRgba);
+        img2= img2.getScaledInstance(700,700,1);
         ImageIcon icon = new ImageIcon(img2);
         JFrame frame = new JFrame();
         frame.setLayout(new FlowLayout());
-        frame.setSize(img2.getWidth(null) + 50, img2.getHeight(null) + 50);
+
+        frame.setSize((img2.getWidth(null)) + 50, img2.getHeight(null) + 50);
         JLabel lbl = new JLabel();
         lbl.setIcon(icon);
         frame.add(lbl);
@@ -112,7 +118,7 @@ public class ImageUtils {
 
     public String ocrOnImage(Mat img, int i) {
         //File imageFile = new File(fname);
-        BufferedImage bimage = mat2BufferedImage(convertToBinary(img));
+        BufferedImage bimage = mat2BufferedImage(convertToBinary(img,255));
         ITesseract instance = new Tesseract();  // JNA Interface Mapping
 
         instance.setDatapath("/usr/share/tesseract-ocr");
@@ -133,7 +139,24 @@ public class ImageUtils {
 
     }
 
-    public Mat convertToBinary(Mat mRgba) {
+    public Mat convertToBinary(Mat mRgba,int val) {
+        if(val==255){
+            Mat mIntermediateMat = new Mat(mRgba.height(), mRgba.width(), CvType.CV_8UC1);
+            for (int i = 0; i < mRgba.rows(); i++) {
+                for (int j = 0; j < mRgba.cols(); j++) {
+
+                    double[] color = mRgba.get(i, j);
+                    if (isPixelWhite(color)) {
+                        double[] newC = {255};
+                        mIntermediateMat.put(i, j, newC);
+                    } else {
+                        double[] newC = {0};
+                        mIntermediateMat.put(i, j, newC);
+                    }
+                }
+            }
+            return mIntermediateMat;
+        }
         Mat mIntermediateMat = new Mat(mRgba.height(), mRgba.width(), CvType.CV_8UC3);
 
         Mat newMat = new Mat(mRgba.height(), mRgba.width(), CvType.CV_8UC1);
@@ -142,7 +165,7 @@ public class ImageUtils {
             for (int j = 0; j < mRgba.cols(); j++) {
 
                 double[] color = mRgba.get(i, j);
-                double[] newC = {255 - color[0], 255 - color[1], 255 - color[1]};
+                double[] newC = {255 - color[0], 255 - color[1], 255 - color[2]};
                 mIntermediateMat.put(i, j, newC);
             }
         }
@@ -156,10 +179,10 @@ public class ImageUtils {
 
                 double[] color = mIntermediateMat.get(i, j);
                 if (color[0] < 20 && color[1] < 20 && color[2] < 20) {
-                    double[] newC = {0};
+                    double[] newC = {255-val};
                     newMat.put(i, j, newC);
                 } else {
-                    double[] newC = {255};
+                    double[] newC = {val};
                     newMat.put(i, j, newC);
                 }
             }
@@ -187,6 +210,7 @@ public class ImageUtils {
     * Otherwise checks for exactly black in bImage
      */
     public boolean isPixelBlack(double[] color) {
+
         if (color.length == 3) {
             if (color[2] < 10) {
                 return true;
@@ -194,7 +218,10 @@ public class ImageUtils {
                 return false;
             }
         }
-        if (color[0] == 0) return true;
+        //System.out.print("hello");
+        if (color[0] <= 10) {
+            return true;
+        }
         return false;
     }
 
@@ -214,7 +241,7 @@ public class ImageUtils {
 
     public String ocrOnImageForYScale(Mat image_roi, int i) {
         BufferedImage bimage = mat2BufferedImage(image_roi);
-        bimage = mat2BufferedImage(convertToBinary(image_roi));
+        bimage = mat2BufferedImage(convertToBinary(image_roi,255));
         ITesseract instance = new Tesseract();  // JNA Interface Mapping
 
         instance.setDatapath("/usr/share/tesseract-ocr");
@@ -238,6 +265,7 @@ public class ImageUtils {
     public Mat getCroppedImage(Mat source, double tolerance) {
         // Get our top-left pixel color as our "baseline" for cropping
         double[] baseColor = source.get(0, 0);
+        displayImage(source);
 
         int width = source.width();
         int height = source.height();

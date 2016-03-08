@@ -4,6 +4,7 @@ import org.opencv.imgproc.Imgproc;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.opencv.imgproc.Imgproc.minAreaRect;
 import static org.opencv.imgproc.Imgproc.rectangle;
 
 /**
@@ -18,7 +19,8 @@ public class ImageClipper {
     }
 
     public List<Mat> clipImage() {
-        Mat mIntermediateMat = imageUtils.convertToBinary(mRgba);
+        Mat mIntermediateMat = imageUtils.convertToBinary(mRgba,255);
+        //imageUtils.displayImage(mIntermediateMat);
         Point pt = findfirstBlackRowwAndCol(mIntermediateMat);
         int x = (int) pt.x;
         int y = (int) pt.y;
@@ -31,7 +33,7 @@ public class ImageClipper {
         Mat YscaleImage = new Mat(mRgba, rectCrop);
 
 
-        rectCrop = new Rect(x - 3, y + 1, mIntermediateMat.cols() - x + 3, mIntermediateMat.rows() - y - 1);
+        rectCrop = new Rect(x, y + 1, mIntermediateMat.cols() - x, mIntermediateMat.rows() - y - 1);
         Mat XscaleImage = new Mat(mRgba, rectCrop);
 
         Mat graphImageBnW = getGraphImage(x, y, mIntermediateMat);
@@ -98,6 +100,7 @@ public class ImageClipper {
         }
         return new Point(x, y);
     }
+
 
     public Mat clipContour(Mat graphImage, MatOfPoint contour) {
         List<MatOfPoint> contours = new ArrayList<>();

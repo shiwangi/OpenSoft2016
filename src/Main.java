@@ -1,12 +1,14 @@
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import sun.awt.motif.X11CNS11643;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
+import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 
 /**
  * Created by shiwangi on 26/2/16.
@@ -15,13 +17,13 @@ public class Main {
     static ImageUtils imageUtils;
 
 
-    static String FNAME = "./resources/try2.png";
+    static String FNAME = "./resources/roi101.png";
 
     public static void main(String args[]) throws IOException {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
-        JMagick jMagick = new JMagick();
-        jMagick.convert();
+//        JMagick jMagick = new JMagick();
+//        jMagick.convert();
 
         imageUtils = new ImageUtils();
 
@@ -47,6 +49,10 @@ public class Main {
                 graphImage = images.get(3);
 
         //detect the axes and fetches labels
+//        imageUtils.displayImage(XscaleImage);
+//        imwrite("/home/rajitha/Desktop/xcale.png",XscaleImage);
+//        imageUtils.displayImage(YscaleImage);
+//        imageUtils.displayImage(graphImage);
         List<Double> minmaxValues = null;
         AxisDetection axisDetection = new AxisDetection(XscaleImage, YscaleImage);
         List<String> labels = axisDetection.getAxis();
@@ -60,7 +66,7 @@ public class Main {
         List<Colour> colourOfPlotsHSV = plotValue.populateTable();
 
         RectangleDetection rectangleDetection = new RectangleDetection();
-        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba, imageUtils.convertToBinary(graphImage));
+        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba, imageUtils.convertToBinary(graphImage,255));
         List<MatOfPoint> contours = new ArrayList<>();
         contours.add(contour);
         LegendDetection legendDetection = new LegendDetection(graphImage, colourOfPlotsHSV);

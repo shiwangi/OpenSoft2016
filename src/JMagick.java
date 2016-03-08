@@ -32,7 +32,7 @@ public class JMagick {
                 imageinfo = new ImageInfo(p_inFile);
                 //  imageinfo.setCompression(CompressionType.NoCompression);
                 imageinfo.setDensity("400");
-                imageinfo.setDepth(50);
+               // imageinfo.setDepth(50);
                 MagickImage mainImage = new MagickImage(imageinfo);
 
                 MagickImage[] subImages = mainImage.breakFrames();
@@ -70,7 +70,7 @@ public class JMagick {
         Mat img = imread(fName);
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
-        Mat binary = imageUtils.convertToBinary(img);
+        Mat binary = imageUtils.convertToBinary(img,255);
         binary = imageUtils.cleanborders(binary);
         imwrite("./resources/binary" + i + ".png", binary);
 
@@ -95,7 +95,7 @@ public class JMagick {
                         int xl = min(img.cols(),rect.x+rect.width+20);
                         int yl = min(img.rows(),rect.y+rect.height+offsetY);
 
-                        rectangle(img, new Point(rect.x, rect.y), new Point(rect.x+rect.width,rect.y+rect.height), new Scalar(0, 0, 255));
+                        //rectangle(img, new Point(rect.x, rect.y), new Point(rect.x+rect.width,rect.y+rect.height), new Scalar(0, 0, 255));
                         roi = img.submat(y, yl, x, xl);
                         imwrite("./resources/roi" + i*10+j + ".png", roi);
 
