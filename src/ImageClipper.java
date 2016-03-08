@@ -17,7 +17,7 @@ public class ImageClipper {
     }
 
     public List<Mat> clipImage() {
-        Mat mIntermediateMat = imageUtils.convertToBinary(mRgba);
+        Mat mIntermediateMat = imageUtils.convertToBinary(mRgba,0);
         Point pt = findfirstBlackRowwAndCol(mIntermediateMat);
         int x = (int) pt.x;
         int y = (int) pt.y;

@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static java.lang.Math.abs;
-
 /**
  * Created by shiwangi on 2/3/16.
  */
@@ -104,4 +102,7 @@ public class RectangleDetection {
         return squares;
     }
 
+//    public List<MatOfPoint> getSmallCountours(List<MatOfPoint> contours) {
+//        List<MatOf>
+//    }
 }

@@ -4,6 +4,7 @@ import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.opencv.core.*;
 import org.opencv.core.Point;
+import org.opencv.imgproc.Imgproc;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +12,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.List;
 
-import static org.opencv.imgproc.Imgproc.drawContours;
+import static org.opencv.imgproc.Imgproc.*;
 
 /**
  * Created by shiwangi on 3/3/16.
@@ -65,7 +66,19 @@ public class ImageUtils {
     }
 
     public static boolean isPixelWhite(double[] color) {
-        if (color[0] >= 200 && color[1] >= 200 && color[2] >= 200) return true;
+//        if(isHSV==1){
+//            if(color[0]==0 && color[1]<5 && color[2]<=20){
+//                return true;
+//            }
+//            return false;
+//        }
+//        int brightness = (int) Math.sqrt(
+//                color[0] * color[0] * .241 +
+//                        color[1] * color[1] * .691 +
+//                        color[2] * color[2] * .068);
+//        if (brightness > 200) return true;
+//        return false;
+        if (color[0] >= 240 && color[1] >= 240 && color[2] >= 240) return true;
         return false;
     }
 
@@ -110,7 +123,7 @@ public class ImageUtils {
 
     public String ocrOnImage(Mat img, int i) {
         //File imageFile = new File(fname);
-        BufferedImage bimage = mat2BufferedImage(convertToBinary(img));
+        BufferedImage bimage = mat2BufferedImage(convertToBinary(img, 0));
         ITesseract instance = new Tesseract();  // JNA Interface Mapping
 
         instance.setDatapath("/usr/share/tesseract-ocr");
@@ -131,23 +144,45 @@ public class ImageUtils {
 
     }
 
+    public Mat convertToBinary(Mat mRgba, int i2) {
+        Mat mIntermediateMat = new Mat(mRgba.height(), mRgba.width(), CvType.CV_8UC3);
 
-    public Mat convertToBinary(Mat mRgba) {
-        Mat mIntermediateMat = new Mat(mRgba.height(), mRgba.width(), CvType.CV_8UC1);
+        Mat newMat = new Mat(mRgba.height(), mRgba.width(), CvType.CV_8UC1);
+        //subtract from 255.
         for (int i = 0; i < mRgba.rows(); i++) {
             for (int j = 0; j < mRgba.cols(); j++) {
 
                 double[] color = mRgba.get(i, j);
-                if (isPixelWhite(color)) {
+                double[] newC = {255 - color[0], 255 - color[1], 255 - color[1]};
+                mIntermediateMat.put(i, j, newC);
+            }
+        }
+
+        Mat hsvImage = mRgba.clone();
+
+        //invert
+        cvtColor(mIntermediateMat, hsvImage, Imgproc.COLOR_RGB2HSV, 3);
+        for (int i = 0; i < mRgba.rows(); i++) {
+            for (int j = 0; j < mRgba.cols(); j++) {
+
+                double[] color = mIntermediateMat.get(i, j);
+                if (color[0] < 20 && color[1] < 20 && color[2] < 20) {
                     double[] newC = {255};
-                    mIntermediateMat.put(i, j, newC);
+                    newMat.put(i, j, newC);
                 } else {
                     double[] newC = {0};
-                    mIntermediateMat.put(i, j, newC);
+                    newMat.put(i, j, newC);
                 }
             }
         }
-        return mIntermediateMat;
+        Mat Kernel = new Mat(new Size(2, 2), CvType.CV_8UC1, Scalar.all(255));
+        Mat temp = newMat.clone();
+        morphologyEx(newMat, temp, Imgproc.MORPH_OPEN, Kernel);
+        morphologyEx(temp, newMat, Imgproc.MORPH_CLOSE, Kernel);
+
+        //imwrite("./resources/binary" + i2 + ".png", newMat);
+        displayImage(newMat);
+        return newMat;
     }
 
     public boolean isColBlack(Mat mIntermediateMat, int i) {
@@ -193,7 +228,7 @@ public class ImageUtils {
 
     public String ocrOnImageForYScale(Mat image_roi, int i) {
         BufferedImage bimage = mat2BufferedImage(image_roi);
-        bimage = mat2BufferedImage(convertToBinary(image_roi));
+        bimage = mat2BufferedImage(convertToBinary(image_roi, 0));
         ITesseract instance = new Tesseract();  // JNA Interface Mapping
 
         instance.setDatapath("/usr/share/tesseract-ocr");
