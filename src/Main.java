@@ -19,8 +19,8 @@ public class Main {
 
     public static void main(String args[]) throws IOException {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        JMagick jMagick = new JMagick();
-        jMagick.convert();
+//        JMagick jMagick = new JMagick();
+//        jMagick.convert();
 //        ;
 
         imageUtils = new ImageUtils();
@@ -47,25 +47,11 @@ public class Main {
                 graphImage = images.get(3);
 
         //detect the axes and fetches labels
-        RectangleDetection rectangleDetection = new RectangleDetection();
-        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba, graphImageBnW);
-        List<MatOfPoint> contours = new ArrayList<>();
         List<Double> minmaxValues = null;
-        contours.add(contour);
-        if (contour != null) {
-            AxisDetection axisDetection = new AxisDetection(XscaleImage, YscaleImage);
-            List<String> labels = axisDetection.getAxis();
-            minmaxValues = axisDetection.getMinMaxValues(labels);
-            System.out.println(labels.toString());
-        } else {
-            System.out.println("Could not find border axes");
-
-        }
-
-//
-//
-//        LegendDetection legendDetection = new LegendDetection(graphImage,colourOfPlotsHSV);
-//        legendDetection.detectLegend();
+        AxisDetection axisDetection = new AxisDetection(XscaleImage, YscaleImage);
+        List<String> labels = axisDetection.getAxis();
+        minmaxValues = axisDetection.getMinMaxValues(labels);
+        System.out.println(labels.toString());
 
         imageUtils.displayImage(graphImage);
 
@@ -73,9 +59,26 @@ public class Main {
         PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), minmaxValues.get(2), minmaxValues.get(3));
         List<Colour> colourOfPlotsHSV = plotValue.populateTable();
 
-
+        RectangleDetection rectangleDetection = new RectangleDetection();
+        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba, imageUtils.convertToBinary(graphImage));
+        List<MatOfPoint> contours = new ArrayList<>();
+        contours.add(contour);
         LegendDetection legendDetection = new LegendDetection(graphImage, colourOfPlotsHSV);
-        legendDetection.detectLegend();
+
+        Mat legendMat = null;
+        if (contour != null) {
+            //legend detection get easier.
+            imageUtils.drawContoursOnImage(contours, graphImage);
+            legendMat = imageClipper.clipContour(graphImage, contour);
+
+        } else {
+            System.out.println("Could not find scale box");
+            legendMat = legendDetection.detectLegendImageMatch();
+            //so we ll image-match :)
+        }
+
+        String label = legendDetection.detectLegend(legendMat);
+
     }
 
 

@@ -22,10 +22,10 @@ public class LegendDetection {
         this.colourOfPlotsHSV = colourOfPlotsHSV;
     }
 
-    public String detectLegend() {
+    public Mat detectLegendImageMatch() {
         Mat img = graphImage.clone();
         Mat templ = imread("./resources/pic1.png");
-        System.out.print(imageUtils.ocrOnImage(templ,2));
+        System.out.print(imageUtils.ocrOnImage(templ, 2));
         resize(templ, templ, new Size(img.cols() / 4.0, img.rows() / 3.0));
         imageUtils.displayImage(templ);
         System.out.println("\nRunning Template Matching");
@@ -38,7 +38,7 @@ public class LegendDetection {
         // / Do the Matching and Normalize
         int match_method = Imgproc.TM_CCORR_NORMED;
         Imgproc.matchTemplate(img, templ, result, Imgproc.TM_CCOEFF);
-    //    Core.normalize(result, result, 0, 1, Core.NORM_MINMAX, -1, new Mat());
+        //    Core.normalize(result, result, 0, 1, Core.NORM_MINMAX, -1, new Mat());
         //imwrite("./resources/out2.png", result);
 
         // / Localizing the best match with minMaxLoc
@@ -60,9 +60,8 @@ public class LegendDetection {
 
         // Save the visualized detection.
         imageUtils.displayImage(img);
-       Rect rectCrop = new Rect((int)matchLoc.x,(int)matchLoc.y,(int)templ.cols(),(int)templ.rows());
+        Rect rectCrop = new Rect((int) matchLoc.x, (int) matchLoc.y, (int) templ.cols(), (int) templ.rows());
         Mat legendimage = new Mat(img, rectCrop);
-        System.out.print(imageUtils.ocrOnImage(legendimage, 2));
 //        Mat cleanlegend = imageUtils.removecolorpixels(graphImage);
 //         imageUtils.displayImage(cleanlegend);
 //        cleanlegend = imageUtils.convertToBinary(cleanlegend);
@@ -71,6 +70,12 @@ public class LegendDetection {
 //        String legend = imageUtils.ocrOnImage((cleanlegend),2);
 //
 //        imageUtils.displayImage(graphImage);
-       return null;
+        return legendimage;
+    }
+
+    public String detectLegend(Mat legendMat) {
+        String legend = imageUtils.ocrOnImage(legendMat, 2);
+        System.out.print(legend);
+        return legend;
     }
 }

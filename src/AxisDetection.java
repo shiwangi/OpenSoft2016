@@ -59,7 +59,7 @@ public class AxisDetection {
         Mat img2 = yscaleImage.clone();
 
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Imgproc.findContours(imageUtils.convertToBinary(yscaleImage,0), contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(imageUtils.convertToBinary(yscaleImage), contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
         imageUtils.drawContoursOnImage(contours, yscaleImage);
         imageUtils.displayImage(yscaleImage);
 

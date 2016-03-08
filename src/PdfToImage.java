@@ -13,19 +13,16 @@ import java.util.List;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 
-public final class PdfToImage
-{
+public final class PdfToImage {
     static ImageUtils imageUtils = new ImageUtils();
 
     /**
      * This will remove all text from a PDF document.
      *
      * @param args The command line arguments.
-     *
      * @throws IOException If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws IOException
-    {
+    public static void main(String[] args) throws IOException {
 
 
         PDDocument document = null;
@@ -75,9 +72,9 @@ public final class PdfToImage
 //        }
 
 
-        document = PDDocument.load( new File("/home/shiwangi/Downloads/SCANNEDOP.pdf") );
+        document = PDDocument.load(new File("/home/shiwangi/Downloads/SCANNEDOP.pdf"));
         PDFRenderer pren = new PDFRenderer(document);
-        BufferedImage bfimg = pren.renderImageWithDPI(2,00);
+        BufferedImage bfimg = pren.renderImageWithDPI(2, 00);
         imageUtils.displaybuffImage(bfimg);
         File outputfile = new File("./resources/image3.jpg");
         ImageIO.write(bfimg, "png", outputfile);
@@ -93,10 +90,10 @@ public final class PdfToImage
             System.out.println("Cannot load image!");
             return;
         }
-Mat bimage = imageUtils.convertToBinary(mRgba,0);
+        Mat bimage = imageUtils.convertToBinary(mRgba);
         imageUtils.displayImage(bimage);
         RectangleDetection rectangleDetection = new RectangleDetection();
-        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba,bimage );
+        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba, bimage);
         List<MatOfPoint> contours = new ArrayList<>();
         contours.add(contour);
         if (contour != null) {

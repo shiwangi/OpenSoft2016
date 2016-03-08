@@ -1,9 +1,10 @@
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
+import org.opencv.core.*;
+import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.opencv.imgproc.Imgproc.rectangle;
 
 /**
  * Created by shiwangi on 5/3/16.
@@ -17,7 +18,7 @@ public class ImageClipper {
     }
 
     public List<Mat> clipImage() {
-        Mat mIntermediateMat = imageUtils.convertToBinary(mRgba,0);
+        Mat mIntermediateMat = imageUtils.convertToBinary(mRgba);
         Point pt = findfirstBlackRowwAndCol(mIntermediateMat);
         int x = (int) pt.x;
         int y = (int) pt.y;
@@ -98,4 +99,18 @@ public class ImageClipper {
         return new Point(x, y);
     }
 
+    public Mat clipContour(Mat graphImage, MatOfPoint contour) {
+        List<MatOfPoint> contours = new ArrayList<>();
+        contours.add(contour);
+        Rect rect = Imgproc.boundingRect(contours.get(0));
+        Mat roi=null;
+
+            rectangle(graphImage, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 0, 255));
+        imageUtils.displayImage(graphImage);
+            roi = graphImage.submat(rect.y, rect.y + rect.height, rect.x, rect.x + rect.width);
+
+
+
+        return roi;
+    }
 }

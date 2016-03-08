@@ -66,18 +66,6 @@ public class ImageUtils {
     }
 
     public static boolean isPixelWhite(double[] color) {
-//        if(isHSV==1){
-//            if(color[0]==0 && color[1]<5 && color[2]<=20){
-//                return true;
-//            }
-//            return false;
-//        }
-//        int brightness = (int) Math.sqrt(
-//                color[0] * color[0] * .241 +
-//                        color[1] * color[1] * .691 +
-//                        color[2] * color[2] * .068);
-//        if (brightness > 200) return true;
-//        return false;
         if (color[0] >= 240 && color[1] >= 240 && color[2] >= 240) return true;
         return false;
     }
@@ -123,7 +111,7 @@ public class ImageUtils {
 
     public String ocrOnImage(Mat img, int i) {
         //File imageFile = new File(fname);
-        BufferedImage bimage = mat2BufferedImage(convertToBinary(img, 0));
+        BufferedImage bimage = mat2BufferedImage(convertToBinary(img));
         ITesseract instance = new Tesseract();  // JNA Interface Mapping
 
         instance.setDatapath("/usr/share/tesseract-ocr");
@@ -144,7 +132,7 @@ public class ImageUtils {
 
     }
 
-    public Mat convertToBinary(Mat mRgba, int i2) {
+    public Mat convertToBinary(Mat mRgba) {
         Mat mIntermediateMat = new Mat(mRgba.height(), mRgba.width(), CvType.CV_8UC3);
 
         Mat newMat = new Mat(mRgba.height(), mRgba.width(), CvType.CV_8UC1);
@@ -181,7 +169,7 @@ public class ImageUtils {
         morphologyEx(temp, newMat, Imgproc.MORPH_CLOSE, Kernel);
 
         //imwrite("./resources/binary" + i2 + ".png", newMat);
-        displayImage(newMat);
+        //displayImage(newMat);
         return newMat;
     }
 
@@ -228,7 +216,7 @@ public class ImageUtils {
 
     public String ocrOnImageForYScale(Mat image_roi, int i) {
         BufferedImage bimage = mat2BufferedImage(image_roi);
-        bimage = mat2BufferedImage(convertToBinary(image_roi, 0));
+        bimage = mat2BufferedImage(convertToBinary(image_roi));
         ITesseract instance = new Tesseract();  // JNA Interface Mapping
 
         instance.setDatapath("/usr/share/tesseract-ocr");
@@ -305,24 +293,7 @@ public class ImageUtils {
     }
 
     private boolean colorWithinTolerance(double[] a, double[] b, double tolerance) {
-//        int aAlpha  = (int)((a & 0xFF000000) >>> 24);   // Alpha level
-//        int aRed    = (int)((a & 0x00FF0000) >>> 16);   // Red level
-//        int aGreen  = (int)((a & 0x0000FF00) >>> 8);    // Green level
-//        int aBlue   = (int)(a & 0x000000FF);            // Blue level
-//
-//        int bAlpha  = (int)((b & 0xFF000000) >>> 24);   // Alpha level
-//        int bRed    = (int)((b & 0x00FF0000) >>> 16);   // Red level
-//        int bGreen  = (int)((b & 0x0000FF00) >>> 8);    // Green level
-//        int bBlue   = (int)(b & 0x000000FF);            // Blue level
-//
-//        double distance = Math.sqrt((aAlpha-bAlpha)*(aAlpha-bAlpha) +
-//                (aRed-bRed)*(aRed-bRed) +
-//                (aGreen-bGreen)*(aGreen-bGreen) +
-//                (aBlue-bBlue)*(aBlue-bBlue));
-//
-//        // 510.0 is the maximum distance between two colors
-//        // (0,0,0,0 -> 255,255,255,255)
-//        double percentAway = distance / 510.0d;
+
         return (Math.abs(a[0] - b[0]) < tolerance && Math.abs(a[1] - b[1]) < tolerance && Math.abs(a[2] - b[2]) < tolerance);
 
     }
