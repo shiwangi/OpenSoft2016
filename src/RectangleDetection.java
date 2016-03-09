@@ -63,7 +63,11 @@ public class RectangleDetection {
                     idx++;
                 }
             }
+            if(secondMax<10000){
+                borderContour=null;
+            }
         }
+
         return borderContour;
     }
 

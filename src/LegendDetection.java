@@ -67,7 +67,7 @@ public class LegendDetection {
         Mat legendimage = new Mat(img, rectCrop);
         for(int i=0;i<img.rows();i++){
             for(int j=0;j<img.cols();j++) {
-                if (j >= matchLoc.x && j <= templ.cols() + matchLoc.x && i > matchLoc.y && i <= matchLoc.y + templ.rows()) {
+                if (j >= matchLoc.x && j <= templ.cols() + matchLoc.x && i >= matchLoc.y && i <= matchLoc.y + templ.rows()) {
                     double []col={255,255,255};
                     img.put(i,j,col);
                 }

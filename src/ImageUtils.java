@@ -61,6 +61,17 @@ public class ImageUtils {
                     whiteList.add(new Point(j, i));
                 }
             }
+        }List<Point> blackList = new ArrayList<>();
+        for (int i = 0; i < graph.cols(); i += 1) {
+
+
+            for (int j = 0; j < graph.rows(); j += 1) {
+
+                double[] colourCompare = graph.get(j, i);
+                if (isPixelBlack(colourCompare)) {
+                    blackList.add(new Point(j, i));
+                }
+            }
         }
         String inputPath="./resources/input.png";
         imwrite(inputPath,graph);
@@ -83,6 +94,12 @@ public class ImageUtils {
         for (int i = 0; i < sz; i++) {
             Point p = whiteList.get(i);
             double c[] = {255, 255, 255};
+            readFile.put((int) p.x, (int) p.y, c);
+        }
+         sz = blackList.size();
+        for (int i = 0; i < sz; i++) {
+            Point p = blackList.get(i);
+            double c[] = {0, 0, 0};
             readFile.put((int) p.x, (int) p.y, c);
         }
         return readFile;

@@ -106,16 +106,24 @@ public class ImageClipper {
     }
 
 
-    public List<Mat> clipContour(Mat graphImage, MatOfPoint contour) {
+    public List<Mat> clipContour(Mat graphImage, MatOfPoint contour, boolean hasScalesInBox) {
 
         Rect rect = Imgproc.boundingRect(contour);
         Mat roi = null;
         Mat yscale, xscale;
         List<Mat> images = new ArrayList<>();
         imageUtils.displayImage(graphImage);
-        roi = graphImage.submat(rect.y+5, rect.y + rect.height-5, rect.x+5, rect.x + rect.width-5);
-        yscale = graphImage.submat(0, graphImage.height() - 1, 0, rect.x);
-        xscale = graphImage.submat(rect.y + rect.height - 1, graphImage.height() - 1, 0, graphImage.width() - 1);
+        if(hasScalesInBox){
+            roi = graphImage.submat(rect.y+5, (int) (rect.y + rect.height*.8), rect.x+ (int) (rect.width*.1), rect.x + rect.width-5);
+            yscale = graphImage.submat(0, graphImage.height() - 1, 0,rect.x+ (int) (rect.width*.1));
+            xscale = graphImage.submat((int) (rect.y + rect.height*.8), graphImage.height() - 1, 0, graphImage.width() - 1);
+        }
+        else{
+            roi = graphImage.submat(rect.y+10, rect.y + rect.height-10, rect.x+10, rect.x + rect.width-10);
+            yscale = graphImage.submat(0, graphImage.height() - 1, 0, rect.x);
+            xscale = graphImage.submat(rect.y + rect.height - 1, graphImage.height() - 1, 0, graphImage.width() - 1);
+        }
+
 
         images.add(roi);
         images.add(yscale);
