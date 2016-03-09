@@ -17,7 +17,7 @@ public class Main {
 
 
     static String FNAME =
-            "./resources/roi101.png";
+            "./resources/roi306.png";
    //"/home/shiwangi/yo.png";
 
     public static void main(String args[]) throws IOException {
@@ -65,32 +65,40 @@ public class Main {
         System.out.println(labels.toString());
 
 
+        //Legend Detection
 
-        PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), minmaxValues.get(2), minmaxValues.get(3));
-        Map<Colour,Boolean> colourOfPlotsHSV = plotValue.populateTable();
-        imageUtils.displayImage(graphImage);
         RectangleDetection rectangleDetection = new RectangleDetection();
         MatOfPoint contour = rectangleDetection.detectRectangle(mRgba, imageUtils.convertToBinary(graphImage, 255));
         List<MatOfPoint> contours = new ArrayList<>();
         contours.add(contour);
         imageUtils.displayImage(graphImage);
-        LegendDetection legendDetection = new LegendDetection(graphImage, colourOfPlotsHSV);
+        LegendDetection legendDetection = new LegendDetection(graphImage);
 
         Mat legendMat = null;
+        List<Mat> legendAndPlot;
         if (contour != null) {
             //legend detection get easier.
-            imageUtils.drawContoursOnImage(contours, graphImage);
-             legendMat = imageClipper.clipContourM(graphImage, contour);
+           // imageUtils.drawContoursOnImage(contours, graphImage);
+            legendAndPlot = imageClipper.clipContourM(graphImage, contour);
 
         } else {
             System.out.println("Could not find scale box");
-            legendMat = legendDetection.detectLegendImageMatch();
+            legendAndPlot = legendDetection.detectLegendImageMatch();
             //so we ll image-match :)
         }
+        graphImage = legendAndPlot.get(1);
+        legendMat = legendAndPlot.get(0);
+
+        PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), minmaxValues.get(2), minmaxValues.get(3));
+        Map<Colour,Boolean> colourOfPlotsHSV = plotValue.populateTable();
+        imageUtils.displayImage(graphImage);
+
 
         String label = legendDetection.detectLegend(legendMat);
 
     }
+
+
 
 
 }

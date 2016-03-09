@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
+import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 import static org.opencv.imgproc.Imgproc.cvtColor;
 import static org.opencv.imgproc.Imgproc.drawContours;
 
@@ -61,12 +62,12 @@ public class ImageUtils {
                 }
             }
         }
-//        double saturation = 1.2;
-        // BGR to HSV
-        ImagePlus im = new ImagePlus("./resources/input.png");
+        String inputPath="./resources/input.png";
+        imwrite(inputPath,graph);
+        ImagePlus im = new ImagePlus(inputPath);
         ContrastEnhancer enh = new ContrastEnhancer();
 
-        enh.stretchHistogram(im, 10);
+        enh.stretchHistogram(im, 2);
 
         BufferedImage res = im.getBufferedImage();
         String outFile = "./out/enhanced.jpg";

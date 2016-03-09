@@ -13,6 +13,7 @@ import java.util.List;
 public class ImageClipper {
     Mat mRgba;
     ImageUtils imageUtils;
+
     public ImageClipper(Mat mRgba) {
         this.mRgba = mRgba;
         imageUtils = new ImageUtils();
@@ -50,7 +51,7 @@ public class ImageClipper {
 
     }
 
-    private  Mat getGraphImage(int x, int y, Mat mIntermediateMat) {
+    private Mat getGraphImage(int x, int y, Mat mIntermediateMat) {
         Mat graphImage = mIntermediateMat.clone();
         for (int i = 0; i < graphImage.rows(); i++) {
             for (int j = 0; j < graphImage.cols(); j++) {
@@ -67,7 +68,7 @@ public class ImageClipper {
         return graphImage;
     }
 
-    private  Point findfirstBlackRowwAndCol(Mat mIntermediateMat) {
+    private Point findfirstBlackRowwAndCol(Mat mIntermediateMat) {
         imageUtils.displayImage(mIntermediateMat);
         int x = 0;
         int y = 0;
@@ -77,7 +78,7 @@ public class ImageClipper {
                 break;
             }
         }
-        for (int i = 0; i <mIntermediateMat.rows() ; i++) {
+        for (int i = 0; i < mIntermediateMat.rows(); i++) {
             if (imageUtils.isRowBlack(mIntermediateMat, i)) {
                 y = i;
                 break;
@@ -86,10 +87,10 @@ public class ImageClipper {
         return new Point(x, y);
     }
 
-    private  Point findLastBlackRowAndCol(Mat mIntermediateMat) {
+    private Point findLastBlackRowAndCol(Mat mIntermediateMat) {
         int x = mIntermediateMat.cols();
         int y = mIntermediateMat.rows();
-        for (int i = mIntermediateMat.cols()-1; i >=0; i--) {
+        for (int i = mIntermediateMat.cols() - 1; i >= 0; i--) {
             if (imageUtils.isColBlack(mIntermediateMat, i)) {
                 x = i;
                 break;
@@ -108,37 +109,38 @@ public class ImageClipper {
     public List<Mat> clipContour(Mat graphImage, MatOfPoint contour) {
 
         Rect rect = Imgproc.boundingRect(contour);
-        Mat roi=null;
-        Mat yscale,xscale;
+        Mat roi = null;
+        Mat yscale, xscale;
         List<Mat> images = new ArrayList<>();
-
-//            rectangle(graphImage, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 0, 255));
-//        rectangle(graphImage, new Point(0, 0), new Point(rect.x , graphImage.height()-1), new Scalar(0, 0, 255));
-//        rectangle(graphImage, new Point(0, rect.y+rect.height-1), new Point(graphImage.width()-1, graphImage.height()-1), new Scalar(0, 0, 255));
         imageUtils.displayImage(graphImage);
-            roi = graphImage.submat(rect.y, rect.y + rect.height, rect.x, rect.x + rect.width);
-yscale = graphImage.submat(0, graphImage.height()-1, 0, rect.x );
-        xscale = graphImage.submat( rect.y+rect.height-1, graphImage.height()-1,0,graphImage.width()-1 );
+        roi = graphImage.submat(rect.y+5, rect.y + rect.height-5, rect.x+5, rect.x + rect.width-5);
+        yscale = graphImage.submat(0, graphImage.height() - 1, 0, rect.x);
+        xscale = graphImage.submat(rect.y + rect.height - 1, graphImage.height() - 1, 0, graphImage.width() - 1);
 
-images.add(roi);
+        images.add(roi);
         images.add(yscale);
         images.add(xscale);
-        //return roi;
         return images;
     }
 
-    public Mat clipContourM(Mat graphImage, MatOfPoint contour) {
-
+    public List<Mat> clipContourM(Mat graphImage, MatOfPoint contour) {
+List<Mat> result = new ArrayList<>();
         Rect rect = Imgproc.boundingRect(contour);
-        Mat roi=null;
+        Mat roi = null;
 
-//            rectangle(graphImage, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 0, 255));
-//        rectangle(graphImage, new Point(0, 0), new Point(rect.x , graphImage.height()-1), new Scalar(0, 0, 255));
-//        rectangle(graphImage, new Point(0, rect.y+rect.height-1), new Point(graphImage.width()-1, graphImage.height()-1), new Scalar(0, 0, 255));
         imageUtils.displayImage(graphImage);
         roi = graphImage.submat(rect.y, rect.y + rect.height, rect.x, rect.x + rect.width);
-
+        for(int i=0;i<graphImage.rows();i++){
+            for(int j=0;j<graphImage.cols();j++) {
+                if (j>= rect.x && j <= rect.x+rect.width && i > rect.y && i <= rect.y + rect.height) {
+                    double []col={255,255,255};
+                    graphImage.put(i,j,col);
+                }
+            }
+        }
+        result.add(roi);
+        result.add(graphImage);
         //return roi;
-        return roi;
+        return result;
     }
 }

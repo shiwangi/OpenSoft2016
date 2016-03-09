@@ -11,7 +11,7 @@ import java.util.List;
 public class RectangleDetection {
 
     static ImageUtils imageUtils;
-    static int CONTOUR_THRESHOLD=50;
+    static int CONTOUR_THRESHOLD=10;
 
     public RectangleDetection(){
         imageUtils = new ImageUtils();
@@ -22,7 +22,7 @@ public class RectangleDetection {
         //convert the image to black and white does (8 bit)
 
 
-//        imageUtils.displayImage(mIntermediateMat);
+        //imageUtils.displayImage(graphImage);
 
         //find the contours
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
@@ -56,7 +56,7 @@ public class RectangleDetection {
             while (each.hasNext()) {
                 MatOfPoint contour = each.next();
                 double area = Imgproc.contourArea(contour);
-                if (contour.height() > CONTOUR_THRESHOLD && contour.width() > CONTOUR_THRESHOLD && area > secondMax && Imgproc.contourArea(contour) < maxArea) {
+                if (area > secondMax && Imgproc.contourArea(contour) < maxArea) {
                     mContours.add(contour);
                     secondMax = area;
                     borderContour = contour;

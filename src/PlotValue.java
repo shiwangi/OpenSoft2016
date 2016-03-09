@@ -51,7 +51,7 @@ public class PlotValue {
         imageUtils.displayImage(graph);
 
         int flag = 1;
-        int i = dx;
+        int i = 100+dx;
         dx = 1;
         Mat hsvImage = graph.clone();
         imageUtils.displayImage(graph);

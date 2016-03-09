@@ -1,6 +1,8 @@
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
@@ -16,13 +18,14 @@ public class LegendDetection {
     ImageUtils imageUtils;
     Map<Colour,Boolean> colourOfPlotsHSV;
 
-    public LegendDetection(Mat graphImage, Map colourOfPlotsHSV) {
+    public LegendDetection(Mat graphImage) {
         this.graphImage = graphImage;
         imageUtils = new ImageUtils();
-        this.colourOfPlotsHSV = colourOfPlotsHSV;
+       // this.colourOfPlotsHSV = colourOfPlotsHSV;
     }
 
-    public Mat detectLegendImageMatch() {
+    public List<Mat> detectLegendImageMatch() {
+        List<Mat> resultList;
         Mat img = graphImage.clone();
         Mat templ = imread("./resources/pic1.png");
         //System.out.print(imageUtils.ocrOnImage(templ, 2));
@@ -62,6 +65,14 @@ public class LegendDetection {
         imageUtils.displayImage(img);
         Rect rectCrop = new Rect((int) matchLoc.x, (int) matchLoc.y, (int) templ.cols(), (int) templ.rows());
         Mat legendimage = new Mat(img, rectCrop);
+        for(int i=0;i<img.rows();i++){
+            for(int j=0;j<img.cols();j++) {
+                if (j >= matchLoc.x && j <= templ.cols() + matchLoc.x && i > matchLoc.y && i <= matchLoc.y + templ.rows()) {
+                    double []col={255,255,255};
+                    img.put(i,j,col);
+                }
+            }
+        }
 //        Mat cleanlegend = imageUtils.removecolorpixels(graphImage);
 //         imageUtils.displayImage(cleanlegend);
 //        cleanlegend = imageUtils.convertToBinary(cleanlegend);
@@ -69,8 +80,11 @@ public class LegendDetection {
 //
 //        String legend = imageUtils.ocrOnImage((cleanlegend),2);
 //
+        resultList = new ArrayList<>();
+  resultList.add(legendimage);
+        resultList.add(img);
         imageUtils.displayImage(legendimage);
-        return legendimage;
+        return resultList;
     }
 
     public String detectLegend(Mat legendMat) {
