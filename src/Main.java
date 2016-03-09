@@ -16,13 +16,15 @@ public class Main {
     static ImageUtils imageUtils;
 
 
-    static String FNAME = "./resources/roi201.png";
+    static String FNAME =
+            "./resources/roi101.png";
+   //"/home/shiwangi/yo.png";
 
     public static void main(String args[]) throws IOException {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 //
         JMagick jMagick = new JMagick();
-        //   jMagick.convert();
+    //       jMagick.convert();
 
         imageUtils = new ImageUtils();
 
@@ -32,6 +34,7 @@ public class Main {
             System.out.println("Cannot load image!");
             return;
         }
+        mRgba = imageUtils.increaseSaturation(mRgba);
         //imageUtils.displayImage(mRgba);
 
         //trim whitespaces

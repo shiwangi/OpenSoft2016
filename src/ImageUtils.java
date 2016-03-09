@@ -1,3 +1,5 @@
+import ij.ImagePlus;
+import ij.plugin.ContrastEnhancer;
 import net.sourceforge.tess4j.ITessAPI;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
@@ -6,59 +8,84 @@ import org.opencv.core.*;
 import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.opencv.core.Core.merge;
-import static org.opencv.core.Core.split;
+import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgproc.Imgproc.cvtColor;
 import static org.opencv.imgproc.Imgproc.drawContours;
-import static org.opencv.imgproc.Imgproc.equalizeHist;
 
 /**
  * Created by shiwangi on 3/3/16.
  */
 public class ImageUtils {
     public Mat bufferImageToMat(BufferedImage image, int type) {
-        int rows = image.getWidth();
-        int cols = image.getHeight();
 
-        Mat newMat = new Mat(rows, cols, type);
+        Mat mat = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3
+        );
+        try {
 
-        int type2 = image.getType();
-        byte[] data = ((DataBufferByte) image.getRaster().getDataBuffer())
-                .getData();
-        Mat mat = new Mat(image.getHeight(), image.getWidth(), type);
-        mat.put(0, 0, data);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(image, "jpg", baos);
+        baos.flush();
+        byte[] data = baos.toByteArray();
+
+            baos.close();
+            mat.put(0, 0, data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return mat;
     }
 
-    Mat equalizeIntensity( Mat inputImage)
-    {
-        if(inputImage.channels() >= 3)
-        {
-            Mat ycrcb=inputImage.clone();
+    Mat increaseSaturation(Mat graph) {
+        //   Mat saturated = graph.clone();
+        List<Point> whiteList = new ArrayList<>();
+        for (int i = 0; i < graph.cols(); i += 1) {
 
-            cvtColor(inputImage,ycrcb,Imgproc.COLOR_BGR2YCrCb);
 
-            List<Mat> channels=new ArrayList<>();
+            for (int j = 0; j < graph.rows(); j += 1) {
 
-            split(ycrcb,channels);
-
-            equalizeHist(channels.get(0), channels.get(0));
-
-            Mat result=inputImage.clone();
-            merge(channels,ycrcb);
-
-            cvtColor(ycrcb,result,Imgproc.COLOR_YCrCb2BGR);
-
-            return result;
+                double[] colourCompare = graph.get(j, i);
+                if (isPixelWhite(colourCompare)) {
+                    whiteList.add(new Point(j, i));
+                }
+            }
         }
-        return new Mat();
+//        double saturation = 1.2;
+        // BGR to HSV
+        ImagePlus im = new ImagePlus("./resources/input.png");
+        ContrastEnhancer enh = new ContrastEnhancer();
+
+        enh.stretchHistogram(im, 10);
+
+        BufferedImage res = im.getBufferedImage();
+        String outFile = "./out/enhanced.jpg";
+        File outputfile = new File(outFile);
+        try {
+            ImageIO.write(res, "jpg", outputfile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Mat readFile = imread(outFile);
+
+        int sz = whiteList.size();
+        for (int i = 0; i < sz; i++) {
+            Point p = whiteList.get(i);
+            double c[] = {255, 255, 255};
+            readFile.put((int) p.x, (int) p.y, c);
+        }
+        return readFile;
+
     }
     public BufferedImage mat2BufferedImage(Mat m) {
 
@@ -115,8 +142,8 @@ public class ImageUtils {
 
         Image img2 = mat2BufferedImage(mRgba);
 
-        if(mRgba.rows() > 700 && mRgba.cols() > 700 )
-        img2= img2.getScaledInstance( mRgba.rows()/2,mRgba.cols()/2,1);
+        if(mRgba.rows() > 800 && mRgba.cols() > 800 )
+            img2= img2.getScaledInstance( (int)(mRgba.rows()*.6),(int)(mRgba.cols()*.6),1);
         ImageIcon icon = new ImageIcon(img2);
         JFrame frame = new JFrame();
         frame.setLayout(new FlowLayout());

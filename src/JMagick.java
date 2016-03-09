@@ -40,9 +40,11 @@ public class JMagick {
                 for (MagickImage m : subImages) {
                     String fName = p_outFile + i + ".png";
                 //    m.reduceNoiseImage(30);
-m.enhanceImage();
+
                     m.setXResolution(20);
                     m.setYResolution(20);
+                    m.enhanceImage();
+                    m.setColorFuzz(10);
                     m.setFileName(fName);
                     System.out.println(i);
                     i++;
