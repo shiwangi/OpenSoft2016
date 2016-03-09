@@ -137,7 +137,7 @@ List<Mat> result = new ArrayList<>();
         Mat roi = null;
 
         imageUtils.displayImage(graphImage);
-        roi = graphImage.submat(rect.y, rect.y + rect.height, rect.x, rect.x + rect.width);
+        roi = (graphImage.submat(rect.y, rect.y + rect.height, rect.x, rect.x + rect.width)).clone();
         for(int i=0;i<graphImage.rows();i++){
             for(int j=0;j<graphImage.cols();j++) {
                 if (j>= rect.x && j <= rect.x+rect.width && i > rect.y && i <= rect.y + rect.height) {

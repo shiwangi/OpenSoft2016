@@ -3,7 +3,6 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,9 +10,8 @@ import java.util.TreeMap;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static org.opencv.core.Core.merge;
-import static org.opencv.core.Core.split;
-import static org.opencv.imgproc.Imgproc.*;
+import static org.opencv.imgproc.Imgproc.circle;
+import static org.opencv.imgproc.Imgproc.cvtColor;
 
 
 /**
@@ -25,11 +23,12 @@ public class PlotValue {
     public static double rangeX;
     public static int dx, dy;
     public ImageUtils imageUtils;
-    public PdfCreator create = new PdfCreator("./output/graphValues.pdf");
+
     Mat graph;
     double minX, minY;
     Map<Colour, Boolean> colourOfPlotsHSV;
 
+    //public PdfCreator create = new PdfCreator("./output/graphValues.pdf");
     PlotValue(Mat graph, double minX, double maxX, double minY, double maxY) {
         this.minX = minX;
         this.minY = minY;
@@ -129,19 +128,19 @@ public class PlotValue {
             }
         }
         imageUtils.displayImage(img);
-        try {
-            create.drawpdf(content);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        }
+//        try {
+//            create.drawpdf(content);
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//
+//        }
 
         //imageUtils.displayImage(img);
     }
 
     private boolean isValidPixel(Mat hsvImage, int j, int i) {
-        int startx = max(0,j-10);
+        int startx = max(0, j - 10);
         int starty  = max(0,i-10);
         int endx = min(hsvImage.cols(),j+10);
         int endy  = min(hsvImage.rows(),i+10);

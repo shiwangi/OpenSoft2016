@@ -16,12 +16,12 @@ public class LegendDetection {
     Mat graphImage;
     Mat binaryGraphImage;
     ImageUtils imageUtils;
-    Map<Colour,Boolean> colourOfPlotsHSV;
+    Map<Colour, Boolean> colourOfPlotsHSV;
 
     public LegendDetection(Mat graphImage) {
         this.graphImage = graphImage;
         imageUtils = new ImageUtils();
-       // this.colourOfPlotsHSV = colourOfPlotsHSV;
+        // this.colourOfPlotsHSV = colourOfPlotsHSV;
     }
 
     public List<Mat> detectLegendImageMatch() {
@@ -65,23 +65,19 @@ public class LegendDetection {
         imageUtils.displayImage(img);
         Rect rectCrop = new Rect((int) matchLoc.x, (int) matchLoc.y, (int) templ.cols(), (int) templ.rows());
         Mat legendimage = new Mat(img, rectCrop);
-        for(int i=0;i<img.rows();i++){
-            for(int j=0;j<img.cols();j++) {
+        legendimage = legendimage.clone();
+        // imageUtils.displayImage(legendimage);
+        for (int i = 0; i < img.rows(); i++) {
+            for (int j = 0; j < img.cols(); j++) {
                 if (j >= matchLoc.x && j <= templ.cols() + matchLoc.x && i >= matchLoc.y && i <= matchLoc.y + templ.rows()) {
-                    double []col={255,255,255};
-                    img.put(i,j,col);
+                    double[] col = {255, 255, 255};
+                    img.put(i, j, col);
                 }
             }
         }
-//        Mat cleanlegend = imageUtils.removecolorpixels(graphImage);
-//         imageUtils.displayImage(cleanlegend);
-//        cleanlegend = imageUtils.convertToBinary(cleanlegend);
-//        imageUtils.displayImage(cleanlegend);
-//
-//        String legend = imageUtils.ocrOnImage((cleanlegend),2);
-//
+
         resultList = new ArrayList<>();
-  resultList.add(legendimage);
+        resultList.add(legendimage);
         resultList.add(img);
         imageUtils.displayImage(legendimage);
         return resultList;

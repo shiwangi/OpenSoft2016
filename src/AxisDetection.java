@@ -7,7 +7,6 @@ import java.util.List;
 
 import static java.lang.Math.max;
 import static org.opencv.imgcodecs.Imgcodecs.imread;
-import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 import static org.opencv.imgproc.Imgproc.*;
 
 /**
@@ -125,7 +124,7 @@ public class AxisDetection {
         Mat image_roi = xscaleImage;
 
         //imageUtils.displayImage(xscaleImage);
-        imwrite("/home/rajitha/Desktop/xscale.png",image_roi);
+        //imwrite("/home/rajitha/Desktop/xscale.png",image_roi);
 
         String Xpart = imageUtils.ocrOnImage(image_roi, 255);
         String Xscale = Xpart.split("\n")[0];
