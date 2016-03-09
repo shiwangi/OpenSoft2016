@@ -46,23 +46,24 @@ public class RectangleDetection {
             }
         }
 
-       // Find the Border contour and draw it on the image
-        each = squareContours.iterator();
-        int idx = 0;
-        double secondMax = 0;
-
         MatOfPoint borderContour = null;
-        while (each.hasNext()) {
-            MatOfPoint contour = each.next();
-            double area = Imgproc.contourArea(contour);
-            if (contour.height()>CONTOUR_THRESHOLD && contour.width()>CONTOUR_THRESHOLD && area>secondMax && Imgproc.contourArea(contour) < maxArea) {
-                mContours.add(contour);
-                secondMax = area;
-                borderContour = contour;
-                idx++;
+       // Find the Border contour and draw it on the image
+        if(squareContours!=null) {
+            each = squareContours.iterator();
+            int idx = 0;
+            double secondMax = 0;
+
+            while (each.hasNext()) {
+                MatOfPoint contour = each.next();
+                double area = Imgproc.contourArea(contour);
+                if (contour.height() > CONTOUR_THRESHOLD && contour.width() > CONTOUR_THRESHOLD && area > secondMax && Imgproc.contourArea(contour) < maxArea) {
+                    mContours.add(contour);
+                    secondMax = area;
+                    borderContour = contour;
+                    idx++;
+                }
             }
         }
-
         return borderContour;
     }
 

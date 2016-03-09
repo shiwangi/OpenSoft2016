@@ -1,7 +1,7 @@
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
-import java.util.List;
+import java.util.Map;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgproc.Imgproc.rectangle;
@@ -14,9 +14,9 @@ public class LegendDetection {
     Mat graphImage;
     Mat binaryGraphImage;
     ImageUtils imageUtils;
-    List<Colour> colourOfPlotsHSV;
+    Map<Colour,Boolean> colourOfPlotsHSV;
 
-    public LegendDetection(Mat graphImage, List<Colour> colourOfPlotsHSV) {
+    public LegendDetection(Mat graphImage, Map colourOfPlotsHSV) {
         this.graphImage = graphImage;
         imageUtils = new ImageUtils();
         this.colourOfPlotsHSV = colourOfPlotsHSV;

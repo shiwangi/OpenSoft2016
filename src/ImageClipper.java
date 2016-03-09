@@ -126,4 +126,19 @@ images.add(roi);
         //return roi;
         return images;
     }
+
+    public Mat clipContourM(Mat graphImage, MatOfPoint contour) {
+
+        Rect rect = Imgproc.boundingRect(contour);
+        Mat roi=null;
+
+//            rectangle(graphImage, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 0, 255));
+//        rectangle(graphImage, new Point(0, 0), new Point(rect.x , graphImage.height()-1), new Scalar(0, 0, 255));
+//        rectangle(graphImage, new Point(0, rect.y+rect.height-1), new Point(graphImage.width()-1, graphImage.height()-1), new Scalar(0, 0, 255));
+        imageUtils.displayImage(graphImage);
+        roi = graphImage.submat(rect.y, rect.y + rect.height, rect.x, rect.x + rect.width);
+
+        //return roi;
+        return roi;
+    }
 }

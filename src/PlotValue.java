@@ -6,6 +6,8 @@ import org.opencv.imgproc.Imgproc;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static org.opencv.imgproc.Imgproc.circle;
 import static org.opencv.imgproc.Imgproc.cvtColor;
@@ -22,7 +24,7 @@ public class PlotValue {
     public PdfCreator create = new PdfCreator("./output/graphValues.pdf");
     Mat graph;
     double minX, minY;
-    List<Colour> colourOfPlotsHSV;
+    Map<Colour,Boolean> colourOfPlotsHSV;
 
 
     PlotValue(Mat graph, double minX, double maxX, double minY, double maxY) {
@@ -38,14 +40,14 @@ public class PlotValue {
         dy = (int) ((rangeY / 100.0) * (yPixels / rangeY));
         dx = (dx == 0) ? 1 : dx;
         dy = (dy == 0) ? 1 : dy;
-        colourOfPlotsHSV = new ArrayList<>();
+        colourOfPlotsHSV = new TreeMap();
      //   graph = imageUtils.equalizeIntensity(graph);
       //  imageUtils.displayImage(graph);
     }
 
-    public List<Colour> populateTable() {
+    public Map populateTable() {
         int flag = 1;
-        int i = 100;
+        int i = dx;
 
         Mat hsvImage = graph.clone();
         cvtColor(graph, hsvImage, Imgproc.COLOR_RGB2HSV, 3);
@@ -53,17 +55,18 @@ public class PlotValue {
         for (int j = 0; j < graph.rows(); j++) {
             double[] colorHSV = hsvImage.get(j, i);
             double[] color = graph.get(j, i);
-            if (imageUtils.isPixelBlack(colorHSV)) {
+            Colour colour = new Colour(colorHSV[0], colorHSV[1], colorHSV[2]);
+
+            if (imageUtils.isPixelBlack(color)) {
                 continue;
             }
             if (imageUtils.isPixelWhite(color)) {
                 flag = 1;
-            } else if (flag == 1) {
-                color = hsvImage.get(j, i);
-                Colour colour = new Colour(color[0], color[1], color[2]);
+                continue;
+            } else if (flag == 1  && (!colourOfPlotsHSV.containsKey(colour))) {
                 findGraphValues(colour);
                 flag = 0;
-                colourOfPlotsHSV.add(colour);
+                colourOfPlotsHSV.put(colour,true);
             }
         }
         return colourOfPlotsHSV;

@@ -13,7 +13,7 @@ public class Colour implements Comparable<Colour>{
     public int compareTo(Colour o) {
         if(Math.abs(o.r-r)<10 )
         return 0;
-        else return 1;
+        else return (int) (o.r-r);
     }
 
     public static double dist(Colour colour, Colour colour2) {
