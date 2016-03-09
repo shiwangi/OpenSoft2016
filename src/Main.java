@@ -40,8 +40,7 @@ public class Main {
         List<MatOfPoint> largeContours = jMagick.getLargeContours(imageUtils.convertToBinary(mRgba, 0), mRgba, 0, false);
 
 
-        imageUtils.drawContoursOnImage(largeContours, mRgba);
-        imageUtils.displayImage(mRgba);
+
 
         //clipping for Scales and Plots
         ImageClipper imageClipper = new ImageClipper(mRgba);
@@ -53,7 +52,7 @@ public class Main {
         //detect the axes and fetches labels
         imageUtils.displayImage(XscaleImage);
         imageUtils.displayImage(YscaleImage);
-        
+
         List<Double> minmaxValues = null;
         AxisDetection axisDetection = new AxisDetection(XscaleImage, YscaleImage);
         List<String> labels = axisDetection.getAxis();

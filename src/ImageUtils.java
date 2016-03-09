@@ -114,7 +114,9 @@ public class ImageUtils {
     public void displayImage(Mat mRgba) {
 
         Image img2 = mat2BufferedImage(mRgba);
-        img2= img2.getScaledInstance(Math.min(700,mRgba.rows()),Math.min(700,mRgba.cols()),1);
+
+        if(mRgba.rows() > 700 && mRgba.cols() > 700 )
+        img2= img2.getScaledInstance( mRgba.rows()/2,mRgba.cols()/2,1);
         ImageIcon icon = new ImageIcon(img2);
         JFrame frame = new JFrame();
         frame.setLayout(new FlowLayout());

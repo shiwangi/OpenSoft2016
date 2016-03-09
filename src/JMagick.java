@@ -43,7 +43,6 @@ public class JMagick {
 m.enhanceImage();
                     m.setXResolution(20);
                     m.setYResolution(20);
-                    System.out.println(m.getColors());
                     m.setFileName(fName);
                     System.out.println(i);
                     i++;

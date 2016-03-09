@@ -1,10 +1,11 @@
-import org.opencv.core.*;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.opencv.imgproc.Imgproc.rectangle;
 
 /**
  * Created by shiwangi on 5/3/16.
@@ -111,9 +112,9 @@ public class ImageClipper {
         Mat yscale,xscale;
         List<Mat> images = new ArrayList<>();
 
-            rectangle(graphImage, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 0, 255));
-        rectangle(graphImage, new Point(0, 0), new Point(rect.x , graphImage.height()-1), new Scalar(0, 0, 255));
-        rectangle(graphImage, new Point(0, rect.y+rect.height-1), new Point(graphImage.width()-1, graphImage.height()-1), new Scalar(0, 0, 255));
+//            rectangle(graphImage, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 0, 255));
+//        rectangle(graphImage, new Point(0, 0), new Point(rect.x , graphImage.height()-1), new Scalar(0, 0, 255));
+//        rectangle(graphImage, new Point(0, rect.y+rect.height-1), new Point(graphImage.width()-1, graphImage.height()-1), new Scalar(0, 0, 255));
         imageUtils.displayImage(graphImage);
             roi = graphImage.submat(rect.y, rect.y + rect.height, rect.x, rect.x + rect.width);
 yscale = graphImage.submat(0, graphImage.height()-1, 0, rect.x );

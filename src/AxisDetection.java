@@ -4,8 +4,6 @@ import org.opencv.imgproc.Imgproc;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.jar.Pack200;
-import java.util.regex.Pattern;
 
 import static java.lang.Math.max;
 import static org.opencv.imgcodecs.Imgcodecs.imread;
@@ -41,10 +39,10 @@ public class AxisDetection {
         List<String> labels = new ArrayList<>();
         List<Mat> scaleAndLabelMat = getMatsByContourMatching();
 
-        Mat legendimage = scaleAndLabelMat.get(0);
+        Mat yscaleImage = scaleAndLabelMat.get(0);
         Mat legendImage2 = scaleAndLabelMat.get(1);
-
-        String YScale = imageUtils.ocrOnImage(legendimage, 0);
+        imageUtils.displayImage(yscaleImage);
+        String YScale = imageUtils.ocrOnImage(yscaleImage, 0);
         YScale = YScale.replaceAll("\n", " ");
         labels.add(YScale);
 
@@ -62,9 +60,8 @@ public class AxisDetection {
         Mat img2 = yscaleImage.clone();
 
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Imgproc.findContours(imageUtils.convertToBinary(yscaleImage,255), contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(imageUtils.convertToBinary(yscaleImage, 255), contours, new Mat(), Imgproc.RETR_CCOMP, Imgproc.CHAIN_APPROX_SIMPLE);
         imageUtils.drawContoursOnImage(contours, yscaleImage);
-        imageUtils.displayImage(yscaleImage);
 
         Mat img = yscaleImage.clone();
 
@@ -81,7 +78,6 @@ public class AxisDetection {
         // / Do the Matching and Normalize
         int match_method = Imgproc.TM_CCORR_NORMED;
         Imgproc.matchTemplate(img, templ, result, Imgproc.TM_CCOEFF);
-
         // / Localizing the best match with minMaxLoc
         Core.MinMaxLocResult mmr = Core.minMaxLoc(result);
 
