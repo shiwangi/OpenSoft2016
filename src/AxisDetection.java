@@ -203,7 +203,7 @@ public class AxisDetection {
                 double num = Double.parseDouble(scale[i]);
                 scaleNum.add(num);
             }else{
-                scaleNum.add((double) -1);
+                if(!scale[i].equals("")) scaleNum.add((double) -1);
             }
         }
 
@@ -214,11 +214,11 @@ public class AxisDetection {
                 continue;
             }
             for (int j = i + 1; j < scaleNum.size(); j++) {
-                if(scaleNum.get(i)==-1){
+                if(scaleNum.get(j)==-1){
                     continue;
                 }
                 double r = scaleNum.get(j) - scaleNum.get(i);
-                r = r / (j - i + 1);
+                r = r / (j - i);
                 possibleRValues.add(r);
             }
         }
@@ -236,11 +236,22 @@ public class AxisDetection {
         for (int j = 1; j < sz; j++) {
             if (possibleRValues.get(j) == num) {
                 count++;
+                if(j==sz-1)
+                {
+                    if (count >= maxCount) {
+                        maxCount = count;
+
+                        mostProbableR = num;
+                        num = possibleRValues.get(j);
+                    }
+                }
             } else {
                 if (count >= maxCount) {
                     maxCount = count;
+
                     mostProbableR = num;
                 }
+                count=1;
                 num = possibleRValues.get(j);
             }
         }

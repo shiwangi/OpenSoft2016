@@ -283,6 +283,7 @@ public class ImageUtils {
     * If 3-channel images provided , returns boolean on the basis of hue
     * Otherwise checks for exactly black in bImage
      */
+
     public boolean  isPixelBlack(double[] color) {
 
         if (color.length == 3) {

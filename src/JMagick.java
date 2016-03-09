@@ -78,7 +78,7 @@ public class JMagick {
         Mat binary = imageUtils.convertToBinary(img,0);
         binary = imageUtils.cleanborders(binary);
         imwrite("./resources/binary" + i + ".png", binary);
-getLargeContours(binary,img,i, true);
+        getLargeContours(binary,img,i, true);
 
 //        imageUtils.drawContoursOnImage(largeones, img);
 //        imwrite("./resources/contour_large"+i+".png",img);

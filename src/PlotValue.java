@@ -9,8 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static org.opencv.imgproc.Imgproc.circle;
-import static org.opencv.imgproc.Imgproc.cvtColor;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static org.opencv.core.Core.merge;
+import static org.opencv.core.Core.split;
+import static org.opencv.imgproc.Imgproc.*;
+
 
 /**
  * Created by shiwangi on 3/3/16.
@@ -102,7 +106,7 @@ public class PlotValue {
                 double[] colourCompare = hsvImage.get(j, i);
                 Colour colour2 = new Colour(colourCompare[0], colourCompare[1], colourCompare[2]);
                 double distance = Colour.dist(colour, colour2);
-                if (distance < minDist) {
+                if (distance < minDist && isValidPixel(hsvImage,j,i)) {
                     minDist = distance;
                     point = new Point(j, i);
                 }
@@ -134,6 +138,26 @@ public class PlotValue {
         }
 
         //imageUtils.displayImage(img);
+    }
+
+    private boolean isValidPixel(Mat hsvImage, int j, int i) {
+        int startx = max(0,j-10);
+        int starty  = max(0,i-10);
+        int endx = min(hsvImage.cols(),j+10);
+        int endy  = min(hsvImage.rows(),i+10);
+        int count= 0;
+        Colour C1 = new Colour(hsvImage.get(j,i)[0],hsvImage.get(j,i)[1],hsvImage.get(j,i)[2]);
+        for(int p = startx;p<endx;p++)
+        {
+            for(int q = starty;q<endy;q++)
+            {
+                Colour C2 = new Colour(hsvImage.get(q,p)[0],hsvImage.get(q,p)[1],hsvImage.get(q,p)[2]);
+                if(C1.compareTo(C2)<10) count++;
+                if(count>25) return true;
+            }
+        }
+        return false;
+
     }
 
 }
