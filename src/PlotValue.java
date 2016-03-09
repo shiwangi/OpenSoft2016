@@ -1,6 +1,5 @@
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
+import org.opencv.core.*;
+import org.opencv.imgproc.CLAHE;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.IOException;
@@ -9,8 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static org.opencv.imgproc.Imgproc.circle;
-import static org.opencv.imgproc.Imgproc.cvtColor;
+import static org.opencv.core.Core.merge;
+import static org.opencv.core.Core.split;
+import static org.opencv.imgproc.Imgproc.*;
 
 /**
  * Created by shiwangi on 3/3/16.
@@ -24,7 +24,7 @@ public class PlotValue {
     public PdfCreator create = new PdfCreator("./output/graphValues.pdf");
     Mat graph;
     double minX, minY;
-    Map<Colour,Boolean> colourOfPlotsHSV;
+    Map<Colour, Boolean> colourOfPlotsHSV;
 
 
     PlotValue(Mat graph, double minX, double maxX, double minY, double maxY) {
@@ -41,8 +41,28 @@ public class PlotValue {
         dx = (dx == 0) ? 1 : dx;
         dy = (dy == 0) ? 1 : dy;
         colourOfPlotsHSV = new TreeMap();
-     //   graph = imageUtils.equalizeIntensity(graph);
-      //  imageUtils.displayImage(graph);
+        CLAHE clahe = createCLAHE(2.0,new Size(10,10));
+        Mat lab_image =new Mat();
+        cvtColor(graph, lab_image,Imgproc.COLOR_BGR2Lab);
+
+        // Extract the L channel
+        List<Mat> lab_planes = new ArrayList<>();
+        split(lab_image, lab_planes);  // now we have the L image in lab_planes[0]
+
+        // apply the CLAHE algorithm to the L channel
+      Mat dst = new Mat();
+        clahe.apply(lab_planes.get(0), dst);
+
+        // Merge the the color planes back into an Lab image
+        dst.copyTo(lab_planes.get(0));
+        merge(lab_planes, lab_image);
+
+        // convert back to RGB
+        Mat image_clahe = new Mat();
+        cvtColor(lab_image, graph, Imgproc.COLOR_Lab2BGR);
+
+        //   graph = imageUtils.equalizeIntensity(graph);
+          imageUtils.displayImage(graph);
     }
 
     public Map populateTable() {
@@ -63,10 +83,10 @@ public class PlotValue {
             if (imageUtils.isPixelWhite(color)) {
                 flag = 1;
                 continue;
-            } else if (flag == 1  && (!colourOfPlotsHSV.containsKey(colour))) {
+            } else if (flag == 1 && (!colourOfPlotsHSV.containsKey(colour))) {
                 findGraphValues(colour);
                 flag = 0;
-                colourOfPlotsHSV.put(colour,true);
+                colourOfPlotsHSV.put(colour, true);
             }
         }
         return colourOfPlotsHSV;
