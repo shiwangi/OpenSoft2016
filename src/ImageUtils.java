@@ -179,10 +179,10 @@ public class ImageUtils {
 
                 double[] color = mIntermediateMat.get(i, j);
                 if (color[0] < 20 && color[1] < 20 && color[2] < 20) {
-                    double[] newC = {255-val};
+                    double[] newC = {val};
                     newMat.put(i, j, newC);
                 } else {
-                    double[] newC = {val};
+                    double[] newC = {255-val};
                     newMat.put(i, j, newC);
                 }
             }

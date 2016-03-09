@@ -17,7 +17,7 @@ public class Main {
     static ImageUtils imageUtils;
 
 
-    static String FNAME = "./resources/roi404.png";
+    static String FNAME = "./resources/roi101.png";
 
     public static void main(String args[]) throws IOException {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -57,6 +57,7 @@ public class Main {
         AxisDetection axisDetection = new AxisDetection(XscaleImage, YscaleImage);
         List<String> labels = axisDetection.getAxis();
         minmaxValues = axisDetection.getMinMaxValues(labels);
+        System.out.println(minmaxValues.toString());
         System.out.println(labels.toString());
 
         imageUtils.displayImage(graphImage);

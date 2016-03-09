@@ -70,7 +70,7 @@ public class JMagick {
         Mat img = imread(fName);
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
-        Mat binary = imageUtils.convertToBinary(img,255);
+        Mat binary = imageUtils.convertToBinary(img,0);
         binary = imageUtils.cleanborders(binary);
         imwrite("./resources/binary" + i + ".png", binary);
 
