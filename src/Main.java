@@ -16,8 +16,7 @@ public class Main {
     static ImageUtils imageUtils;
 
 
-    static String FNAME =
-            "./resources/roi101.png";
+    static String FNAME = "./resources/roi402.png";
 
 
 
@@ -97,6 +96,7 @@ public class Main {
 
 
         String label = legendDetection.detectLegend(legendMat);
+        System.out.println(label);
 
     }
 

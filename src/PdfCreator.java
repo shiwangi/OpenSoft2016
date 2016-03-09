@@ -5,6 +5,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -18,6 +19,14 @@ public class PdfCreator {
         this.Filename = s;
         try {
             document = PDDocument.load(new File(s));
+        }
+        catch (FileNotFoundException e) {
+            document = new PDDocument();
+            try {
+                document.save(s);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
