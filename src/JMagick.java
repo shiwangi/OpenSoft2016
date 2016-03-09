@@ -1,7 +1,6 @@
 import magick.ImageInfo;
 import magick.MagickException;
 import magick.MagickImage;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Rect;
@@ -20,7 +19,7 @@ import static org.opencv.imgcodecs.Imgcodecs.imwrite;
  * Created by shiwangi on 6/3/16.
  */
 public class JMagick {
-    static final int TESTING = 1;
+    static final int TESTING = 0;
 
     public void convert() {
 
@@ -40,6 +39,11 @@ public class JMagick {
                 int i = 0;
                 for (MagickImage m : subImages) {
                     String fName = p_outFile + i + ".png";
+                //    m.reduceNoiseImage(30);
+m.enhanceImage();
+                    m.setXResolution(20);
+                    m.setYResolution(20);
+                    System.out.println(m.getColors());
                     m.setFileName(fName);
                     System.out.println(i);
                     i++;
@@ -69,46 +73,56 @@ public class JMagick {
 
         ImageUtils imageUtils = new ImageUtils();
         Mat img = imread(fName);
-        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
         Mat binary = imageUtils.convertToBinary(img,0);
         binary = imageUtils.cleanborders(binary);
         imwrite("./resources/binary" + i + ".png", binary);
+getLargeContours(binary,img,i, true);
 
+//        imageUtils.drawContoursOnImage(largeones, img);
+//        imwrite("./resources/contour_large"+i+".png",img);
+
+    }
+
+    public List<MatOfPoint> getLargeContours(Mat binary, Mat img, int i, boolean isROI) {
+
+        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
         Imgproc.findContours(binary, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-        RectangleDetection rectangleDetection = new RectangleDetection();
         List <MatOfPoint> largeones = new ArrayList<>();
         int j=0;
         for(MatOfPoint contour:contours){
             double area = Imgproc.contourArea(contour);
-            Mat mask = new Mat(img.rows(), img.cols(), CvType.CV_8UC1);
             if(area>10000)
             {
-                j++;
-
-                    Rect rect = Imgproc.boundingRect(contour);
-                    Mat roi = new Mat();
-                    if (rect.height >300) {
-                        int offsetX =  rect.width/4;
-                        int offsetY=  rect.height/4;
-                        int x = max(rect.x -offsetX, 0);
-                        int y = max(rect.y - offsetY, 0);
-                        int xl = min(img.cols(),rect.x+rect.width+20);
-                        int yl = min(img.rows(),rect.y+rect.height+offsetY);
-
-                        //rectangle(img, new Point(rect.x, rect.y), new Point(rect.x+rect.width,rect.y+rect.height), new Scalar(0, 0, 255));
-                        roi = img.submat(y, yl, x, xl);
-                        imwrite("./resources/roi" + i*10+j + ".png", roi);
-
+                Rect rect = Imgproc.boundingRect(contour);
+                if(rect.height>300 &&rect.width>300) {
+                    j++;
+                    if (isROI == true) {
+                        createRoi(contour, img, i, j,rect);
                     }
-              //  }
-                largeones.add(contour);
+                    //  }
+                    largeones.add(contour);
+                }
             }
-           // System.out.print(area+"\n");
+            // System.out.print(area+"\n");
         }
+        return largeones;
+    }
 
-//        imageUtils.drawContoursOnImage(largeones, img);
-//        imwrite("./resources/contour_large"+i+".png",img);
+    private void createRoi(MatOfPoint contour, Mat img,int i,int j,Rect rect) {
+
+        Mat roi = new Mat();
+            int offsetX =  rect.width/4;
+            int offsetY=  rect.height/4;
+            int x = max(rect.x -offsetX, 0);
+            int y = max(rect.y - offsetY, 0);
+            int xl = min(img.cols(),rect.x+rect.width+20);
+            int yl = min(img.rows(),rect.y+rect.height+offsetY);
+
+            //rectangle(img, new Point(rect.x, rect.y), new Point(rect.x+rect.width,rect.y+rect.height), new Scalar(0, 0, 255));
+            roi = img.submat(y, yl, x, xl);
+            imwrite("./resources/roi" + i*10+j + ".png", roi);
+
 
     }
 }

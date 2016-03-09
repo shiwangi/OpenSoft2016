@@ -11,7 +11,7 @@ import java.util.List;
 public class RectangleDetection {
 
     static ImageUtils imageUtils;
-    static int CONTOUR_THRESHOLD=200;
+    static int CONTOUR_THRESHOLD=50;
 
     public RectangleDetection(){
         imageUtils = new ImageUtils();

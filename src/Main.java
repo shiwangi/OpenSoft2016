@@ -15,13 +15,13 @@ public class Main {
     static ImageUtils imageUtils;
 
 
-    static String FNAME = "./resources/roi101.png";
+    static String FNAME = "./resources/roi306.png";
 
     public static void main(String args[]) throws IOException {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-
-//        JMagick jMagick = new JMagick();
-//        jMagick.convert();
+//
+        JMagick jMagick = new JMagick();
+        //   jMagick.convert();
 
         imageUtils = new ImageUtils();
 
@@ -37,20 +37,23 @@ public class Main {
         mRgba = imageUtils.getCroppedImage((mRgba), 250);
         // mRgba = imageUtils.bufferImageToMat(trimmedImage, mRgba.type());
         imageUtils.displayImage(mRgba);
+        List<MatOfPoint> largeContours = jMagick.getLargeContours(imageUtils.convertToBinary(mRgba, 0), mRgba, 0, false);
+
+
+        imageUtils.drawContoursOnImage(largeContours, mRgba);
+        imageUtils.displayImage(mRgba);
 
         //clipping for Scales and Plots
         ImageClipper imageClipper = new ImageClipper(mRgba);
-        List<Mat> images = imageClipper.clipImage();
-        Mat XscaleImage = images.get(0),
+        List<Mat> images = imageClipper.clipContour(mRgba, largeContours.get(0));
+        Mat XscaleImage = images.get(2),
                 YscaleImage = images.get(1),
-                graphImageBnW = images.get(2),
-                graphImage = images.get(3);
+                graphImage = images.get(0);
 
         //detect the axes and fetches labels
-//        imageUtils.displayImage(XscaleImage);
-//        imwrite("/home/rajitha/Desktop/xcale.png",XscaleImage);
-//        imageUtils.displayImage(YscaleImage);
-//        imageUtils.displayImage(graphImage);
+        imageUtils.displayImage(XscaleImage);
+        imageUtils.displayImage(YscaleImage);
+        
         List<Double> minmaxValues = null;
         AxisDetection axisDetection = new AxisDetection(XscaleImage, YscaleImage);
         List<String> labels = axisDetection.getAxis();
@@ -65,7 +68,7 @@ public class Main {
         List<Colour> colourOfPlotsHSV = plotValue.populateTable();
 
         RectangleDetection rectangleDetection = new RectangleDetection();
-        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba, imageUtils.convertToBinary(graphImage,255));
+        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba, imageUtils.convertToBinary(graphImage, 255));
         List<MatOfPoint> contours = new ArrayList<>();
         contours.add(contour);
         imageUtils.displayImage(graphImage);
@@ -75,7 +78,7 @@ public class Main {
         if (contour != null) {
             //legend detection get easier.
             imageUtils.drawContoursOnImage(contours, graphImage);
-            legendMat = imageClipper.clipContour(graphImage, contour);
+            // legendMat = imageClipper.clipContour(graphImage, contour);
 
         } else {
             System.out.println("Could not find scale box");

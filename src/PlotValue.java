@@ -39,11 +39,13 @@ public class PlotValue {
         dx = (dx == 0) ? 1 : dx;
         dy = (dy == 0) ? 1 : dy;
         colourOfPlotsHSV = new ArrayList<>();
+     //   graph = imageUtils.equalizeIntensity(graph);
+      //  imageUtils.displayImage(graph);
     }
 
     public List<Colour> populateTable() {
         int flag = 1;
-        int i = 2 * dx;
+        int i = 100;
 
         Mat hsvImage = graph.clone();
         cvtColor(graph, hsvImage, Imgproc.COLOR_RGB2HSV, 3);
@@ -99,7 +101,7 @@ public class PlotValue {
             }
             if (minDist < 20) {
                 double[] newC = {0, 0, 0};
-                circle(img, new Point(i, point.x), 5, new Scalar(0, 0, 0));
+                circle(img, new Point(i, point.x), 10, new Scalar(0, 0, 0));
                 img.put((int) point.x, i, newC);
                 List<String> element = new ArrayList<>();
                 element.add(String.valueOf(minX + point.x * rangeX / graph.cols()));

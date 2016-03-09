@@ -10,10 +10,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.opencv.imgcodecs.Imgcodecs.imwrite;
-import static org.opencv.imgproc.Imgproc.*;
+import static org.opencv.core.Core.merge;
+import static org.opencv.core.Core.split;
+import static org.opencv.imgproc.Imgproc.cvtColor;
+import static org.opencv.imgproc.Imgproc.drawContours;
+import static org.opencv.imgproc.Imgproc.equalizeHist;
 
 /**
  * Created by shiwangi on 3/3/16.
@@ -33,6 +37,29 @@ public class ImageUtils {
         return mat;
     }
 
+    Mat equalizeIntensity( Mat inputImage)
+    {
+        if(inputImage.channels() >= 3)
+        {
+            Mat ycrcb=inputImage.clone();
+
+            cvtColor(inputImage,ycrcb,Imgproc.COLOR_BGR2YCrCb);
+
+            List<Mat> channels=new ArrayList<>();
+
+            split(ycrcb,channels);
+
+            equalizeHist(channels.get(0), channels.get(0));
+
+            Mat result=inputImage.clone();
+            merge(channels,ycrcb);
+
+            cvtColor(ycrcb,result,Imgproc.COLOR_YCrCb2BGR);
+
+            return result;
+        }
+        return new Mat();
+    }
     public BufferedImage mat2BufferedImage(Mat m) {
 
         int type = BufferedImage.TYPE_BYTE_GRAY;
@@ -68,7 +95,7 @@ public class ImageUtils {
 
     public static boolean isPixelWhite(double[] color) {
         if(color.length==1){
-            return color[0]>=245;
+            return color[0]>=250;
         }
         if (color[0] >= 200 && color[1] >= 200 && color[2] >= 200) return true;
         return false;
@@ -87,7 +114,7 @@ public class ImageUtils {
     public void displayImage(Mat mRgba) {
 
         Image img2 = mat2BufferedImage(mRgba);
-        img2= img2.getScaledInstance(700,700,1);
+        img2= img2.getScaledInstance(Math.min(700,mRgba.rows()),Math.min(700,mRgba.cols()),1);
         ImageIcon icon = new ImageIcon(img2);
         JFrame frame = new JFrame();
         frame.setLayout(new FlowLayout());
@@ -209,14 +236,21 @@ public class ImageUtils {
     * If 3-channel images provided , returns boolean on the basis of hue
     * Otherwise checks for exactly black in bImage
      */
-    public boolean isPixelBlack(double[] color) {
+    public boolean  isPixelBlack(double[] color) {
 
         if (color.length == 3) {
-            if (color[2] < 10) {
-                return true;
-            } else {
-                return false;
-            }
+                         if(color[0]<100 &&color[1]<100 && color[2]<100){
+                                    return true;
+                                }
+                           else{
+                                return false;
+                                }
+
+//            if (color[2] < 10) {
+//                return true;
+//            } else {
+//                return false;
+//            }
         }
         //System.out.print("hello");
         if (color[0] <= 10) {
@@ -304,7 +338,10 @@ public class ImageUtils {
                 flagX = 1;
             }
         }
-
+topX = (topX== Integer.MAX_VALUE)?0:topX;
+        topY = (topY== Integer.MAX_VALUE)?0:topY;
+        bottomY = (bottomY==-1)?source.rows()-1:bottomY;
+        bottomX = (bottomX==-1)?source.cols()-1:bottomX;
         int startx = Math.max(topX - 10, 0);
         int starty = Math.max(topY - 10, 0);
         width = Math.min(bottomX + 10 - startx, width - startx);
