@@ -1,9 +1,11 @@
 import magick.ImageInfo;
 import magick.MagickException;
 import magick.MagickImage;
-import org.opencv.core.*;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.utils.Converters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +14,6 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgcodecs.Imgcodecs.imwrite;
-import static org.opencv.imgproc.Imgproc.rectangle;
 
 
 /**

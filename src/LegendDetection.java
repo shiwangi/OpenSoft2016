@@ -25,8 +25,8 @@ public class LegendDetection {
     public Mat detectLegendImageMatch() {
         Mat img = graphImage.clone();
         Mat templ = imread("./resources/pic1.png");
-        System.out.print(imageUtils.ocrOnImage(templ, 2));
-        resize(templ, templ, new Size(img.cols() / 4.0, img.rows() / 3.0));
+        //System.out.print(imageUtils.ocrOnImage(templ, 2));
+        resize(templ, templ, new Size(img.cols() / 4.0, img.rows() / 2));
         imageUtils.displayImage(templ);
         System.out.println("\nRunning Template Matching");
 
@@ -69,7 +69,7 @@ public class LegendDetection {
 //
 //        String legend = imageUtils.ocrOnImage((cleanlegend),2);
 //
-//        imageUtils.displayImage(graphImage);
+        imageUtils.displayImage(legendimage);
         return legendimage;
     }
 

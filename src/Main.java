@@ -1,14 +1,12 @@
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
-import sun.awt.motif.X11CNS11643;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
-import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 
 /**
  * Created by shiwangi on 26/2/16.
@@ -70,6 +68,7 @@ public class Main {
         MatOfPoint contour = rectangleDetection.detectRectangle(mRgba, imageUtils.convertToBinary(graphImage,255));
         List<MatOfPoint> contours = new ArrayList<>();
         contours.add(contour);
+        imageUtils.displayImage(graphImage);
         LegendDetection legendDetection = new LegendDetection(graphImage, colourOfPlotsHSV);
 
         Mat legendMat = null;

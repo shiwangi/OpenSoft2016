@@ -4,7 +4,6 @@ import org.opencv.imgproc.Imgproc;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.opencv.imgproc.Imgproc.minAreaRect;
 import static org.opencv.imgproc.Imgproc.rectangle;
 
 /**

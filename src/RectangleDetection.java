@@ -11,6 +11,7 @@ import java.util.List;
 public class RectangleDetection {
 
     static ImageUtils imageUtils;
+    static int CONTOUR_THRESHOLD=200;
 
     public RectangleDetection(){
         imageUtils = new ImageUtils();
@@ -54,13 +55,14 @@ public class RectangleDetection {
         while (each.hasNext()) {
             MatOfPoint contour = each.next();
             double area = Imgproc.contourArea(contour);
-            if (area>secondMax && Imgproc.contourArea(contour) < maxArea) {
+            if (contour.height()>CONTOUR_THRESHOLD && contour.width()>CONTOUR_THRESHOLD && area>secondMax && Imgproc.contourArea(contour) < maxArea) {
                 mContours.add(contour);
                 secondMax = area;
                 borderContour = contour;
                 idx++;
             }
         }
+
         return borderContour;
     }
 
