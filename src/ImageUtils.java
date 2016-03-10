@@ -7,15 +7,16 @@ import net.sourceforge.tess4j.TesseractException;
 import org.opencv.core.*;
 import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
+import sun.misc.Launcher;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,25 +29,12 @@ import static org.opencv.imgproc.Imgproc.drawContours;
  * Created by shiwangi on 3/3/16.
  */
 public class ImageUtils {
-    public Mat bufferImageToMat(BufferedImage image, int type) {
 
-        Mat mat = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3
-        );
-        try {
+    static RectangleDetection rectangleDetection;
+    static URL url = Launcher.class.getResource("/" + "resources");
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(image, "jpg", baos);
-        baos.flush();
-        byte[] data = baos.toByteArray();
+    static String RPATH = url.getPath();
 
-            baos.close();
-            mat.put(0, 0, data);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return mat;
-    }
 
     Mat increaseSaturation(Mat graph) {
         //   Mat saturated = graph.clone();
@@ -73,15 +61,17 @@ public class ImageUtils {
                 }
             }
         }
-        String inputPath="./resources/input.png";
-        imwrite(inputPath,graph);
+        String path="/input.png";
+        String inputPath=RPATH+path;
+        imwrite(inputPath, graph);
         ImagePlus im = new ImagePlus(inputPath);
         ContrastEnhancer enh = new ContrastEnhancer();
 
         enh.stretchHistogram(im, 2);
 
         BufferedImage res = im.getBufferedImage();
-        String outFile = "./out/enhanced.jpg";
+        path = "/enhanced.jpg";
+        String outFile=RPATH+path;
         File outputfile = new File(outFile);
         try {
             ImageIO.write(res, "jpg", outputfile);
@@ -344,10 +334,10 @@ public class ImageUtils {
 
     }
 
-    public Mat getCroppedImage(Mat source, double tolerance) {
+    public Mat getCroppedImage(Mat source) {
         // Get our top-left pixel color as our "baseline" for cropping
         double[] baseColor = source.get(0, 0);
-        displayImage(source);
+       // displayImage(source);
 
         int width = source.width();
         int height = source.height();

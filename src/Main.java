@@ -1,8 +1,10 @@
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import sun.misc.Launcher;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,26 +18,35 @@ public class Main {
     static ImageUtils imageUtils;
 
 
-    static String FNAME = "./resources/roi402.png";
-
-
+    static JMagick jMagick;
+    static RectangleDetection rectangleDetection;
+    static URL url = Launcher.class.getResource("/" + "resources");
+    static String RPATH = url.getPath();
 
     public static void main(String args[]) throws IOException {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
-        JMagick jMagick = new JMagick();
-        //       jMagick.convert();
+        jMagick = new JMagick();
+             jMagick.convert();
+         String FNAME= RPATH + "/roi01.png";
 
+if(1==1)
+    return;
         imageUtils = new ImageUtils();
 
-        RectangleDetection rectangleDetection = new RectangleDetection();
+        rectangleDetection = new RectangleDetection();
         //read the image file.
+
         Mat mRgba = imread(FNAME);
         if (mRgba.empty()) {
             System.out.println("Cannot load image!");
             return;
         }
-        mRgba = imageUtils.getCroppedImage((mRgba), 250);
+
+
+
+        mRgba = imageUtils.getCroppedImage((mRgba));
+
         boolean hasScalesInBox = false;
         List<MatOfPoint> largeContours = jMagick.getLargeContours(imageUtils.convertToBinary(mRgba, 0), mRgba, 0, false);
         if(rectangleDetection.getSquareContours(largeContours)==null){
@@ -49,11 +60,10 @@ public class Main {
 
         //clipping for Scales and Plots
         ImageClipper imageClipper = new ImageClipper(mRgba);
-        List<Mat> images = imageClipper.clipContour(mRgba, largeContours.get(0),hasScalesInBox);
+        List<Mat> images = imageClipper.clipContour(mRgba, largeContours.get(0), hasScalesInBox);
         Mat XscaleImage = images.get(2),
                 YscaleImage = images.get(1),
                 graphImage = images.get(0);
-
         //detect the axes and fetches labels
 //        imageUtils.displayImage(XscaleImage);
 //        imageUtils.displayImage(YscaleImage);
@@ -76,6 +86,7 @@ public class Main {
 
         Mat legendMat = null;
         List<Mat> legendAndPlot;
+         imageClipper = new ImageClipper(graphImage);
         if (contour != null) {
             //legend detection get easier.
              imageUtils.drawContoursOnImage(contours, graphImage);
@@ -99,6 +110,10 @@ public class Main {
         System.out.println(label);
 
     }
+
+
+
+
 
 
 }
