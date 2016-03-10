@@ -28,7 +28,7 @@ public class JMagick {
     static String RPATH = url.getPath();
     public void convert() {
 
-        String p_inFile = "/home/shiwangi"+"/test_p2t.pdf";
+        String p_inFile = "/home/shiwangi"+"/SCANNEDOPactual.pdf";
         String p_outFile =RPATH+ "/images";
 
         try {
@@ -114,8 +114,8 @@ public class JMagick {
             // System.out.print(area+"\n");
         }
 
-        imageUtils.drawContoursOnImage(largeones,img);
-        imageUtils.displayImage(img);
+        //imageUtils.drawContoursOnImage(largeones,img);
+       // imageUtils.displayImage(img);
         return largeones;
     }
 

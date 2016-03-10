@@ -138,6 +138,8 @@ public class ImageUtils {
 
 
     public void drawContoursOnImage(List<MatOfPoint> contours, Mat mRgba) {
+        if(contours==null)
+            return;
         int i = 0;
         for (MatOfPoint contour : contours) {
             drawContours(mRgba, contours, i, new Scalar(0, 255, 0), 3);

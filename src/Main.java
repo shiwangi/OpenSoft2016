@@ -27,11 +27,9 @@ public class Main {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
         jMagick = new JMagick();
-             jMagick.convert();
-         String FNAME= RPATH + "/roi01.png";
+        //     jMagick.convert();
+         String FNAME= RPATH + "/roi101.png";
 
-if(1==1)
-    return;
         imageUtils = new ImageUtils();
 
         rectangleDetection = new RectangleDetection();
@@ -44,9 +42,9 @@ if(1==1)
         }
 
 
-
         mRgba = imageUtils.getCroppedImage((mRgba));
 
+        imageUtils.displayImage(mRgba);
         boolean hasScalesInBox = false;
         List<MatOfPoint> largeContours = jMagick.getLargeContours(imageUtils.convertToBinary(mRgba, 0), mRgba, 0, false);
         if(rectangleDetection.getSquareContours(largeContours)==null){
@@ -65,8 +63,8 @@ if(1==1)
                 YscaleImage = images.get(1),
                 graphImage = images.get(0);
         //detect the axes and fetches labels
-//        imageUtils.displayImage(XscaleImage);
-//        imageUtils.displayImage(YscaleImage);
+        imageUtils.displayImage(XscaleImage);
+        imageUtils.displayImage(YscaleImage);
 
         List<Double> minmaxValues = null;
         AxisDetection axisDetection = new AxisDetection(XscaleImage, YscaleImage);

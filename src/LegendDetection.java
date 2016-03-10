@@ -29,7 +29,7 @@ public class LegendDetection {
         Mat img = graphImage.clone();
         Mat templ = imread("./resources/pic1.png");
         //System.out.print(imageUtils.ocrOnImage(templ, 2));
-        resize(templ, templ, new Size(img.cols() / 4.0, img.rows() / 2));
+        resize(templ, templ, new Size( img.rows() / 4,img.cols() / 4.0));
         imageUtils.displayImage(templ);
         System.out.println("\nRunning Template Matching");
 
