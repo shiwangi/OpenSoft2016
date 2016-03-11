@@ -22,10 +22,16 @@ public class JMagick {
     static final int TESTING = 0;
     static ImageUtils imageUtils;
     int countInvalid=0;
+    String fileName;
     static String RPATH = "./resources";
+
+    public JMagick(String name) {
+        this.fileName = name;
+    }
+
     public void convert() {
 
-        String p_inFile = RPATH+"/SCANNEDOPactual.pdf";
+        String p_inFile = fileName;
         String p_outFile = RPATH +"/images";
 
         try {

@@ -1,4 +1,6 @@
 import org.junit.Test;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
 
 import static org.junit.Assert.*;
 
@@ -25,7 +27,10 @@ public class ImageUtilsTest {
 
     @Test
     public void testIsRowWhite() throws Exception {
-
+        int rownum = 3;
+        Mat newmat = new Mat();
+        int ans = imageUtils.isRowWhite(rownum,newmat);
+        assertTrue(ans==0);
     }
 
     @Test

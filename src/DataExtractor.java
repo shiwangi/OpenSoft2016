@@ -11,7 +11,7 @@ import static org.opencv.imgcodecs.Imgcodecs.imread;
 /**
  * Created by shiwangi on 26/2/16.
  */
-public class Main {
+public class DataExtractor {
     static ImageUtils imageUtils;
 
 
@@ -19,12 +19,12 @@ public class Main {
     static RectangleDetection rectangleDetection;
     static String RPATH = "./resources";
 
-    public static void main(String args[]) throws IOException {
+    public  void extractData(String name) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
-        jMagick = new JMagick();
+        jMagick = new JMagick(name);
 
-        // jMagick.convert();
+        jMagick.convert();
         String FNAME = RPATH + "/roi301.png";
         imageUtils = new ImageUtils();
 
