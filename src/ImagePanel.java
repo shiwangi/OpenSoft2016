@@ -5,8 +5,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by rajitha on 12/3/16.
@@ -21,12 +23,14 @@ public class ImagePanel {
     private JPanel picPanel;
     static String xLabel,yLabel,captionLabel;
     static  Image img;
+    static JFrame jFrame;
 
     public ImagePanel(String imageFile, GraphData graphData) {
 
         textFieldXScale.setText(graphData.xLabel);
         textFieldYScale.setText(graphData.yLabel);
         textFieldCaption.setText(graphData.caption);
+
 
         try {
             img = ImageIO.read(new File(imageFile));
@@ -43,10 +47,23 @@ public class ImagePanel {
                 xLabel = textFieldXScale.getText();
                 yLabel = textFieldYScale.getText();
                 captionLabel = textFieldCaption.getText();
+                jFrame.dispose();
+                DataExtractor dataExtractor = new DataExtractor();
+                dataExtractor.getPlotsAndLegend(graphData.ScaleMat, (ArrayList<Double>) graphData.minmaxValues);
             }
         });
     }
 
+
+    public String createFrame()
+    {
+        jFrame = new JFrame();
+        jFrame.setContentPane(this.container);
+        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jFrame.pack();
+        jFrame.setVisible(true);
+        return this.xLabel;
+    }
 
     private void createUIComponents() {
         // TODO: place custom component creation code here

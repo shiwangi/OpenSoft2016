@@ -77,7 +77,7 @@ public class DataExtractor {
         labels.add(captionLabel);
 
 
-      GraphData graphData = new GraphData(minmaxValues,labels);
+      GraphData graphData = new GraphData(minmaxValues,labels,graphImage);
         return graphData;
 //          legendDetection.getColourSequence(legendMat, colourListFromPlot);
 
@@ -88,7 +88,7 @@ public class DataExtractor {
 //        legendDetection.getColourSequence(legendMat, colourListFromPlot);
     }
 
-    void getPlotsAndLegend(Mat graphImage,ArrayList<Double> minmaxValues,String captionLabel) {
+    void getPlotsAndLegend(Mat graphImage,ArrayList<Double> minmaxValues) {
         //Legend Detection
 
         graphImage = imageUtils.increaseSaturation(graphImage);

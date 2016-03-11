@@ -45,19 +45,7 @@ public class DataExtractorUI {
 
                         GraphData graphData = dataExtractor.extractDataForImage(imageFile);
                         ImagePanel imagePanel = new ImagePanel("./resources"+imageFile,graphData);
-                        JFrame jFrame = new JFrame();
-                        jFrame.add(imagePanel.container);
-                        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                        jFrame.pack();
-                        jFrame.setVisible(true);
-
-
-
-//                        try {
-//                            wait(0);
-//                        } catch (InterruptedException e1) {
-//                            e1.printStackTrace();
-//                        }
+                        imagePanel.createFrame();
                     }
                     newOne = imageGrid.createAndShowGui(imageFileList);
                     //progressBar1.se
