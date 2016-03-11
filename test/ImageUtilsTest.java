@@ -77,9 +77,9 @@ public class ImageUtilsTest {
     public void testIsPixelBlack() throws Exception {
         double[] color = {255,255,255};
         boolean ans = imageUtils.isPixelBlack(color);
-        assertFalse("color is not black",ans);
+        assertFalse("Color is not black",ans);
         double[] color1 = {0,0,0};
-        assertTrue("color is black",imageUtils.isPixelBlack(color1));
+        assertTrue("Color is black",imageUtils.isPixelBlack(color1));
 
     }
 

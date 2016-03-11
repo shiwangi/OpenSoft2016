@@ -25,13 +25,17 @@ public class JMagick {
     String fileName;
     static String RPATH = "./resources";
 
+    static ArrayList<String> imageFilePathList;
+
     public JMagick(String name) {
         this.fileName = name;
+        this.imageFilePathList = new ArrayList<>();
     }
 
-    public void convert() {
+    public ArrayList<String> convert() {
 
         String p_inFile = fileName;
+
         String p_outFile = RPATH +"/images";
 
         try {
@@ -58,7 +62,7 @@ public class JMagick {
                     m.writeImage(imageinfo);
                 }
             }
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 4; i++) {
                 String fName = p_outFile + i + ".jpg";
                 Mat img = imread(fName);
                 countInvalid=0;
@@ -67,6 +71,7 @@ public class JMagick {
             //  }
 
             System.out.print("done");
+            return imageFilePathList;
 //        MagickImage image = new MagickImage(info);
 //        image.setFileName(p_outFile);
 //        image.setCompression(CompressionType.FaxCompression);
@@ -76,6 +81,7 @@ public class JMagick {
         }
 
 
+        return imageFilePathList;
     }
 
     private void performImageMatching(Mat img, int i) {
@@ -138,9 +144,9 @@ public class JMagick {
         Mat cropped = imageUtils.getCroppedImage(roi);
     //    imageUtils.displayImage(cropped);
         if (isGraphImageValid(cropped, rect)) {
-            String path="/roi" + i * 10 + j + ".png";
-
-            imwrite(RPATH+path, roi);
+            String path="/roi" + i + j + ".png";
+            imageFilePathList.add(path);
+            imwrite(RPATH + path, roi);
             return;
         } else {
             countInvalid++;

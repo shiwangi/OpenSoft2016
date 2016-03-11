@@ -2,7 +2,6 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,12 +18,15 @@ public class DataExtractor {
     static RectangleDetection rectangleDetection;
     static String RPATH = "./resources";
 
-    public  void extractData(String name) {
+    public ArrayList<String> getGraphImages(String name){
+
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-
         jMagick = new JMagick(name);
+        ArrayList<String> imageFileList = jMagick.convert();
+        return imageFileList;
+    }
+    public void extractData(String name) {
 
-        jMagick.convert();
         String FNAME = RPATH + "/roi301.png";
         imageUtils = new ImageUtils();
 
@@ -37,14 +39,8 @@ public class DataExtractor {
             return;
         }
 
-
+        //trim whitespaces
         mRgba = imageUtils.getCroppedImage((mRgba));
-
-//        if(1==1)
-//        {
-//            //imageUtils.displayImage(mRgba);
-//            return;
-//        }
 
         boolean hasScalesInBox = false;
 
@@ -56,9 +52,6 @@ public class DataExtractor {
         }
 
         //imageUtils.displayImage(mRgba);
-
-        //trim whitespaces
-
 
         //clipping for Scales and Plots
         ImageClipper imageClipper = new ImageClipper(mRgba);
@@ -119,7 +112,7 @@ public class DataExtractor {
         PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), minmaxValues.get(2), minmaxValues.get(3));
         List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable().keySet());
         legendDetection.getColourSequence(legendMat, colourListFromPlot);
-
+        return;
 
     }
 

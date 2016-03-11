@@ -3,6 +3,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Created by rajitha on 9/3/16.
@@ -29,7 +30,9 @@ public class DataExtractorUI {
                     File selectedFile = fileChooser.getSelectedFile();
                     System.out.println(selectedFile.getName());
                     DataExtractor dataExtractor = new DataExtractor();
-                    dataExtractor.extractData(selectedFile.getPath());
+                   ArrayList<String> imageFileList = dataExtractor.getGraphImages(selectedFile.getPath());
+                    ImageGrid imageGrid = new ImageGrid(imageFileList);
+                    imageGrid.createAndShowGui(imageFileList);
                     //progressBar1.se
                 }
             }
