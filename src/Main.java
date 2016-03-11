@@ -27,9 +27,9 @@ public class Main {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
         jMagick = new JMagick();
-        //     jMagick.convert();
-         String FNAME= RPATH + "/roi101.png";
-
+       // jMagick.convert();
+         String FNAME= RPATH + "/roi302.png";
+        //String FNAME= "./resources" + "/roi101.png";
         imageUtils = new ImageUtils();
 
         rectangleDetection = new RectangleDetection();
@@ -44,9 +44,16 @@ public class Main {
 
         mRgba = imageUtils.getCroppedImage((mRgba));
 
-        imageUtils.displayImage(mRgba);
+//        if(1==1)
+//        {
+//            //imageUtils.displayImage(mRgba);
+//            return;
+//        }
+
         boolean hasScalesInBox = false;
         List<MatOfPoint> largeContours = jMagick.getLargeContours(imageUtils.convertToBinary(mRgba, 0), mRgba, 0, false);
+        imageUtils.drawContoursOnImage(largeContours,mRgba);
+        imageUtils.displayImage(mRgba);
         if(rectangleDetection.getSquareContours(largeContours)==null){
             hasScalesInBox=true;
         }
@@ -76,19 +83,23 @@ public class Main {
 
         //Legend Detection
 
-        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba, imageUtils.convertToBinary(graphImage, 255));
-        List<MatOfPoint> contours = new ArrayList<>();
-        contours.add(contour);
-        imageUtils.displayImage(graphImage);
+
+
         LegendDetection legendDetection = new LegendDetection(graphImage);
 
         Mat legendMat = null;
         List<Mat> legendAndPlot;
-         imageClipper = new ImageClipper(graphImage);
+        imageClipper = new ImageClipper(graphImage);
+        Mat img = imageUtils.removeColorPixels(graphImage);
+        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba, imageUtils.convertToBinary(img, 255));
+        List<MatOfPoint> contours = new ArrayList<>();
+        contours.add(contour);
         if (contour != null) {
             //legend detection get easier.
-             imageUtils.drawContoursOnImage(contours, graphImage);
-            imageUtils.displayImage(graphImage);
+
+
+            imageUtils.drawContoursOnImage(contours, img);
+            imageUtils.displayImage(img);
             legendAndPlot = imageClipper.clipContourM(graphImage, contour);
 
         } else {

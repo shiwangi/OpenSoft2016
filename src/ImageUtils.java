@@ -34,6 +34,7 @@ public class ImageUtils {
     static URL url = Launcher.class.getResource("/" + "resources");
 
     static String RPATH = url.getPath();
+    //static String RPATH = null;
 
 
     Mat increaseSaturation(Mat graph) {
@@ -420,5 +421,21 @@ topX = (topX== Integer.MAX_VALUE)?0:topX;
         }
 
         return binary;
+    }
+
+    public Mat removeColorPixels(Mat img1) {
+
+        Mat img = img1.clone();
+        double[] white = {255,255,255};
+         for(int i=0;i<img.rows();i++)
+         {
+             for(int j=0;j<img.cols();j++)
+             {
+
+                 if(!isPixelBlack(img.get(i,j)) && !isPixelWhite(img.get(i,j))) img.put(i,j,white);
+             }
+         }
+
+        return img;
     }
 }

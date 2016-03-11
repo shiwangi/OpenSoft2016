@@ -120,7 +120,7 @@ public class ImageClipper {
         }
         else{
             roi = graphImage.submat(rect.y+10, rect.y + rect.height-10, rect.x+10, rect.x + rect.width-10);
-            yscale = graphImage.submat(rect.y, rect.height, 0, rect.x);
+            yscale = graphImage.submat(rect.y, rect.y+rect.height, 0, rect.x);
             xscale = graphImage.submat(rect.y + rect.height - 1, graphImage.height() - 1, rect.x, graphImage.width() - 1);
         }
 

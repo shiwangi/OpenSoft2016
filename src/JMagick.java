@@ -26,10 +26,11 @@ public class JMagick {
     int countInvalid=0;
     static URL url = Launcher.class.getResource("/" + "resources");
     static String RPATH = url.getPath();
+//    static String RPATH = null;
     public void convert() {
 
-        String p_inFile = "/home/shiwangi"+"/SCANNEDOPactual.pdf";
-        String p_outFile =RPATH+ "/images";
+        String p_inFile = RPATH+"/SCANNEDOPactual.pdf";
+        String p_outFile = RPATH +"/images";
 
         try {
             if (TESTING == 0) {
