@@ -32,9 +32,7 @@ public class ImageUtils {
 
     static RectangleDetection rectangleDetection;
     static URL url = Launcher.class.getResource("/" + "resources");
-
     static String RPATH = url.getPath();
-    //static String RPATH = null;
 
 
     Mat increaseSaturation(Mat graph) {
