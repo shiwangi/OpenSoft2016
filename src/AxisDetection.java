@@ -1,8 +1,6 @@
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
-import sun.misc.Launcher;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,8 +15,7 @@ import static org.opencv.imgproc.Imgproc.*;
 public class AxisDetection {
     static ImageUtils imageUtils;
     static Mat xscaleImage, yscaleImage;
-    static URL url = Launcher.class.getResource("/" + "resources");
-    static String RPATH = url.getPath();
+    static String RPATH = "./resources";
     public AxisDetection(Mat xscaleImage, Mat yscaleImage) {
         imageUtils = new ImageUtils();
         this.xscaleImage = xscaleImage;

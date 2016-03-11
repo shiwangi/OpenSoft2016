@@ -7,7 +7,6 @@ import net.sourceforge.tess4j.TesseractException;
 import org.opencv.core.*;
 import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
-import sun.misc.Launcher;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -16,7 +15,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,9 +28,7 @@ import static org.opencv.imgproc.Imgproc.drawContours;
  */
 public class ImageUtils {
 
-    static RectangleDetection rectangleDetection;
-    static URL url = Launcher.class.getResource("/" + "resources");
-    static String RPATH = url.getPath();
+    static String RPATH = "./resources";
 
 
     Mat increaseSaturation(Mat graph) {

@@ -1,10 +1,8 @@
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
-import sun.misc.Launcher;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,16 +18,16 @@ public class Main {
 
     static JMagick jMagick;
     static RectangleDetection rectangleDetection;
-    static URL url = Launcher.class.getResource("/" + "resources");
-    static String RPATH = url.getPath();
+    static String RPATH = "./resources";
 
     public static void main(String args[]) throws IOException {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
         jMagick = new JMagick();
-       // jMagick.convert();
-         String FNAME= RPATH + "/roi101.png";
-        //String FNAME= "./resources" + "/try2.png";
+
+        jMagick.convert();
+         String FNAME= RPATH + "/roi302.png";
+        //String FNAME= "./resources" + "/roi101.png";
         imageUtils = new ImageUtils();
 
         rectangleDetection = new RectangleDetection();

@@ -5,9 +5,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
-import sun.misc.Launcher;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,9 +22,7 @@ public class JMagick {
     static final int TESTING = 0;
     static ImageUtils imageUtils;
     int countInvalid=0;
-    static URL url = Launcher.class.getResource("/" + "resources");
-    static String RPATH = url.getPath();
-//    static String RPATH = null;
+    static String RPATH = "./resources";
     public void convert() {
 
         String p_inFile = RPATH+"/SCANNEDOPactual.pdf";
