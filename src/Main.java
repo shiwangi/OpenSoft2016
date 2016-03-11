@@ -28,8 +28,8 @@ public class Main {
 
         jMagick = new JMagick();
        // jMagick.convert();
-         String FNAME= RPATH + "/roi302.png";
-        //String FNAME= "./resources" + "/roi101.png";
+         String FNAME= RPATH + "/roi101.png";
+        //String FNAME= "./resources" + "/try2.png";
         imageUtils = new ImageUtils();
 
         rectangleDetection = new RectangleDetection();
@@ -51,13 +51,15 @@ public class Main {
 //        }
 
         boolean hasScalesInBox = false;
+
         List<MatOfPoint> largeContours = jMagick.getLargeContours(imageUtils.convertToBinary(mRgba, 0), mRgba, 0, false);
-        imageUtils.drawContoursOnImage(largeContours,mRgba);
-        imageUtils.displayImage(mRgba);
+//        imageUtils.drawContoursOnImage(largeContours,mRgba);
+//        imageUtils.displayImage(mRgba);
         if(rectangleDetection.getSquareContours(largeContours)==null){
             hasScalesInBox=true;
         }
         mRgba = imageUtils.increaseSaturation(mRgba);
+
         //imageUtils.displayImage(mRgba);
 
         //trim whitespaces
@@ -115,8 +117,8 @@ public class Main {
         imageUtils.displayImage(graphImage);
 
 
-        String label = legendDetection.detectLegend(legendMat);
-        System.out.println(label);
+       // String label = legendDetection.detectLegend(legendMat);
+//        System.out.println(label);
 
     }
 

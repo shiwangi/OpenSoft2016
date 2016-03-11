@@ -105,7 +105,7 @@ public class PlotValue {
                 double[] colourCompare = hsvImage.get(j, i);
                 Colour colour2 = new Colour(colourCompare[0], colourCompare[1], colourCompare[2]);
                 double distance = Colour.dist(colour, colour2);
-                if (distance < minDist && isValidPixel(hsvImage,j,i)) {
+                if (distance < minDist) {
                     minDist = distance;
                     point = new Point(j, i);
                 }

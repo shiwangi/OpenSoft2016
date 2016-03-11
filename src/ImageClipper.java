@@ -114,9 +114,9 @@ public class ImageClipper {
         List<Mat> images = new ArrayList<>();
         //imageUtils.displayImage(graphImage);
         if(hasScalesInBox){
-            roi = graphImage.submat(rect.y+5, (int) (rect.y + rect.height*.8), rect.x+ (int) (rect.width*.1), rect.x + rect.width-5);
+            roi = graphImage.submat(rect.y+5, (int) (rect.y + rect.height*.9), rect.x+ (int) (rect.width*.1), rect.x + rect.width-5);
             yscale = graphImage.submat(0, graphImage.height() - 1, 0,rect.x+ (int) (rect.width*.1));
-            xscale = graphImage.submat((int) (rect.y + rect.height*.8), graphImage.height() - 1, 0, graphImage.width() - 1);
+            xscale = graphImage.submat((int) (rect.y + rect.height*.9), graphImage.height() - 1, 0, graphImage.width() - 1);
         }
         else{
             roi = graphImage.submat(rect.y+10, rect.y + rect.height-10, rect.x+10, rect.x + rect.width-10);
