@@ -17,7 +17,7 @@ public class ImagePanel {
     private JTextField textFieldXScale;
     private JTextField textFieldYScale;
     private JTextField textFieldCaption;
-    private JLabel picLabel ;
+    private JLabel picLabel;
     private JPanel picPanel;
     static String xLabel,yLabel,captionLabel;
     static  Image img;
@@ -36,10 +36,7 @@ public class ImagePanel {
 
         img =  img.getScaledInstance(500,500,1);
 
-//        picLabel.setIcon(new ImageIcon(img));
-//        picPanel.add(picLabel);
-//        //picPanel.setLayout(new BoxLayout(PicPanel,BoxLayout.PAGE_AXIS));
-//        picPanel.setVisible(true);
+        picLabel.setIcon(new ImageIcon(img));
         okayButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -53,6 +50,9 @@ public class ImagePanel {
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
+
+        picPanel = new JPanel();
+        picLabel = new JLabel();
 
 
 
