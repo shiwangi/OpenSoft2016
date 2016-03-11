@@ -1,9 +1,9 @@
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static org.opencv.imgproc.Imgproc.cvtColor;
 
 /**
  * Created by shiwangi on 5/3/16.
@@ -57,5 +57,46 @@ public class LegendDetection {
         String legend = imageUtils.ocrOnImage(legendMat, 2);
         System.out.print(legend);
         return legend;
+    }
+
+    public List<Colour> getColourSequence(Mat legendMat, List<Colour> colourListFromPlot) {
+        Mat hsvImage = legendMat.clone();
+        cvtColor(legendMat, hsvImage, Imgproc.COLOR_RGB2HSV, 3);
+        List<Colour> colours = new ArrayList<>();
+        int sz  = colourListFromPlot.size();
+        List<ColourOrder> orderColourInLegend = new ArrayList<>();
+        for(int i=0;i<sz;i++){
+            Colour c =colourListFromPlot.get(i);
+            Point pt = getClosestPixel(c,legendMat,legendMat);
+            orderColourInLegend.add(new ColourOrder(c,pt.y));
+
+        }
+        Collections.sort(orderColourInLegend);
+        System.out.println("Colour in the legend : ");
+        for(int i=0;i<orderColourInLegend.size();i++){
+            Colour c =orderColourInLegend.get(i).colour;
+            System.out.println(c.r+" "+c.g+" "+c.b);
+        }
+        return colours;
+
+    }
+
+    private Point getClosestPixel(Colour col, Mat hsvImage,Mat graph) {
+
+        double minDist = Double.MAX_VALUE;
+        Point pt = new Point(0, 0);
+        for (int j = 0; j < hsvImage.rows(); j++) {
+            for (int i = 0; i < hsvImage.cols(); i++) {
+                double[] colorHSV = hsvImage.get(j, i);
+                Colour colour = new Colour(colorHSV[0], colorHSV[1], colorHSV[2]);
+                double currDistance = Colour.dist(col, colour);
+                if (minDist > currDistance) {
+                    minDist = currDistance;
+                    pt = new Point(j, i);
+                }
+            }
+        }
+
+        return pt;
     }
 }

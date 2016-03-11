@@ -35,7 +35,7 @@ public class PlotValue {
         rangeX = maxX - minX;
         rangeY = maxY - minY;
         imageUtils = new ImageUtils();
-        this.graph =imageUtils.increaseSaturation(graph);
+        this.graph =(graph);
         int xPixels = graph.cols();
         int yPixels = graph.rows();
         dx = (int) ((rangeX / 100.0) * (xPixels / rangeX));
@@ -93,7 +93,7 @@ public class PlotValue {
 
 
         cvtColor(graph, hsvImage, Imgproc.COLOR_RGB2HSV, 3);
-        System.out.println("For Color " + colour.r + " " + colour.g + " " + colour.b);
+        System.out.println("Plot Points For Color " + colour.r + " " + colour.g + " " + colour.b);
         Mat img = graph.clone();
         for (int i = dx; i < graph.cols(); i += dx) {
 
