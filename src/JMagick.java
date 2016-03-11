@@ -37,7 +37,7 @@ public class JMagick {
         String p_inFile = fileName;
 
         String p_outFile = RPATH +"/images";
-
+        int i = 0;
         try {
             if (TESTING == 0) {
                 ImageInfo imageinfo = null;
@@ -49,7 +49,7 @@ public class JMagick {
                 MagickImage mainImage = new MagickImage(imageinfo);
 
                 MagickImage[] subImages = mainImage.breakFrames();
-                int i = 0;
+
                 for (MagickImage m : subImages) {
                     String fName = p_outFile + i + ".jpg";
                     //    m.reduceNoiseImage(30);
@@ -62,11 +62,11 @@ public class JMagick {
                     m.writeImage(imageinfo);
                 }
             }
-            for (int i = 0; i < 4; i++) {
-                String fName = p_outFile + i + ".jpg";
+            for (int j = 0; j < i; j++) {
+                String fName = p_outFile + j + ".jpg";
                 Mat img = imread(fName);
                 countInvalid=0;
-                performImageMatching(img, i);
+                performImageMatching(img, j);
             }
             //  }
 

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class ImageGrid extends JPanel {
     public static final String PATH = "./resources";
 
-    private DefaultListModel<Car> carModel = new DefaultListModel<>();
+    private DefaultListModel<ImageName> imageModel = new DefaultListModel<>();
     final JTextField textField = new JTextField(20);
 
     public ImageGrid(ArrayList<String> images) {
@@ -25,14 +25,14 @@ public class ImageGrid extends JPanel {
                 ImageIcon icon = new ImageIcon(img);
                 String name = image;
                // name = name.substring(1, name.lastIndexOf("-"));
-                carModel.addElement(new Car(name, icon));
+                imageModel.addElement(new ImageName(name, icon));
             } catch (IOException e) {
                 e.printStackTrace();
                 System.exit(-1);
             }
         }
 
-        ShowGridAction showAction = new ShowGridAction("Car Grid", carModel);
+        ShowGridAction showAction = new ShowGridAction("ImageName Grid", imageModel);
         JButton showGridBtn = new JButton(showAction);
         add(showGridBtn);
         add(textField);
@@ -41,7 +41,7 @@ public class ImageGrid extends JPanel {
     private class ShowGridAction extends AbstractAction {
         private CarGridPanel carGridPanel;
 
-        public ShowGridAction(String name, DefaultListModel<Car> carModel) {
+        public ShowGridAction(String name, DefaultListModel<ImageName> carModel) {
             super(name);
             carGridPanel = new CarGridPanel(carModel);
         }
@@ -62,9 +62,9 @@ public class ImageGrid extends JPanel {
             dialog.setLocation(x, y);
             dialog.setVisible(true);
 
-            Car selectedCar = carGridPanel.getSelectedCar();
-            if (selectedCar != null) {
-                textField.setText(selectedCar.getName());
+            ImageName selectedImageName = carGridPanel.getSelectedImageName();
+            if (selectedImageName != null) {
+                textField.setText(selectedImageName.getName());
             }
 
         }
@@ -90,11 +90,11 @@ public class ImageGrid extends JPanel {
 
 
 
-class Car {
+class ImageName {
     String name;
     Icon icon;
 
-    public Car(String name, Icon icon) {
+    public ImageName(String name, Icon icon) {
         this.name = name;
         this.icon = icon;
     }
@@ -111,10 +111,10 @@ class Car {
 
 @SuppressWarnings("serial")
 class CarGridPanel extends JPanel {
-    private JList<Car> carList = new JList<>();
-    private Car selectedCar;
+    private JList<ImageName> carList = new JList<>();
+    private ImageName selectedImageName;
 
-    public CarGridPanel(ListModel<Car> model) {
+    public CarGridPanel(ListModel<ImageName> model) {
         carList.setModel(model);
         carList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         carList.setVisibleRowCount(2);
@@ -123,8 +123,8 @@ class CarGridPanel extends JPanel {
             public Component getListCellRendererComponent(JList<?> list,
                                                           Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 if (value != null) {
-                    Car carValue = (Car) value;
-                    value = carValue.getIcon();
+                    ImageName imageNameValue = (ImageName) value;
+                    value = imageNameValue.getIcon();
                 } else {
                     value = "";
                 }
@@ -138,15 +138,15 @@ class CarGridPanel extends JPanel {
         carList.addListSelectionListener(new ListListener());
     }
 
-    public Car getSelectedCar() {
-        return selectedCar;
+    public ImageName getSelectedImageName() {
+        return selectedImageName;
     }
 
     private class ListListener implements ListSelectionListener {
 
         @Override
         public void valueChanged(ListSelectionEvent e) {
-            selectedCar = carList.getSelectedValue();
+            selectedImageName = carList.getSelectedValue();
 
             Window win = SwingUtilities.getWindowAncestor(CarGridPanel.this);
             win.dispose();

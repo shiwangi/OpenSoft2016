@@ -17,23 +17,31 @@ public class DataExtractor {
     static JMagick jMagick;
     static RectangleDetection rectangleDetection;
     static String RPATH = "./resources";
-
+    static ArrayList<String> imageFileList;
     public ArrayList<String> getGraphImages(String name){
 
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         jMagick = new JMagick(name);
-        ArrayList<String> imageFileList = jMagick.convert();
+        imageFileList = jMagick.convert();
         return imageFileList;
     }
-    public void extractData(String name) {
+    public void extractData() {
+        for(String imageFile:imageFileList){
+           String fName = RPATH +imageFile;
+           extractDataForImage(fName);
+        }
 
-        String FNAME = RPATH + "/roi301.png";
+        return;
+
+    }
+
+    private void extractDataForImage(String fname) {
         imageUtils = new ImageUtils();
 
         rectangleDetection = new RectangleDetection();
 
         //read the image file.
-        Mat mRgba = imread(FNAME);
+        Mat mRgba = imread(fname);
         if (mRgba.empty()) {
             System.out.println("Cannot load image!");
             return;
@@ -112,8 +120,6 @@ public class DataExtractor {
         PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), minmaxValues.get(2), minmaxValues.get(3));
         List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable().keySet());
         legendDetection.getColourSequence(legendMat, colourListFromPlot);
-        return;
-
     }
 
 

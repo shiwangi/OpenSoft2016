@@ -30,7 +30,9 @@ public class DataExtractorUI {
                     File selectedFile = fileChooser.getSelectedFile();
                     System.out.println(selectedFile.getName());
                     DataExtractor dataExtractor = new DataExtractor();
+
                    ArrayList<String> imageFileList = dataExtractor.getGraphImages(selectedFile.getPath());
+                    dataExtractor.extractData();
                     ImageGrid imageGrid = new ImageGrid(imageFileList);
                     imageGrid.createAndShowGui(imageFileList);
                     //progressBar1.se
