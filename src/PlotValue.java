@@ -33,9 +33,9 @@ public class PlotValue {
         this.minX = minX;
         this.minY = minY;
         rangeX = maxX - minX;
-        this.graph = graph;
         rangeY = maxY - minY;
         imageUtils = new ImageUtils();
+        this.graph =imageUtils.increaseSaturation(graph);
         int xPixels = graph.cols();
         int yPixels = graph.rows();
         dx = (int) ((rangeX / 100.0) * (xPixels / rangeX));
@@ -51,13 +51,13 @@ public class PlotValue {
     public Map populateTable() {
 
         //   graph = imageUtils.equalizeIntensity(graph);
-        imageUtils.displayImage(graph);
+        //imageUtils.displayImage(graph);
 
         int flag = 1;
         int i = 100+dx;
-        dx = 1;
+    //    dx = 1;
         Mat hsvImage = graph.clone();
-        imageUtils.displayImage(graph);
+      //  imageUtils.displayImage(graph);
         cvtColor(graph, hsvImage, Imgproc.COLOR_RGB2HSV, 3);
         //find first color Pixel
         for (int j = 0; j < graph.rows(); j++) {
@@ -112,7 +112,7 @@ public class PlotValue {
             }
             if (minDist < 20) {
                 double[] newC = {0, 0, 0};
-                circle(img, new Point(i, point.x), 10, new Scalar(0, 0, 0));
+                circle(img, new Point(i, point.x), 10, new Scalar(0, 0, 0),-1);
                 img.put((int) point.x, i, newC);
                 List<String> element = new ArrayList<>();
                 element.add(String.valueOf(minX + point.x * rangeX / graph.cols()));

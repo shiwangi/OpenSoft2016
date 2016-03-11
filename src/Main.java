@@ -5,7 +5,6 @@ import org.opencv.core.MatOfPoint;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 
@@ -25,14 +24,13 @@ public class Main {
 
         jMagick = new JMagick();
 
-        jMagick.convert();
-         String FNAME= RPATH + "/roi302.png";
-        //String FNAME= "./resources" + "/roi101.png";
+       // jMagick.convert();
+         String FNAME= RPATH + "/roi101.png";
         imageUtils = new ImageUtils();
 
         rectangleDetection = new RectangleDetection();
-        //read the image file.
 
+        //read the image file.
         Mat mRgba = imread(FNAME);
         if (mRgba.empty()) {
             System.out.println("Cannot load image!");
@@ -56,7 +54,6 @@ public class Main {
         if(rectangleDetection.getSquareContours(largeContours)==null){
             hasScalesInBox=true;
         }
-        mRgba = imageUtils.increaseSaturation(mRgba);
 
         //imageUtils.displayImage(mRgba);
 
@@ -70,8 +67,8 @@ public class Main {
                 YscaleImage = images.get(1),
                 graphImage = images.get(0);
         //detect the axes and fetches labels
-        imageUtils.displayImage(XscaleImage);
-        imageUtils.displayImage(YscaleImage);
+//        imageUtils.displayImage(XscaleImage);
+//        imageUtils.displayImage(YscaleImage);
 
         List<Double> minmaxValues = null;
         AxisDetection axisDetection = new AxisDetection(XscaleImage, YscaleImage);
@@ -83,40 +80,46 @@ public class Main {
 
         //Legend Detection
 
-
-
         LegendDetection legendDetection = new LegendDetection(graphImage);
 
         Mat legendMat = null;
         List<Mat> legendAndPlot;
+
+
         imageClipper = new ImageClipper(graphImage);
-        Mat img = imageUtils.removeColorPixels(graphImage);
-        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba, imageUtils.convertToBinary(img, 255));
+
+        //image enhanced check if we can see the contours
+        imageUtils.displayImage(graphImage);
+
+        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba, imageUtils.convertToBinary(graphImage, 255));
         List<MatOfPoint> contours = new ArrayList<>();
         contours.add(contour);
         if (contour != null) {
-            //legend detection get easier.
-
-
-            imageUtils.drawContoursOnImage(contours, img);
-            imageUtils.displayImage(img);
+            //legend detection gets easier
+//            imageUtils.drawContoursOnImage(contours, graphImage);
+//            imageUtils.displayImage(graphImage);
             legendAndPlot = imageClipper.clipContourM(graphImage, contour);
+            if(legendAndPlot.size()==2) {
+                legendMat = legendAndPlot.get(0);
+                graphImage = legendAndPlot.get(1);
+
+                imageUtils.displayImage(legendMat);
+                String label = legendDetection.detectLegend(legendMat);
+                System.out.println(label);
+            }
 
         } else {
             //so we ll image-match :)
-            System.out.println("Could not find scale box");
-            legendAndPlot = legendDetection.detectLegendImageMatch();
+            System.out.println("Could not find scale box - So the legend i wont print :P");
+            //Mat img = imageUtils.removeColorPixels(graphImage);
+
+            //After removing coloured Pixels - Before Blob Detection
+
+            imageUtils.displayImage(graphImage);
         }
-        legendMat = legendAndPlot.get(0);
-        graphImage = legendAndPlot.get(1);
-
         PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), minmaxValues.get(2), minmaxValues.get(3));
-        Map<Colour, Boolean> colourOfPlotsHSV = plotValue.populateTable();
-        imageUtils.displayImage(graphImage);
+        plotValue.populateTable();
 
-
-       // String label = legendDetection.detectLegend(legendMat);
-//        System.out.println(label);
 
     }
 

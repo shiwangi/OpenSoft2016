@@ -62,7 +62,7 @@ public class ImageUtils {
         ImagePlus im = new ImagePlus(inputPath);
         ContrastEnhancer enh = new ContrastEnhancer();
 
-        enh.stretchHistogram(im, 2);
+        enh.stretchHistogram(im, 0.5);
 
         BufferedImage res = im.getBufferedImage();
         path = "/enhanced.jpg";
