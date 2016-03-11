@@ -1,5 +1,6 @@
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -40,8 +41,25 @@ public class DataExtractorUI {
                     ArrayList<String> imageFileList = dataExtractor.getGraphImages(selectedFile.getPath());
 
                     ImageGrid imageGrid = new ImageGrid(imageFileList);
+                    for(String imageFile:imageFileList){
+
+                        GraphData graphData = dataExtractor.extractDataForImage(imageFile);
+                        ImagePanel imagePanel = new ImagePanel("./resources"+imageFile,graphData);
+                        JFrame jFrame = new JFrame();
+                        jFrame.add(imagePanel.container);
+                        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        jFrame.pack();
+                        jFrame.setVisible(true);
+
+
+
+//                        try {
+//                            wait(0);
+//                        } catch (InterruptedException e1) {
+//                            e1.printStackTrace();
+//                        }
+                    }
                     newOne = imageGrid.createAndShowGui(imageFileList);
-                    dataExtractor.extractData();
                     //progressBar1.se
                 }
             }

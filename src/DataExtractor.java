@@ -25,24 +25,12 @@ public class DataExtractor {
         imageFileList = jMagick.convert();
         return imageFileList;
     }
-    public void extractData() {
+
+
+
+    public GraphData extractDataForImage(String fname) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        for(String imageFile:imageFileList){
-           String fName = RPATH +imageFile;
-           extractDataForImage(fName);
-        }
-
-        return;
-
-    }
-    public void extractDataTemp(String fname)
-    {
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        String fName = fname;
-        extractDataForImage(fName);
-    }
-
-    private void extractDataForImage(String fname) {
+        fname =RPATH+ fname;
         imageUtils = new ImageUtils();
 
         rectangleDetection = new RectangleDetection();
@@ -51,7 +39,7 @@ public class DataExtractor {
         Mat mRgba = imread(fname);
         if (mRgba.empty()) {
             System.out.println("Cannot load image!");
-            return;
+            return null;
         }
 
         //trim whitespaces
@@ -86,8 +74,21 @@ public class DataExtractor {
         System.out.println(minmaxValues.toString());
         System.out.println(labels.toString());
         String captionLabel = imageUtils.ocrOnImage(captionImage,2);
+        labels.add(captionLabel);
 
 
+      GraphData graphData = new GraphData(minmaxValues,labels);
+        return graphData;
+//          legendDetection.getColourSequence(legendMat, colourListFromPlot);
+
+//        GraphData graphData = new GraphData(minmaxValues.get(0),minmaxValues.get(1),
+//                minmaxValues.get(2),minmaxValues.get(3),)
+       // PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), minmaxValues.get(2), minmaxValues.get(3));
+//        List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable().keySet());
+//        legendDetection.getColourSequence(legendMat, colourListFromPlot);
+    }
+
+    void getPlotsAndLegend(Mat graphImage,ArrayList<Double> minmaxValues,String captionLabel) {
         //Legend Detection
 
         graphImage = imageUtils.increaseSaturation(graphImage);
@@ -97,12 +98,12 @@ public class DataExtractor {
         List<Mat> legendAndPlot;
 
 
-        imageClipper = new ImageClipper(graphImage);
+        ImageClipper imageClipper = new ImageClipper(graphImage);
 
         //image enhanced check if we can see the contours
         // legendMat = imageUtils.increaseSaturation(legendMat);
 
-        MatOfPoint contour = rectangleDetection.detectRectangle(mRgba, imageUtils.convertToBinary(graphImage, 255));
+        MatOfPoint contour = rectangleDetection.detectRectangle(graphImage, imageUtils.convertToBinary(graphImage, 255));
         List<MatOfPoint> contours = new ArrayList<>();
         contours.add(contour);
         if (contour != null) {
@@ -130,11 +131,7 @@ public class DataExtractor {
             imageUtils.displayImage(graphImage);
             PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), 50, 95);
             List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable().keySet());
-//          legendDetection.getColourSequence(legendMat, colourListFromPlot);
         }
-       // PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), minmaxValues.get(2), minmaxValues.get(3));
-//        List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable().keySet());
-//        legendDetection.getColourSequence(legendMat, colourListFromPlot);
     }
 
 
