@@ -3,6 +3,7 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class PlotValue {
     double minX, minY;
     Map<Colour, Boolean> colourOfPlotsHSV;
 
-    //public PdfCreator create = new PdfCreator("./output/graphValues.pdf");
+    public PdfCreator create = new PdfCreator("./output/graphValues.pdf");
     PlotValue(Mat graph, double minX, double maxX, double minY, double maxY) {
         this.minX = minX;
         this.minY = minY;
@@ -128,13 +129,13 @@ public class PlotValue {
             }
         }
         imageUtils.displayImage(img);
-//        try {
-//            create.drawpdf(content);
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//
-//        }
+        try {
+            create.drawpdf(content);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
 
         //imageUtils.displayImage(img);
     }

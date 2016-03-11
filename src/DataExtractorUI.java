@@ -15,6 +15,7 @@ public class DataExtractorUI {
     private JPanel jpanel;
     private JProgressBar progressBar1;
 
+    static JFrame newOne;
 
     public DataExtractorUI() {
         browseButton.addActionListener(new ActionListener() {
@@ -25,18 +26,30 @@ public class DataExtractorUI {
                 fileChooser.setAcceptAllFileFilterUsed(false);
                 fileChooser.setFileFilter(filter);
                 int returnValue = fileChooser.showOpenDialog(null);
+//                DataExtractor dataExtractor = new DataExtractor();
+////
+////                dataExtractor.extractDataTemp("./resources/try2.png");
+
                 if (returnValue == JFileChooser.APPROVE_OPTION)
                 {
                     File selectedFile = fileChooser.getSelectedFile();
                     System.out.println(selectedFile.getName());
                     DataExtractor dataExtractor = new DataExtractor();
 
-                   ArrayList<String> imageFileList = dataExtractor.getGraphImages(selectedFile.getPath());
-                    dataExtractor.extractData();
+                    //dataExtractor.extractDataTemp("./resources/try2.png");
+                    ArrayList<String> imageFileList = dataExtractor.getGraphImages(selectedFile.getPath());
+
                     ImageGrid imageGrid = new ImageGrid(imageFileList);
-                    imageGrid.createAndShowGui(imageFileList);
+                    newOne = imageGrid.createAndShowGui(imageFileList);
+                    dataExtractor.extractData();
                     //progressBar1.se
                 }
+            }
+        });
+        okButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                newOne.remove(newOne.getContentPane());
             }
         });
     }

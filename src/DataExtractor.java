@@ -26,6 +26,7 @@ public class DataExtractor {
         return imageFileList;
     }
     public void extractData() {
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         for(String imageFile:imageFileList){
            String fName = RPATH +imageFile;
            extractDataForImage(fName);
@@ -33,6 +34,12 @@ public class DataExtractor {
 
         return;
 
+    }
+    public void extractDataTemp(String fname)
+    {
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        String fName = fname;
+        extractDataForImage(fName);
     }
 
     private void extractDataForImage(String fname) {
@@ -66,7 +73,8 @@ public class DataExtractor {
         List<Mat> images = imageClipper.clipContour(mRgba, largeContours.get(0), hasScalesInBox);
         Mat XscaleImage = images.get(2),
                 YscaleImage = images.get(1),
-                graphImage = images.get(0);
+                graphImage = images.get(0),
+                captionImage = images.get(3);
         //detect the axes and fetches labels
 //        imageUtils.displayImage(XscaleImage);
 //        imageUtils.displayImage(YscaleImage);
@@ -77,6 +85,7 @@ public class DataExtractor {
         minmaxValues = axisDetection.getMinMaxValues(labels);
         System.out.println(minmaxValues.toString());
         System.out.println(labels.toString());
+        String captionLabel = imageUtils.ocrOnImage(captionImage,2);
 
 
         //Legend Detection
@@ -109,6 +118,9 @@ public class DataExtractor {
                 String label = legendDetection.detectLegend(legendMat);
 
                 System.out.println(label);
+                PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), minmaxValues.get(2), minmaxValues.get(3));
+                List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable().keySet());
+                legendDetection.getColourSequence(legendMat, colourListFromPlot);
             }
 
         } else {
@@ -116,10 +128,13 @@ public class DataExtractor {
             System.out.println("Could not find scale box - So the legend i wont print :P");
             //Mat img = imageUtils.removeColorPixels(graphImage);
             imageUtils.displayImage(graphImage);
+            PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), 50, 95);
+            List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable().keySet());
+//          legendDetection.getColourSequence(legendMat, colourListFromPlot);
         }
-        PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), minmaxValues.get(2), minmaxValues.get(3));
-        List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable().keySet());
-        legendDetection.getColourSequence(legendMat, colourListFromPlot);
+       // PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), minmaxValues.get(2), minmaxValues.get(3));
+//        List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable().keySet());
+//        legendDetection.getColourSequence(legendMat, colourListFromPlot);
     }
 
 

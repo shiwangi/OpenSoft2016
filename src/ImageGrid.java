@@ -53,7 +53,7 @@ public class ImageGrid extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             Window win = SwingUtilities.getWindowAncestor((Component) e.getSource());
-            JDialog dialog = new JDialog(win, "Cars", ModalityType.APPLICATION_MODAL);
+            JDialog dialog = new JDialog(win, "Images", ModalityType.APPLICATION_MODAL);
             dialog.add(carGridPanel);
             dialog.pack();
             dialog.setLocationRelativeTo(null);
@@ -70,24 +70,15 @@ public class ImageGrid extends JPanel {
         }
     }
 
-    public static void createAndShowGui(ArrayList<String> imagePathList) {
+    public static JFrame createAndShowGui(ArrayList<String> imagePathList) {
         JFrame frame = new JFrame("ImageGrid");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().add(new ImageGrid(imagePathList));
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+        return frame;
     }
-
-//    public static void main(String[] args) {
-//        SwingUtilities.invokeLater(new Runnable() {
-//            public void run() {
-//                createAndShowGui();
-//            }
-//        });
-//    }
-}
-
 
 
 class ImageName {
@@ -153,4 +144,5 @@ class CarGridPanel extends JPanel {
         }
 
     }
+}
 }
