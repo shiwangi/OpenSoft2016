@@ -180,12 +180,21 @@ public class ImageUtils {
         String path = "./resources/tessInput.png";
         File tessFile = new File(path);
         Process pr = null;
+        String addConfig = " ";
+        if(i==0)
+        {
+            addConfig = "-c tessedit_char_whitelist=\"-.0123556789\" ";
+        }
+        if(i==1)
+        {
+            addConfig = "-c tessedit_char_whitelist=\"%()abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXZ\" ";
+        }
        // String line = null;
         try {
             ImageIO.write(bimage, "png", tessFile);
             Runtime rt = Runtime.getRuntime();
 
-            pr = rt.exec("tesseract " + path + " ./resources/outputtext");
+            pr = rt.exec("tesseract " + addConfig +path + " ./resources/outputtext");
 
             String everything = "";
             int exitVal = 0;

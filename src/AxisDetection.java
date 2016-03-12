@@ -12,15 +12,30 @@ import static org.opencv.imgproc.Imgproc.*;
 /**
  * Created by rajitha on 3/3/16.
  */
+
+/**
+ * This class has methods to get the text labels,min-max values from the xscale yscale images
+ */
 public class AxisDetection {
     static ImageUtils imageUtils;
     static Mat xscaleImage, yscaleImage;
     static String RPATH = "./resources";
+
+    /**
+     * Constructor of the class
+     * @param xscaleImage
+     * @param yscaleImage
+     */
     public AxisDetection(Mat xscaleImage, Mat yscaleImage) {
         imageUtils = new ImageUtils();
         this.xscaleImage = xscaleImage;
         this.yscaleImage = yscaleImage;
     }
+
+    /**
+     * returns the List of labels for the Axis.
+     * @return
+     */
 
     public List<String> getAxis() {
 
@@ -34,20 +49,22 @@ public class AxisDetection {
         return labels;
     }
 
+    /**
+     * returns list of labels and min-max values for Yaxis
+     * @return
+     */
     private List<String> getYaxisLabels() {
         List<String> labels = new ArrayList<>();
         List<Mat> scaleAndLabelMat = getMatsByContourMatching();
 
         Mat yscaleImage = scaleAndLabelMat.get(0);
         Mat legendImage2 = scaleAndLabelMat.get(1);
-        imageUtils.displayImage(yscaleImage);
         String YScale = imageUtils.ocrOnImage(yscaleImage, 0);
         YScale = YScale.replaceAll("\n", " ");
         labels.add(YScale);
 
 
         Mat rotated = getRotated(legendImage2);
-        imageUtils.displayImage(rotated);
         YScale = imageUtils.ocrOnImage(rotated, 1);
         YScale = YScale.replaceAll("\n", " ");
         labels.add(YScale);
@@ -55,6 +72,10 @@ public class AxisDetection {
 
     }
 
+    /**
+     * The Method which finds out the Y-axis labels, by contour matching
+     * @return the list of Mats corresponding to Labels and scale.
+     */
     private List<Mat> getMatsByContourMatching() {
         Mat img2 = yscaleImage.clone();
 
@@ -66,7 +87,7 @@ public class AxisDetection {
 
         Mat templ = imread(RPATH+ "/scalematch.png");
         resize(templ, templ, new Size(img.cols() / 2.0, img.rows()));
-        imageUtils.displayImage(templ);
+        //imageUtils.displayImage(templ);
         System.out.println("\nRunning Template Matching");
 
         // / Create the result matrix
@@ -92,18 +113,21 @@ public class AxisDetection {
         Rect rectCrop = new Rect((int) matchLoc.x, (int) matchLoc.y, (int) templ.cols(), (int) templ.rows());
         Mat legendimage = new Mat(img2, rectCrop);
 
-        //imageUtils.displayImage(legendimage);
         List<Mat> results = new ArrayList<>();
         results.add(legendimage);
 
         rectCrop = new Rect(0, 0, ((int) matchLoc.x), templ.rows());
         Mat legendimage2 = new Mat(img2, rectCrop);
         results.add(legendimage2);
-        //imageUtils.displayImage(legendimage2);
 
         return results;
     }
 
+    /**
+     * Rotates the input image and returns the rotated image.
+     * @param labelImage_roi
+     * @return
+     */
 
     private Mat getRotated(Mat labelImage_roi) {
 
@@ -117,16 +141,16 @@ public class AxisDetection {
 
     }
 
+    /**
+     * returns list of labels and min-max values for Xaxis
+     * @return
+     */
     private List<String> getXaxislabels() {
         List<String> labels = new ArrayList<>();
 
 
         Mat image_roi = xscaleImage;
-
-        //imageUtils.displayImage(xscaleImage);
-        //imwrite("/home/rajitha/Desktop/xscale.png",image_roi);
-
-        String Xpart = imageUtils.ocrOnImage(image_roi, 255);
+        String Xpart = imageUtils.ocrOnImage(image_roi, 0);
         String Xscale = Xpart.split("\n")[0];
 
 
@@ -141,6 +165,12 @@ public class AxisDetection {
     }
 
 
+    /**
+     * finds the distance between two points.
+     * @param pt
+     * @param point
+     * @return
+     */
     private static double dist(Point pt, Point point) {
         return (pt.x - point.x) * (pt.x - point.x) + (pt.y - point.y) * (pt.y - point.y);
     }
@@ -161,6 +191,14 @@ public class AxisDetection {
         return values;
     }
 
+    /**
+     * Given the array of the scalenumbers and a most probable value of common difference d, it finds out the best fit of Arithmetic progression.
+     * after finding the best fit, it returns the min and max values of that AP.
+     * @param scaleNum
+     * @param r
+     * @return
+     */
+
     private static double[] getMaxMin(ArrayList<Double> scaleNum,double r)
     {
         double Patternmatch[] = {0};
@@ -179,6 +217,14 @@ public class AxisDetection {
         return ans;
     }
 
+    /**
+     * given an Arithmatic progression it finds out the matching count with original data found from the image.
+     * @param d
+     * @param r
+     * @param index
+     * @param scaleNum
+     * @return
+     */
     private static double[] getMatchCount(double d, double r, int index,ArrayList<Double> scaleNum) {
         double count = 0;
         for(int i=0;i<scaleNum.size();i++)
@@ -190,6 +236,12 @@ public class AxisDetection {
 
     }
 
+    /**
+     * Cleans the scale, removes complete gibberish found from Labels
+     * and returns the max,min values.
+     * @param scale
+     * @return
+     */
     private static double[] getRIfAp(String[] scale) {
         if (!isValidscale(scale))
         {
@@ -262,6 +314,11 @@ public class AxisDetection {
 
     }
 
+    /**
+     * finds out whether the scale found from OCR is a valid one, if more than 1/3 of the scale are not numbers, drops the scale.
+     * @param scale
+     * @return
+     */
     private static boolean isValidscale(String[] scale) { //checks very bad scales.
         int count = 0;
         for (int i = 0; i < scale.length; i++) {
@@ -272,6 +329,11 @@ public class AxisDetection {
         return true;
     }
 
+    /**
+     * returns true if the sring input is a double.
+     * @param s
+     * @return
+     */
     private static boolean isDouble(String s) {
         try {
             Double.parseDouble(s);

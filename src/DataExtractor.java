@@ -18,6 +18,12 @@ public class DataExtractor {
     static RectangleDetection rectangleDetection;
     static String RPATH = "./resources";
     static ArrayList<String> imageFileList;
+
+    /**
+     * returns the arraylist of filepaths to the graph images extracted.
+     * @param name The filpath of the input pdf
+     * @return
+     */
     public ArrayList<String> getGraphImages(String name){
 
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -27,7 +33,11 @@ public class DataExtractor {
     }
 
 
-
+    /**
+     * returns the basic graphdata given a imagefilepath.
+     * @param fname the filepath to the input graphImage.
+     * @return
+     */
     public GraphData extractDataForImage(String fname) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         fname =RPATH+ fname;
@@ -48,13 +58,9 @@ public class DataExtractor {
         boolean hasScalesInBox = false;
 
         List<MatOfPoint> largeContours = jMagick.getLargeContours(imageUtils.convertToBinary(mRgba, 0), mRgba, 0, false);
-//        imageUtils.drawContoursOnImage(largeContours,mRgba);
-//        imageUtils.displayImage(mRgba);
         if (rectangleDetection.getSquareContours(largeContours) == null) {
             hasScalesInBox = true;
         }
-
-        //imageUtils.displayImage(mRgba);
 
         //clipping for Scales and Plots
         ImageClipper imageClipper = new ImageClipper(mRgba);
@@ -63,9 +69,7 @@ public class DataExtractor {
                 YscaleImage = images.get(1),
                 graphImage = images.get(0),
                 captionImage = images.get(3);
-        //detect the axes and fetches labels
-//        imageUtils.displayImage(XscaleImage);
-//        imageUtils.displayImage(YscaleImage);
+
 
         List<Double> minmaxValues = null;
         AxisDetection axisDetection = new AxisDetection(XscaleImage, YscaleImage);
@@ -79,15 +83,13 @@ public class DataExtractor {
 
       GraphData graphData = new GraphData(minmaxValues,labels,graphImage);
         return graphData;
-//          legendDetection.getColourSequence(legendMat, colourListFromPlot);
-
-//        GraphData graphData = new GraphData(minmaxValues.get(0),minmaxValues.get(1),
-//                minmaxValues.get(2),minmaxValues.get(3),)
-       // PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), minmaxValues.get(2), minmaxValues.get(3));
-//        List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable().keySet());
-//        legendDetection.getColourSequence(legendMat, colourListFromPlot);
     }
 
+    /**
+     * Finds all the different colored plots in the image,corresponding datapoints and stores in Output.pdf
+     * @param graphImage The input graphImage
+     * @param minmaxValues The min,max values of the scale which are needed to assign values to datapoints
+     */
     void getPlotsAndLegend(Mat graphImage,ArrayList<Double> minmaxValues) {
         //Legend Detection
 
@@ -100,16 +102,11 @@ public class DataExtractor {
 
         ImageClipper imageClipper = new ImageClipper(graphImage);
 
-        //image enhanced check if we can see the contours
-        // legendMat = imageUtils.increaseSaturation(legendMat);
 
         MatOfPoint contour = rectangleDetection.detectRectangle(graphImage, imageUtils.convertToBinary(graphImage, 255));
         List<MatOfPoint> contours = new ArrayList<>();
         contours.add(contour);
         if (contour != null) {
-            //legend detection gets easier
-//            imageUtils.drawContoursOnImage(contours, graphImage);
-//            imageUtils.displayImage(graphImage);
             legendAndPlot = imageClipper.clipContourM(graphImage, contour);
             if (legendAndPlot.size() == 2) {
                 legendMat = legendAndPlot.get(0);
@@ -126,13 +123,10 @@ public class DataExtractor {
 
         } else {
             //so we ll image-match :)
-            System.out.println("Could not find scale box - So the legend i wont print :P");
-            //Mat img = imageUtils.removeColorPixels(graphImage);
+            System.out.println("Could not find scale box ");
             imageUtils.displayImage(graphImage);
             PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), 50, 95);
             List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable().keySet());
         }
     }
-
-
 }

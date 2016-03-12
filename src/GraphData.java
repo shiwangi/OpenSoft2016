@@ -5,6 +5,7 @@ import java.util.List;
 /**
  * Created by rajitha on 11/3/16.
  */
+
 public class GraphData {
     String xLabel,yLabel,caption;
     List<Double> minmaxValues;

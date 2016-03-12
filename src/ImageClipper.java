@@ -10,6 +10,10 @@ import java.util.List;
 /**
  * Created by shiwangi on 5/3/16.
  */
+
+/**
+ * The class ImageClipper has methods for cropping out the X-axis, Y-axis,Caption and the graph alone.
+ */
 public class ImageClipper {
     Mat mRgba;
     ImageUtils imageUtils;
@@ -19,6 +23,10 @@ public class ImageClipper {
         imageUtils = new ImageUtils();
     }
 
+    /**
+     * returns a list of Mat objects corresponding to the X-axis, Y-axis,Caption, Graph.
+     * * @return
+     */
     public List<Mat> clipImage() {
         Mat mIntermediateMat = imageUtils.convertToBinary(mRgba, 255);
         imageUtils.displayImage(mIntermediateMat);
@@ -51,6 +59,13 @@ public class ImageClipper {
 
     }
 
+    /**
+     *
+     * @param x
+     * @param y
+     * @param mIntermediateMat
+     * @return
+     */
     private Mat getGraphImage(int x, int y, Mat mIntermediateMat) {
         Mat graphImage = mIntermediateMat.clone();
         for (int i = 0; i < graphImage.rows(); i++) {
@@ -67,6 +82,12 @@ public class ImageClipper {
         }
         return graphImage;
     }
+
+    /**
+     * Given a mat image it returns the point of intersection of the first black row and column.
+     * @param mIntermediateMat
+     * @return
+     */
 
     private Point findfirstBlackRowwAndCol(Mat mIntermediateMat) {
         imageUtils.displayImage(mIntermediateMat);
@@ -87,6 +108,12 @@ public class ImageClipper {
         return new Point(x, y);
     }
 
+    /**
+     * Given a mat image it returns the point of intersection of the last black row and column.
+     * @param mIntermediateMat
+     * @return
+     */
+
     private Point findLastBlackRowAndCol(Mat mIntermediateMat) {
         int x = mIntermediateMat.cols();
         int y = mIntermediateMat.rows();
@@ -105,6 +132,14 @@ public class ImageClipper {
         return new Point(x, y);
     }
 
+    /**
+     * It clips the imput graph which has X,Y axis,Caption,Graph into individual Mat objects.
+     * @param graphImage
+     * @param contour The countout found correspoinding to the rectangle of the graph
+     * @param hasScalesInBox the flag indicating whether the countour is a perfect square
+     * @return
+     */
+
 
     public List<Mat> clipContour(Mat graphImage, MatOfPoint contour, boolean hasScalesInBox) {
 
@@ -112,20 +147,18 @@ public class ImageClipper {
         Mat roi = null;
         Mat yscale, xscale,caption;
         List<Mat> images = new ArrayList<>();
-        //imageUtils.displayImage(graphImage);
         if(hasScalesInBox){
             roi = graphImage.submat(rect.y+5, (int) (rect.y + rect.height*.9), rect.x+ (int) (rect.width*.1), rect.x + rect.width-5);
             yscale = graphImage.submat(0, graphImage.height() - 1, 0,rect.x+ (int) (rect.width*.1));
-            xscale = graphImage.submat((int) (rect.y + rect.height*.9), graphImage.height() - 1, 0, graphImage.width() - 1);
-            caption = graphImage.submat(0,rect.y,rect.x,graphImage.rows()-1);
-            //imageUtils.displayImage(caption);
+            xscale = graphImage.submat((int) (rect.y + rect.height*.9), graphImage.height() - 1, rect.x, graphImage.width() - 1);
+            caption = graphImage.submat(0,rect.y,0,graphImage.cols()-1);
+
         }
         else{
             roi = graphImage.submat(rect.y+10, rect.y + rect.height-10, rect.x+10, rect.x + rect.width-10);
             yscale = graphImage.submat(rect.y, rect.y+rect.height, 0, rect.x);
             xscale = graphImage.submat(rect.y + rect.height - 1, graphImage.height() - 1, rect.x, graphImage.width() - 1);
-            caption = graphImage.submat(0,rect.y,rect.x,graphImage.rows()-1);
-            //imageUtils.displayImage(caption);
+            caption = graphImage.submat(0,rect.y,0,graphImage.cols()-1);
         }
 
 
@@ -136,12 +169,17 @@ public class ImageClipper {
         return images;
     }
 
+    /**
+     * This function makes the bounding rectangle of the countour in the graphImage white.
+     * @param graphImage
+     * @param contour
+     * @return
+     */
+
     public List<Mat> clipContourM(Mat graphImage, MatOfPoint contour) {
-List<Mat> result = new ArrayList<>();
+        List<Mat> result = new ArrayList<>();
         Rect rect = Imgproc.boundingRect(contour);
         Mat roi = null;
-
-        imageUtils.displayImage(graphImage);
         roi = (graphImage.submat(rect.y, rect.y + rect.height, rect.x, rect.x + rect.width)).clone();
         for(int i=0;i<graphImage.rows();i++){
             for(int j=0;j<graphImage.cols();j++) {
@@ -153,7 +191,6 @@ List<Mat> result = new ArrayList<>();
         }
         result.add(roi);
         result.add(graphImage);
-        //return roi;
         return result;
     }
 
