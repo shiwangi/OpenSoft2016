@@ -1,23 +1,15 @@
-import com.sun.media.imageioimpl.plugins.tiff.TIFFImageReaderSpi;
 import ij.ImagePlus;
 import ij.plugin.ContrastEnhancer;
-import net.sourceforge.tess4j.ITessAPI;
-import net.sourceforge.tess4j.ITesseract;
-import net.sourceforge.tess4j.Tesseract;
-import net.sourceforge.tess4j.TesseractException;
 import org.opencv.core.*;
 import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
 import javax.imageio.ImageIO;
-import javax.imageio.spi.IIORegistry;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +39,8 @@ public class ImageUtils {
                     whiteList.add(new Point(j, i));
                 }
             }
-        }List<Point> blackList = new ArrayList<>();
+        }
+        List<Point> blackList = new ArrayList<>();
         for (int i = 0; i < graph.cols(); i += 1) {
 
 
@@ -59,8 +52,8 @@ public class ImageUtils {
                 }
             }
         }
-        String path="/input.png";
-        String inputPath=RPATH+path;
+        String path = "/input.png";
+        String inputPath = RPATH + path;
         imwrite(inputPath, graph);
         ImagePlus im = new ImagePlus(inputPath);
         ContrastEnhancer enh = new ContrastEnhancer();
@@ -69,7 +62,7 @@ public class ImageUtils {
 
         BufferedImage res = im.getBufferedImage();
         path = "/enhanced.jpg";
-        String outFile=RPATH+path;
+        String outFile = RPATH + path;
         File outputfile = new File(outFile);
         try {
             ImageIO.write(res, "jpg", outputfile);
@@ -84,7 +77,7 @@ public class ImageUtils {
             double c[] = {255, 255, 255};
             readFile.put((int) p.x, (int) p.y, c);
         }
-         sz = blackList.size();
+        sz = blackList.size();
         for (int i = 0; i < sz; i++) {
             Point p = blackList.get(i);
             double c[] = {0, 0, 0};
@@ -93,6 +86,7 @@ public class ImageUtils {
         return readFile;
 
     }
+
     public BufferedImage mat2BufferedImage(Mat m) {
 
         int type = BufferedImage.TYPE_BYTE_GRAY;
@@ -127,8 +121,8 @@ public class ImageUtils {
     }
 
     public static boolean isPixelWhite(double[] color) {
-        if(color.length==1){
-            return color[0]>=250;
+        if (color.length == 1) {
+            return color[0] >= 250;
         }
         if (color[0] >= 200 && color[1] >= 200 && color[2] >= 200) return true;
         return false;
@@ -136,7 +130,7 @@ public class ImageUtils {
 
 
     public void drawContoursOnImage(List<MatOfPoint> contours, Mat mRgba) {
-        if(contours==null)
+        if (contours == null)
             return;
         int i = 0;
         for (MatOfPoint contour : contours) {
@@ -150,8 +144,8 @@ public class ImageUtils {
 
         Image img2 = mat2BufferedImage(mRgba);
 
-        if(mRgba.rows() > 800 && mRgba.cols() > 800 )
-            img2= img2.getScaledInstance( (int)(mRgba.rows()*.6),(int)(mRgba.cols()*.6),1);
+        if (mRgba.rows() > 800 && mRgba.cols() > 800)
+            img2 = img2.getScaledInstance((int) (mRgba.rows() * .6), (int) (mRgba.cols() * .6), 1);
         ImageIcon icon = new ImageIcon(img2);
         JFrame frame = new JFrame();
         frame.setLayout(new FlowLayout());
@@ -183,38 +177,60 @@ public class ImageUtils {
     public String ocrOnImage(Mat image, int i) {
         //File imageFile = new File(fname);
         BufferedImage bimage = mat2BufferedImage(convertToBinary(image, 255));
-        RenderedImage img = bimage;
-        File outputfile = new File("saved.png");
+        String path = "./resources/tessInput.png";
+        File tessFile = new File(path);
+        Process pr = null;
+       // String line = null;
         try {
-            ImageIO.write(img, "png", outputfile);
+            ImageIO.write(bimage, "png", tessFile);
+            Runtime rt = Runtime.getRuntime();
 
-        ITesseract instance = new Tesseract();  // JNA Interface Mapping
+            pr = rt.exec("tesseract " + path + " ./resources/outputtext");
 
-        instance.setDatapath("/usr/share/tesseract-ocr");
-        if (i == 0) instance.setTessVariable("tessedit_char_whitelist", ".0123456789");
-        if (i == 1)
-            instance.setTessVariable("tessedit_char_whitelist", "()ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-/%");
-        IIORegistry reg = IIORegistry.getDefaultInstance();
-        reg.registerServiceProvider(new TIFFImageReaderSpi());
-        //instance.setPageSegMode(ITessAPI.TessPageSegMode.PSM_SINGLE_BLOCK);
-        try {
-            String result = instance.doOCR(outputfile);
+            String everything = "";
+            int exitVal = 0;
+            try {
+                exitVal = pr.waitFor();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if(exitVal==0) {
+                BufferedReader br = new BufferedReader(new FileReader("./resources/outputtext.txt"));
+                try {
+                    StringBuilder sb = new StringBuilder();
+                    String line = br.readLine();
 
+                    while (line != null) {
+                        sb.append(line);
+                        sb.append(System.lineSeparator());
+                        line = br.readLine();
+                    }
+                    everything = sb.toString();
+                } finally {
+                    br.close();
+                }
+            }
+            else {
 
-            return result;
-        } catch (TesseractException e) {
-            System.err.println(e.getMessage());
-            return null;
-        }
+                BufferedReader error = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
+                String m, s = "";
+                while ((m = error.readLine()) != null) {
+                    s += "\n" + m;
+                }
+                System.out.println("Exited with error code " + s);
+            }
+
+            return everything;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
-
     }
 
-    public Mat convertToBinary(Mat mRgba,int val) {
-        if(val==255){
+    public Mat convertToBinary(Mat mRgba, int val) {
+        if (val == 255) {
             Mat mIntermediateMat = new Mat(mRgba.height(), mRgba.width(), CvType.CV_8UC1);
             for (int i = 0; i < mRgba.rows(); i++) {
                 for (int j = 0; j < mRgba.cols(); j++) {
@@ -256,15 +272,15 @@ public class ImageUtils {
                     double[] newC = {val};
                     newMat.put(i, j, newC);
                 } else {
-                    double[] newC = {255-val};
+                    double[] newC = {255 - val};
                     newMat.put(i, j, newC);
                 }
             }
         }
         Mat Kernel = new Mat(new Size(2, 2), CvType.CV_8UC1, Scalar.all(255));
         Mat temp = newMat.clone();
-       // morphologyEx(newMat, temp, Imgproc.MORPH_OPEN, Kernel);
-     //   morphologyEx(temp, newMat, Imgproc.MORPH_CLOSE, Kernel);
+        // morphologyEx(newMat, temp, Imgproc.MORPH_OPEN, Kernel);
+        //   morphologyEx(temp, newMat, Imgproc.MORPH_CLOSE, Kernel);
         return newMat;
     }
 
@@ -284,15 +300,14 @@ public class ImageUtils {
     * Otherwise checks for exactly black in bImage
      */
 
-    public boolean  isPixelBlack(double[] color) {
+    public boolean isPixelBlack(double[] color) {
 
         if (color.length == 3) {
-                         if(color[0]<100 &&color[1]<100 && color[2]<100){
-                                    return true;
-                                }
-                           else{
-                                return false;
-                                }
+            if (color[0] < 100 && color[1] < 100 && color[2] < 100) {
+                return true;
+            } else {
+                return false;
+            }
 
 //            if (color[2] < 10) {
 //                return true;
@@ -321,33 +336,12 @@ public class ImageUtils {
         return (pt.x - point.x) * (pt.x - point.x) + (pt.y - point.y) * (pt.y - point.y);
     }
 
-    public String ocrOnImageForYScale(Mat image_roi, int i) {
-        BufferedImage bimage = mat2BufferedImage(image_roi);
-        bimage = mat2BufferedImage(convertToBinary(image_roi,255));
-        ITesseract instance = new Tesseract();  // JNA Interface Mapping
 
-        instance.setDatapath("/usr/share/tesseract-ocr");
-        if (i == 0) instance.setTessVariable("tessedit_char_whitelist", ".0123456789");
-        if (i == 1)
-            instance.setTessVariable("tessedit_char_whitelist", "()ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-/%");
-        instance.setPageSegMode(ITessAPI.TessPageSegMode.PSM_SINGLE_BLOCK_VERT_TEXT);
-        try {
-            String result = instance.doOCR(bimage);
-            System.out.println("Vertical Text \n" + result);
-            return result;
-        } catch (TesseractException e) {
-            System.err.println(e.getMessage());
-            return null;
-        }
-        //instance.setPageSegMode(ITessAPI.TessPageSegMode.PSM_SINGLE_BLOCK);
-
-
-    }
 
     public Mat getCroppedImage(Mat source) {
         // Get our top-left pixel color as our "baseline" for cropping
         double[] baseColor = source.get(0, 0);
-       // displayImage(source);
+        // displayImage(source);
 
         int width = source.width();
         int height = source.height();
@@ -386,10 +380,10 @@ public class ImageUtils {
                 flagX = 1;
             }
         }
-topX = (topX== Integer.MAX_VALUE)?0:topX;
-        topY = (topY== Integer.MAX_VALUE)?0:topY;
-        bottomY = (bottomY==-1)?source.rows()-1:bottomY;
-        bottomX = (bottomX==-1)?source.cols()-1:bottomX;
+        topX = (topX == Integer.MAX_VALUE) ? 0 : topX;
+        topY = (topY == Integer.MAX_VALUE) ? 0 : topY;
+        bottomY = (bottomY == -1) ? source.rows() - 1 : bottomY;
+        bottomX = (bottomX == -1) ? source.cols() - 1 : bottomX;
         int startx = Math.max(topX - 10, 0);
         int starty = Math.max(topY - 10, 0);
         width = Math.min(bottomX + 10 - startx, width - startx);
@@ -412,18 +406,18 @@ topX = (topX== Integer.MAX_VALUE)?0:topX;
     public Mat cleanborders(Mat binary) {
         int rows = binary.rows();
         int cols = binary.cols();
-        double newc[]={0};
-        for(int i=0;i<50;i++){
-            for(int j=0;j<rows;j++){
-                binary.put(j,i,newc);
+        double newc[] = {0};
+        for (int i = 0; i < 50; i++) {
+            for (int j = 0; j < rows; j++) {
+                binary.put(j, i, newc);
 
-                binary.put(j,cols-1-i,newc);
+                binary.put(j, cols - 1 - i, newc);
             }
         }
-        for(int i=0;i<50;i++){
-            for(int j=0;j<cols;j++){
-                binary.put(i,j,newc);
-                binary.put(rows-1-i,j,newc);
+        for (int i = 0; i < 50; i++) {
+            for (int j = 0; j < cols; j++) {
+                binary.put(i, j, newc);
+                binary.put(rows - 1 - i, j, newc);
             }
         }
 
@@ -433,15 +427,13 @@ topX = (topX== Integer.MAX_VALUE)?0:topX;
     public Mat removeColorPixels(Mat img1) {
 
         Mat img = img1.clone();
-        double[] white = {255,255,255};
-         for(int i=0;i<img.rows();i++)
-         {
-             for(int j=0;j<img.cols();j++)
-             {
+        double[] white = {255, 255, 255};
+        for (int i = 0; i < img.rows(); i++) {
+            for (int j = 0; j < img.cols(); j++) {
 
-                 if(!isPixelBlack(img.get(i,j)) && !isPixelWhite(img.get(i,j))) img.put(i,j,white);
-             }
-         }
+                if (!isPixelBlack(img.get(i, j)) && !isPixelWhite(img.get(i, j))) img.put(i, j, white);
+            }
+        }
 
         return img;
     }
