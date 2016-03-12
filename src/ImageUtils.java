@@ -1,3 +1,4 @@
+import com.sun.media.imageioimpl.plugins.tiff.TIFFImageReaderSpi;
 import ij.ImagePlus;
 import ij.plugin.ContrastEnhancer;
 import net.sourceforge.tess4j.ITessAPI;
@@ -9,10 +10,12 @@ import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
 import javax.imageio.ImageIO;
+import javax.imageio.spi.IIORegistry;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -177,19 +180,25 @@ public class ImageUtils {
     }
 
 
-    public String ocrOnImage(Mat img, int i) {
+    public String ocrOnImage(Mat image, int i) {
         //File imageFile = new File(fname);
-        BufferedImage bimage = mat2BufferedImage(convertToBinary(img,255));
+        BufferedImage bimage = mat2BufferedImage(convertToBinary(image, 255));
+        RenderedImage img = bimage;
+        File outputfile = new File("saved.png");
+        try {
+            ImageIO.write(img, "png", outputfile);
+
         ITesseract instance = new Tesseract();  // JNA Interface Mapping
 
         instance.setDatapath("/usr/share/tesseract-ocr");
         if (i == 0) instance.setTessVariable("tessedit_char_whitelist", ".0123456789");
         if (i == 1)
             instance.setTessVariable("tessedit_char_whitelist", "()ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-/%");
-
+        IIORegistry reg = IIORegistry.getDefaultInstance();
+        reg.registerServiceProvider(new TIFFImageReaderSpi());
         //instance.setPageSegMode(ITessAPI.TessPageSegMode.PSM_SINGLE_BLOCK);
         try {
-            String result = instance.doOCR(bimage);
+            String result = instance.doOCR(outputfile);
 
 
             return result;
@@ -197,6 +206,10 @@ public class ImageUtils {
             System.err.println(e.getMessage());
             return null;
         }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
 
     }
 
