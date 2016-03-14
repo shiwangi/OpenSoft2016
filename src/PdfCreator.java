@@ -6,12 +6,11 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by rajitha on 6/3/16.
- */
 public class PdfCreator {
     String Filename ;
     PDDocument document;
@@ -42,6 +41,16 @@ public class PdfCreator {
         document.addPage(page);
         PDPageContentStream contentStream = null;
         contentStream = new PDPageContentStream(document, page);
+        //File f1 = new File("./output/ans.txt");
+        FileWriter fw = new FileWriter("./output/ans.txt");
+        //List<String> row = new ArrayList<>();
+        for(List<String> row : content)
+        {
+            fw.write(row.toString()+"\n");
+        }
+        fw.close();
+//        Integer rowsPerPage = new Double(tableHeight/rowHeight) - 1; // subtract
+//        Integer numberOfPages = new Double(Math.ceil(table.getNumberOfRows().floatValue() / rowsPerPage)).intValue();
         drawTable(page, contentStream, 700, 100, content);
         contentStream.close();
         document.save(Filename);

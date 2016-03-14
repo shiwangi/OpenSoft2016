@@ -6,11 +6,6 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * Created by shiwangi on 5/3/16.
- */
-
 /**
  * The class ImageClipper has methods for cropping out the X-axis, Y-axis,Caption and the graph alone.
  */
@@ -89,7 +84,7 @@ public class ImageClipper {
      * @return
      */
 
-    private Point findfirstBlackRowwAndCol(Mat mIntermediateMat) {
+    public Point findfirstBlackRowwAndCol(Mat mIntermediateMat) {
         imageUtils.displayImage(mIntermediateMat);
         int x = 0;
         int y = 0;
@@ -114,7 +109,7 @@ public class ImageClipper {
      * @return
      */
 
-    private Point findLastBlackRowAndCol(Mat mIntermediateMat) {
+    public Point findLastBlackRowAndCol(Mat mIntermediateMat) {
         int x = mIntermediateMat.cols();
         int y = mIntermediateMat.rows();
         for (int i = mIntermediateMat.cols() - 1; i >= 0; i--) {
@@ -157,7 +152,7 @@ public class ImageClipper {
         else{
             roi = graphImage.submat(rect.y+10, rect.y + rect.height-10, rect.x+10, rect.x + rect.width-10);
             yscale = graphImage.submat(rect.y, rect.y+rect.height, 0, rect.x);
-            xscale = graphImage.submat(rect.y + rect.height - 1, graphImage.height() - 1, rect.x, graphImage.width() - 1);
+            xscale = graphImage.submat(rect.y + rect.height, graphImage.height() - 1, rect.x, graphImage.width() - 1);
             caption = graphImage.submat(0,rect.y,0,graphImage.cols()-1);
         }
 

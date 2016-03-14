@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-@SuppressWarnings("serial")
+
 public class ImageGrid extends JPanel {
     public static final String PATH = "./resources";
 

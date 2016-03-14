@@ -17,10 +17,6 @@ import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 import static org.opencv.imgproc.Imgproc.cvtColor;
 import static org.opencv.imgproc.Imgproc.drawContours;
-
-/**
- * Created by shiwangi on 3/3/16.
- */
 public class ImageUtils {
 
     static String RPATH = "./resources";
@@ -178,6 +174,7 @@ public class ImageUtils {
         //File imageFile = new File(fname);
         BufferedImage bimage = mat2BufferedImage(convertToBinary(image, 255));
         String path = "./resources/tessInput.png";
+        displayImage(image);
         File tessFile = new File(path);
         Process pr = null;
         String addConfig = " ";
@@ -215,6 +212,7 @@ public class ImageUtils {
                         line = br.readLine();
                     }
                     everything = sb.toString();
+                   // everything.replaceAll("  "," ");
                 } finally {
                     br.close();
                 }

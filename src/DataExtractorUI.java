@@ -6,9 +6,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 
-/**
- * Created by rajitha on 9/3/16.
- */
+
 public class DataExtractorUI {
     private JTextField textField1;
     private JButton browseButton;
@@ -27,9 +25,6 @@ public class DataExtractorUI {
                 fileChooser.setAcceptAllFileFilterUsed(false);
                 fileChooser.setFileFilter(filter);
                 int returnValue = fileChooser.showOpenDialog(null);
-//                DataExtractor dataExtractor = new DataExtractor();
-////
-////                dataExtractor.extractDataTemp("./resources/try2.png");
 
                 if (returnValue == JFileChooser.APPROVE_OPTION)
                 {
@@ -41,23 +36,23 @@ public class DataExtractorUI {
                     ArrayList<String> imageFileList = dataExtractor.getGraphImages(selectedFile.getPath());
 
                     ImageGrid imageGrid = new ImageGrid(imageFileList);
-                    for(String imageFile:imageFileList){
+                    JFrame jFrame = new JFrame();
+                    for(String imageFile:imageFileList ){
+                        if(jFrame!=null)
+                        {
+                            GraphData graphData = dataExtractor.extractDataForImage(imageFile);
+                            ImagePanel imagePanel = new ImagePanel("./resources"+imageFile,graphData);
+                            jFrame.setContentPane(imageGrid);
+                        }
 
-                        GraphData graphData = dataExtractor.extractDataForImage(imageFile);
-                        ImagePanel imagePanel = new ImagePanel("./resources"+imageFile,graphData);
-                        imagePanel.createFrame();
+
                     }
                     newOne = imageGrid.createAndShowGui(imageFileList);
                     //progressBar1.se
                 }
             }
         });
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                newOne.remove(newOne.getContentPane());
-            }
-        });
+
     }
 
     public static void main(String[] args) {

@@ -10,10 +10,6 @@ import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgproc.Imgproc.*;
 
 /**
- * Created by rajitha on 3/3/16.
- */
-
-/**
  * This class has methods to get the text labels,min-max values from the xscale yscale images
  */
 public class AxisDetection {
@@ -60,7 +56,8 @@ public class AxisDetection {
         Mat yscaleImage = scaleAndLabelMat.get(0);
         Mat legendImage2 = scaleAndLabelMat.get(1);
         String YScale = imageUtils.ocrOnImage(yscaleImage, 0);
-        YScale = YScale.replaceAll("\n", " ");
+        YScale = YScale.replaceAll("\n\n", "\n");
+        YScale = YScale.replaceAll("\n"," ");
         labels.add(YScale);
 
 
@@ -178,15 +175,21 @@ public class AxisDetection {
     public List<Double> getMinMaxValues(List<String> labels) {
         List<Double> values = new ArrayList<>();
 
+
+
         String[] xscale = labels.get(0).split(" ");
         double[] minmax = getRIfAp(xscale);
         values.add(minmax[0]);
         values.add(minmax[1]);
+        double r = (minmax[2]);
+
 
         String[] yscale = labels.get(2).split(" ");
         minmax = getRIfAp(yscale);
         values.add(minmax[0]);
         values.add(minmax[1]);
+
+        values.add(r);
 
         return values;
     }
@@ -213,7 +216,7 @@ public class AxisDetection {
                 maxV = Patternmatch[2];
             }
         }
-        double[] ans = {minV,maxV};
+        double[] ans = {minV,maxV,r};
         return ans;
     }
 
@@ -245,7 +248,7 @@ public class AxisDetection {
     private static double[] getRIfAp(String[] scale) {
         if (!isValidscale(scale))
         {
-            double[] ans  = {0.0,100.0};
+            double[] ans  = {0.0,100.0,20.0};
             return ans;
         }
         ArrayList<Double> scaleNum = new ArrayList<>();
@@ -275,7 +278,7 @@ public class AxisDetection {
         }
         Collections.sort(possibleRValues);
         int maxCount = 0;
-        double mostProbableR = -1;
+        double mostProbableR = 0;
         int count = 0;
         int sz = possibleRValues.size();
         double num = 0;
@@ -308,6 +311,8 @@ public class AxisDetection {
         }
         //we have the most probable R - now we need to get the range
 
+        double [] ans = {0,100,20};
+        if(mostProbableR==0) return ans;
         return getMaxMin(scaleNum,mostProbableR);
         //return mostProbableR;
 

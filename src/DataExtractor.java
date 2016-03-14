@@ -6,15 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
-
-/**
- * Created by shiwangi on 26/2/16.
- */
 public class DataExtractor {
     static ImageUtils imageUtils;
 
 
-    static JMagick jMagick;
+    static PdfToImage pdfToImage;
     static RectangleDetection rectangleDetection;
     static String RPATH = "./resources";
     static ArrayList<String> imageFileList;
@@ -27,8 +23,11 @@ public class DataExtractor {
     public ArrayList<String> getGraphImages(String name){
 
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        jMagick = new JMagick(name);
-        imageFileList = jMagick.convert();
+
+//        System.loadLibrary("opencv_core");
+//        System.loadLibrary("opencv_java300");
+        pdfToImage = new PdfToImage(name);
+        imageFileList = pdfToImage.convert();
         return imageFileList;
     }
 
@@ -57,7 +56,7 @@ public class DataExtractor {
 
         boolean hasScalesInBox = false;
 
-        List<MatOfPoint> largeContours = jMagick.getLargeContours(imageUtils.convertToBinary(mRgba, 0), mRgba, 0, false);
+        List<MatOfPoint> largeContours = pdfToImage.getLargeContours(imageUtils.convertToBinary(mRgba, 0), mRgba, 0, false);
         if (rectangleDetection.getSquareContours(largeContours) == null) {
             hasScalesInBox = true;
         }
@@ -81,7 +80,7 @@ public class DataExtractor {
         labels.add(captionLabel);
 
 
-      GraphData graphData = new GraphData(minmaxValues,labels,graphImage);
+       GraphData graphData = new GraphData(minmaxValues,labels,graphImage);
         return graphData;
     }
 
@@ -116,7 +115,7 @@ public class DataExtractor {
                 String label = legendDetection.detectLegend(legendMat);
 
                 System.out.println(label);
-                PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), minmaxValues.get(2), minmaxValues.get(3));
+                PlotValue plotValue = new PlotValue(graphImage, minmaxValues);
                 List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable().keySet());
                 legendDetection.getColourSequence(legendMat, colourListFromPlot);
             }
@@ -125,7 +124,7 @@ public class DataExtractor {
             //so we ll image-match :)
             System.out.println("Could not find scale box ");
             imageUtils.displayImage(graphImage);
-            PlotValue plotValue = new PlotValue(graphImage, minmaxValues.get(0), minmaxValues.get(1), 50, 95);
+            PlotValue plotValue = new PlotValue(graphImage, minmaxValues);
             List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable().keySet());
         }
     }

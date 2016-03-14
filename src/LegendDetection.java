@@ -4,10 +4,6 @@ import org.opencv.imgproc.Imgproc;
 import java.util.*;
 
 import static org.opencv.imgproc.Imgproc.cvtColor;
-
-/**
- * Created by shiwangi on 5/3/16.
- */
 public class LegendDetection {
     Mat graphImage;
     ImageUtils imageUtils;
@@ -75,7 +71,7 @@ public class LegendDetection {
         System.out.println("Colour in the legend : ");
         for(int i=0;i<orderColourInLegend.size();i++){
             Colour c =orderColourInLegend.get(i).colour;
-            System.out.println(c.r+" "+c.g+" "+c.b);
+            System.out.println(c.h +" "+c.s +" "+c.v);
         }
         return colours;
 

@@ -1,22 +1,22 @@
-/**
- * Created by shiwangi on 3/3/16.
- */
+import static java.lang.Math.sqrt;
+
 public class Colour implements Comparable<Colour>{
-    double r,g,b;
-    Colour(double r,double g,double b){
-        this.r = r;
-        this.g = g;
-        this.b = b;
+    double h, s,v;
+    Colour(double h, double s, double v){
+        this.h = h;
+        this.s = s;
+        this.v = v;
     }
 
     @Override
     public int compareTo(Colour o) {
-        if(Math.abs(o.r-r)<10 )
+        if(Math.abs(o.h - h)<=20 )
         return 0;
-        else return (int) (o.r-r);
+        else return (int) (o.h - h);
     }
 
-    public static double dist(Colour colour, Colour colour2) {
-        return Math.abs(colour.r-colour2.r) ;
+    public static double dist(Colour colour, Colour colour2)
+    {
+        return Math.abs(colour.h -colour2.h) ;
     }
 }

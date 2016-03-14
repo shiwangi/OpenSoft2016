@@ -1,6 +1,4 @@
-/**
- * Created by shiwangi on 11/3/16.
- */
+
 public class ColourOrder implements Comparable<ColourOrder>{
     Colour colour;
     double dist;
@@ -10,7 +8,8 @@ public class ColourOrder implements Comparable<ColourOrder>{
     }
 
     @Override
-    public int compareTo(ColourOrder o) {
+    public int compareTo(ColourOrder o)
+    {
         return (int) (dist-o.dist);
     }
 }
