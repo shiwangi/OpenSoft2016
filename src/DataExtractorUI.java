@@ -15,6 +15,7 @@ public class DataExtractorUI {
     private JProgressBar progressBar1;
 
     static JFrame newOne;
+    static GraphData graphData;
 
     public DataExtractorUI() {
         browseButton.addActionListener(new ActionListener() {
@@ -51,7 +52,7 @@ public class DataExtractorUI {
                     final Iterator iterator = imageFileList.iterator();
 
                     String imageFile = iterator.next().toString();
-                    GraphData graphData = dataExtractor.extractDataForImage(imageFile);
+                     graphData = dataExtractor.extractDataForImage(imageFile);
 
                     final ImagePanel[] imagePanel = {new ImagePanel("./resources" + imageFile, graphData)};
 
@@ -62,22 +63,32 @@ public class DataExtractorUI {
                     nextButton.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
+                            String xScale,yScale,caption,minX,maxX,minY,maxY;
+                            minX = imagePanel[0].getTextFieldMinX().getText();
+                            maxX = imagePanel[0].getTextFieldMaxX().getText();
+                            minY = imagePanel[0].getTextFieldMinY().getText();
+                            maxY = imagePanel[0].getTextFieldMaxY().getText();
+                            xScale = imagePanel[0].getTextFieldXScale().getText();
+                            yScale = imagePanel[0].getTextFieldYScale().getText();
+                            caption = imagePanel[0].getTextFieldCaption().getText();
+
+                            //Should actually be the the new values;
+                            dataExtractor.getPlotsAndLegend(graphData.ScaleMat, (ArrayList<Double>) graphData.minmaxValues);
+
+                            if(!isDouble(minX) || !isDouble(maxX) ||!isDouble(minY) || !isDouble(maxY) )
+                            {
+                                JOptionPane.showMessageDialog(new JFrame(),"give double values for min-max values");
+                            }
+                            System.out.println(imagePanel[0].getTextFieldXScale().getText());
                             if (iterator.hasNext()) {
+                                System.out.println(imagePanel[0].container.getComponent(1));
                                 String imageFile = iterator.next().toString();
-                                GraphData graphData = dataExtractor.extractDataForImage(imageFile);
-
-
-                                // bigPanel.remove(1);
-                                // bigPanel.add(imagePanel.container);
+                                graphData = dataExtractor.extractDataForImage(imageFile);
                                 jFrame.remove(imagePanel[0].container);
                                 imagePanel[0] = new ImagePanel("./resources" + imageFile, graphData);
                                 jFrame.setContentPane(bigPanel);
                                 jFrame.add(imagePanel[0].container);
-
                                 jFrame.pack();
-
-
-                                //progressBar1.se
                             }
                         }
                     });
@@ -87,6 +98,15 @@ public class DataExtractorUI {
         });
     }
 
+
+    private static boolean isDouble(String s) {
+        try {
+            Double.parseDouble(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 
 
     public static void main(String[] args) {

@@ -19,6 +19,7 @@ public class ImagePanel {
     private JTextField textFieldMinX;
     private JTextField textFieldMaxY;
     private JTextField textFieldMinY;
+    private JPanel variablePanel;
     static String xLabel,yLabel,captionLabel;
     static  Image img;
     static JFrame jFrame;
@@ -45,14 +46,36 @@ public class ImagePanel {
     }
 
 
-    private static boolean isDouble(String s) {
-        try {
-            Double.parseDouble(s);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
+    public JTextField getTextFieldCaption() {
+        return textFieldCaption;
     }
+
+    public JTextField getTextFieldMaxX() {
+        return textFieldMaxX;
+    }
+
+    public JTextField getTextFieldMaxY() {
+        return textFieldMaxY;
+    }
+
+    public JTextField getTextFieldMinX() {
+        return textFieldMinX;
+    }
+
+    public JTextField getTextFieldMinY() {
+        return textFieldMinY;
+    }
+
+    public JTextField getTextFieldXScale() {
+        return textFieldXScale;
+    }
+
+    public JTextField getTextFieldYScale() {
+        return textFieldYScale;
+    }
+
+
+
 
     private void createUIComponents() {
         // TODO: place custom component creation code here

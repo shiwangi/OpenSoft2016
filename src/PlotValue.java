@@ -1,3 +1,4 @@
+import javafx.util.Pair;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -5,9 +6,11 @@ import org.opencv.imgproc.Imgproc;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.BooleanSupplier;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 import static org.opencv.imgproc.Imgproc.circle;
 import static org.opencv.imgproc.Imgproc.cvtColor;
 
@@ -25,7 +28,7 @@ public class PlotValue {
     double minX, minY;
     Map<Colour, Boolean> colourOfPlotsHSV;
 
-    public PdfCreator create = new PdfCreator("./output/graphValues.pdf");
+
     PlotValue(Mat graph, List<Double> minmaxValues) {
         this.minX = minmaxValues.get(0);
         this.minY = minmaxValues.get(2);
@@ -47,7 +50,7 @@ public class PlotValue {
 
 
 
-    public Map populateTable() {
+    public Pair<List<List<String>>, Map<Colour,Boolean>> populateTable() {
         List<String> heading = new ArrayList<>();
         heading.add("Plot for blah");
         //heading.add("X-Y values");//heading
@@ -73,6 +76,7 @@ public class PlotValue {
             checkPoint.add(i);
         }
         //find first color Pixel
+        List<Mat> listOfMats = new ArrayList<>();
         for(int i :checkPoint)
         {
             for (int j = 0; j < graph.rows(); j++) {
@@ -86,23 +90,30 @@ public class PlotValue {
                     flag = 1;
                     continue;
                 } else if (flag == 1 && !colourOfPlotsHSV.containsKey(colour)){
-                    findGraphValues(colour);
+                    listOfMats.add(findGraphValues(colour));
                     flag = 0;
                     colourOfPlotsHSV.put(colour, true);
                 }
             }
         }
 
-        try {
-            create.drawpdf(content);
-        } catch (IOException e) {
-            e.printStackTrace();
+        int i =0;
+        ArrayList<String> listofFilepath = new ArrayList<>();
+        for(Mat img : listOfMats)
+        {
+            i++;
+            imwrite("./resources/plot"+i+".png",img);
+            listofFilepath.add("/plot"+i+".png");
         }
+        ImageGrid imageGrid = new ImageGrid(listofFilepath);
+        imageGrid.createAndShowGui(listofFilepath);
 
 
 
 
-        return colourOfPlotsHSV;
+        Pair<List<List<String>>,Map<Colour, Boolean>> returnpair = new Pair<>(content,colourOfPlotsHSV);
+
+        return returnpair;
     }
 
     private boolean hasSimilarColor(Colour colour) {
@@ -118,7 +129,7 @@ public class PlotValue {
     }
 
 
-    private void findGraphValues(Colour colour) {
+    private Mat findGraphValues(Colour colour) {
 
         Mat hsvImage = graph.clone();
         //Content for PDF
@@ -127,7 +138,7 @@ public class PlotValue {
         System.out.println("Plot Points For Color " + colour.h + " " + colour.s + " " + colour.v);
         Mat img = graph.clone();
         int k = 0;
-        content.get(0).add("Color+"+colour.h+colour.s+colour.v);
+        content.get(0).add(colour.h+" "+colour.s+" "+colour.v);
         for (int i = 0; i < graph.cols(); i += dx) {
             k++;
 
@@ -165,7 +176,9 @@ public class PlotValue {
         }
 
 
-        imageUtils.displayImage(img);
+        imwrite("./resources/ada.png",img);
+        //imageUtils.displayImage(img);
+        return img;
     }
 
 

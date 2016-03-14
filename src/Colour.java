@@ -15,6 +15,11 @@ public class Colour implements Comparable<Colour>{
         else return (int) (o.h - h);
     }
 
+    @Override
+    public String toString()
+    {
+        return (String.valueOf(h)+" "+String.valueOf(s)+" "+String.valueOf(v));
+    }
     public static double dist(Colour colour, Colour colour2)
     {
         return Math.abs(colour.h -colour2.h) ;

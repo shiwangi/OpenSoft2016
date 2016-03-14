@@ -1,12 +1,17 @@
+import javafx.util.Pair;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 public class DataExtractor {
+
+    public PdfCreator create = new PdfCreator("./output/graphValues.pdf");
     static ImageUtils imageUtils;
 
 
@@ -80,7 +85,7 @@ public class DataExtractor {
         labels.add(captionLabel);
 
 
-       GraphData graphData = new GraphData(minmaxValues,labels,graphImage);
+        GraphData graphData = new GraphData(minmaxValues,labels,graphImage);
         return graphData;
     }
 
@@ -112,12 +117,33 @@ public class DataExtractor {
                 graphImage = legendAndPlot.get(1);
 
                 imageUtils.displayImage(legendMat);
-                String label = legendDetection.detectLegend(legendMat);
+                String[] label = legendDetection.detectLegend(legendMat).split("\n");
 
                 System.out.println(label);
                 PlotValue plotValue = new PlotValue(graphImage, minmaxValues);
-                List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable().keySet());
-                legendDetection.getColourSequence(legendMat, colourListFromPlot);
+                Pair<List<List<String>>, Map<Colour,Boolean>> newPair = plotValue.populateTable();
+                List<Colour> colourListFromPlot = new ArrayList<Colour>(newPair.getValue().keySet());
+                colourListFromPlot = legendDetection.getColourSequence(legendMat, colourListFromPlot);
+                List<List<String>> content = newPair.getKey();
+                for(int i =0;i<content.get(0).size();i++)
+                {
+                    String colour = content.get(0).get(i);
+                    if(colour.contains("Color"))
+                    {
+                        for(int j =0;j<colourListFromPlot.size();j++)
+                        {
+                            colour = colour.replaceAll("Color"," ");
+                            if(colour.equals(colourListFromPlot.get(j).toString())) content.get(0).set(i,label[j]);
+                        }
+                    }
+                }
+
+                try {
+                    create.drawpdf(content);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
             }
 
         } else {
@@ -125,7 +151,8 @@ public class DataExtractor {
             System.out.println("Could not find scale box ");
             imageUtils.displayImage(graphImage);
             PlotValue plotValue = new PlotValue(graphImage, minmaxValues);
-            List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable().keySet());
+            List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable().getValue().keySet());
         }
+
     }
 }

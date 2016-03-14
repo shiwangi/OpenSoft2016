@@ -35,7 +35,7 @@ public class LegendDetection {
        // Imgproc.erode(source, destination, element);
         Imgproc.dilate(imageUtils.convertToBinary(graphImage, 0), mIntermediateMat,element);
        // imwrite("./resources/components.jpg", mIntermediateMat);
-        imageUtils.displayImage(mIntermediateMat);
+        //imageUtils.displayImage(mIntermediateMat);
 
         for (int contourIdx = 0; contourIdx < contours.size(); contourIdx++) {
             Imgproc.drawContours(graphImage, contours, contourIdx, new Scalar(0, 0, 255));
