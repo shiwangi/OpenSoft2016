@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 
 public class DataExtractorUI {
@@ -36,18 +37,38 @@ public class DataExtractorUI {
                     ArrayList<String> imageFileList = dataExtractor.getGraphImages(selectedFile.getPath());
 
                     ImageGrid imageGrid = new ImageGrid(imageFileList);
-                    JFrame jFrame = new JFrame();
-                    for(String imageFile:imageFileList ){
-                        if(jFrame!=null)
-                        {
-                            GraphData graphData = dataExtractor.extractDataForImage(imageFile);
-                            ImagePanel imagePanel = new ImagePanel("./resources"+imageFile,graphData);
-                            jFrame.setContentPane(imageGrid);
-                        }
-
-
-                    }
                     newOne = imageGrid.createAndShowGui(imageFileList);
+                    final JFrame jFrame = new JFrame();
+                    final JPanel bigPanel = new JPanel();
+                    JPanel buttonPanel = new JPanel();
+                    JButton nextButton = new JButton("Next");
+
+                    buttonPanel.add(nextButton);
+                    bigPanel.setLayout(new BoxLayout(bigPanel,BoxLayout.X_AXIS));
+                    bigPanel.add(buttonPanel);
+                    jFrame.setContentPane(bigPanel);
+
+                    jFrame.pack();
+                    jFrame.setVisible(true);
+                    Iterator iterator = imageFileList.iterator();
+
+                    nextButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            if(iterator.hasNext())
+                            {
+                                String imageFile = iterator.next().toString();
+                                GraphData graphData = dataExtractor.extractDataForImage(imageFile);
+                                ImagePanel imagePanel = new ImagePanel("./resources"+imageFile,graphData);
+                                bigPanel.add(imagePanel.container);
+//                                jFrame.remove(bigPanel);
+//                                jFrame.add(imagePanel.container);
+
+
+                            }
+                        }
+                    });
+
                     //progressBar1.se
                 }
             }

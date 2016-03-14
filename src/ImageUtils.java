@@ -174,7 +174,7 @@ public class ImageUtils {
         //File imageFile = new File(fname);
         BufferedImage bimage = mat2BufferedImage(convertToBinary(image, 255));
         String path = "./resources/tessInput.png";
-        displayImage(image);
+        //displayImage(image);
         File tessFile = new File(path);
         Process pr = null;
         String addConfig = " ";
