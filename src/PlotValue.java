@@ -15,6 +15,9 @@ import static org.opencv.imgproc.Imgproc.circle;
 import static org.opencv.imgproc.Imgproc.cvtColor;
 
 
+/**
+ * The class which takes care of identifying the different colors and getting the datapoints.
+ */
 public class PlotValue {
 
     public static double rangeY;
@@ -49,7 +52,11 @@ public class PlotValue {
     }
 
 
-
+    /**
+     * Identifies the different colors and calls the findgraphvaues method for each color.
+     * returns the datapoints found and the colors.
+     * @return
+     */
     public Pair<List<List<String>>, Map<Colour,Boolean>> populateTable() {
         List<String> heading = new ArrayList<>();
         heading.add("Plot for blah");
@@ -129,6 +136,11 @@ public class PlotValue {
     }
 
 
+    /**
+     * Finds the datapoints corresponding to a particuar color in the graph.
+     * @param colour
+     * @return
+     */
     private Mat findGraphValues(Colour colour) {
 
         Mat hsvImage = graph.clone();
@@ -159,24 +171,11 @@ public class PlotValue {
                 double[] newC = {0, 0, 0};
                 circle(img, new Point(i, point.x), 10, new Scalar(0, 0, 0),-1);
                 img.put((int) point.x, i, newC);
-                List<String> element = new ArrayList<>();
-                //element.add(String.valueOf(minX + point.y * rangeX / graph.cols()));
                 content.get(k).add(String.valueOf(minY + point.x * rangeY / graph.rows()));
-//                element.add(String.valueOf(minY + point.x * rangeY / graph.rows()));
-//                content.add(element);
-
-                //  System.out.println(point.x + "\t" + point.y);
             } else {
-                List<String> element = new ArrayList<>();
                 content.get(k).add(String.valueOf(minY + point.x * rangeY / graph.rows()));
-//                element.add(String.valueOf(minX + point.y * rangeX / graph.cols()));
-//                element.add("-");
-//                content.add(element);
             }
         }
-
-
-        imwrite("./resources/ada.png",img);
         //imageUtils.displayImage(img);
         return img;
     }

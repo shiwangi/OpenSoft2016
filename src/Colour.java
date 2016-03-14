@@ -1,5 +1,8 @@
 import static java.lang.Math.sqrt;
 
+/**
+ * The class for HSV colorspace pixels.Used for mainly olor segmentation.
+ */
 public class Colour implements Comparable<Colour>{
     double h, s,v;
     Colour(double h, double s, double v){

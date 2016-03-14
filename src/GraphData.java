@@ -3,7 +3,9 @@ import org.opencv.core.Mat;
 import java.util.List;
 
 
-
+/**
+ * This Class bundles the necessary information to give to the UI classes
+ */
 public class GraphData {
     String xLabel,yLabel,caption;
     List<Double> minmaxValues;

@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * This class is used in identifying the contours and cropping them into rectangles.
+ */
 public class RectangleDetection {
 
     static ImageUtils imageUtils;
@@ -69,6 +72,11 @@ public class RectangleDetection {
     }
 
 
+    /**
+     * Checks whether the contour formed is a square or not
+     * @param thisContour
+     * @return
+     */
     public boolean isContourSquare(MatOfPoint thisContour) {
 
         Rect ret = null;
@@ -90,6 +98,11 @@ public class RectangleDetection {
         return (ret != null);
     }
 
+    /**
+     * Returns a list of all the square contours
+     * @param contours
+     * @return
+     */
     public List<MatOfPoint> getSquareContours(List<MatOfPoint> contours) {
         List<MatOfPoint> squares = null;
 

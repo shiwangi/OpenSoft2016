@@ -14,7 +14,9 @@ import static java.lang.Math.min;
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 
-
+/**
+ * The class used for converting pdf to images.
+ */
 public class PdfToImage {
     static final int TESTING = 0;
     static ImageUtils imageUtils;
@@ -81,6 +83,11 @@ public class PdfToImage {
         return imageFilePathList;
     }
 
+    /**
+     * Perfoms imagematching to find out the grpahs in the pdf.
+     * @param img
+     * @param i
+     */
     private void performImageMatching(Mat img, int i) {
 
         imageUtils = new ImageUtils();

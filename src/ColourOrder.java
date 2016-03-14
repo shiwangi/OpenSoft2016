@@ -1,4 +1,6 @@
-
+/**
+ * This class is used in ordering of colors found in legend with the colors returned from color segmentation
+ */
 public class ColourOrder implements Comparable<ColourOrder>{
     Colour colour;
     double dist;

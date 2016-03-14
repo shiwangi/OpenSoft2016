@@ -17,11 +17,22 @@ import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 import static org.opencv.imgproc.Imgproc.cvtColor;
 import static org.opencv.imgproc.Imgproc.drawContours;
+
+/**
+ * ImageUtils class is the widely used in the project.Almost every other class has an instance of ImageUtils.
+ * This class has methods used mostly while dealing with Mat/image objects,writing,reading,displaying,etc.,
+ */
 public class ImageUtils {
 
     static String RPATH = "./resources";
 
 
+    /**
+     * This method is used to increase the saturation of an Image,generally scanned Pdfs have low quality.
+     * helps in identifying colors easily.
+     * @param graph input Mat Object.
+     * @return The saturted mat.
+     */
     Mat increaseSaturation(Mat graph) {
         //   Mat saturated = graph.clone();
         List<Point> whiteList = new ArrayList<>();
@@ -83,6 +94,11 @@ public class ImageUtils {
 
     }
 
+    /**
+     * Returns a BufferedImage object for an input Mat object.
+     * @param m input mat
+     * @return The bufferedImage
+     */
     public BufferedImage mat2BufferedImage(Mat m) {
 
         int type = BufferedImage.TYPE_BYTE_GRAY;
@@ -99,6 +115,13 @@ public class ImageUtils {
 
     }
 
+    /**
+     * This method when given a column index, checks whether that column is white or not,
+     * Used to trim white spaces.
+     * @param i
+     * @param imgROI
+     * @return 0 if not white.
+     */
 
     public static int isColWhite(int i, Mat imgROI) {
         for (int j = 0; j < imgROI.rows(); j++) {
@@ -108,6 +131,13 @@ public class ImageUtils {
         return 1;
     }
 
+    /**
+     * This method when given a row index, checks whether that row is white or not,
+     * Used to trim white spaces.
+     * @param i
+     * @param imgROI
+     * @return 0 if not white.
+     */
     public static int isRowWhite(int i, Mat imgROI) {
         for (int j = 0; j < imgROI.cols(); j++) {
             double[] color = imgROI.get(i, j);
@@ -116,6 +146,11 @@ public class ImageUtils {
         return 1;
     }
 
+    /**
+     * Checks whether the given color triplet or binary color is white or not
+     * @param color
+     * @return false if not white
+     */
     public static boolean isPixelWhite(double[] color) {
         if (color.length == 1) {
             return color[0] >= 250;
@@ -125,6 +160,11 @@ public class ImageUtils {
     }
 
 
+    /**
+     * Draws the contours on the input Mat object in green color
+     * @param contours
+     * @param mRgba
+     */
     public void drawContoursOnImage(List<MatOfPoint> contours, Mat mRgba) {
         if (contours == null)
             return;
@@ -136,6 +176,10 @@ public class ImageUtils {
     }
 
 
+    /**
+     * Displays the mat object/Image in a jFrame.
+     * @param mRgba
+     */
     public void displayImage(Mat mRgba) {
 
         Image img2 = mat2BufferedImage(mRgba);
@@ -151,10 +195,14 @@ public class ImageUtils {
         lbl.setIcon(icon);
         frame.add(lbl);
         frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
     }
 
+    /**
+     * Displays a bufferedImage.
+     * @param img2
+     */
     public void displaybuffImage(BufferedImage img2) {
 
         ImageIcon icon = new ImageIcon(img2);
@@ -165,11 +213,18 @@ public class ImageUtils {
         lbl.setIcon(icon);
         frame.add(lbl);
         frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
     }
 
 
+    /**
+     * Given a Mat object, runs OCR on the image using tesseract-ocr.
+     * Very Important method, the entire text recognition is done through this method.
+     * @param image
+     * @param i The flag which sets the acceptable characters.
+     * @return the Output String
+     */
     public String ocrOnImage(Mat image, int i) {
         //File imageFile = new File(fname);
         BufferedImage bimage = mat2BufferedImage(convertToBinary(image, 255));
@@ -236,6 +291,12 @@ public class ImageUtils {
         return null;
     }
 
+    /**
+     * This method converts a 3 channel image to a binary image.(single channel)
+     * @param mRgba
+     * @param val
+     * @return
+     */
     public Mat convertToBinary(Mat mRgba, int val) {
         if (val == 255) {
             Mat mIntermediateMat = new Mat(mRgba.height(), mRgba.width(), CvType.CV_8UC1);
@@ -291,6 +352,12 @@ public class ImageUtils {
         return newMat;
     }
 
+    /**
+     * Checks whether that particular column is black, 70% of pixels black.
+     * @param mIntermediateMat
+     * @param i
+     * @return
+     */
     public boolean isColBlack(Mat mIntermediateMat, int i) {
         int reqBlackpixels = (int) (mIntermediateMat.rows() * .7);
         int count = 0;
@@ -301,9 +368,10 @@ public class ImageUtils {
         return count > reqBlackpixels;
     }
 
-    /*
 
-    * If 3-channel images provided , returns boolean on the basis of hue
+
+    /**
+     * * If 3-channel images provided , returns boolean on the basis of hue
     * Otherwise checks for exactly black in bImage
      */
 
@@ -329,6 +397,12 @@ public class ImageUtils {
         return false;
     }
 
+    /**
+     * Checks whether the row is Black in a Mat object
+     * @param mIntermediateMat
+     * @param i
+     * @return
+     */
     public boolean isRowBlack(Mat mIntermediateMat, int i) {
         int reqBlackpixels = (int) (mIntermediateMat.cols() * .7);
         int count = 0;
@@ -344,6 +418,11 @@ public class ImageUtils {
     }
 
 
+    /**
+     * Trims the white spaces of the input image along the edges.
+     * @param source
+     * @return
+     */
 
     public Mat getCroppedImage(Mat source) {
         // Get our top-left pixel color as our "baseline" for cropping
@@ -410,6 +489,12 @@ public class ImageUtils {
 
     }
 
+    /**
+     * Cleans the borders of the given image, some times scanned pdfs hae loud borders.
+     * making them uniform is necessary
+     * @param binary
+     * @return
+     */
     public Mat cleanborders(Mat binary) {
         int rows = binary.rows();
         int cols = binary.cols();
@@ -431,6 +516,11 @@ public class ImageUtils {
         return binary;
     }
 
+    /**
+     * removes the colored pixels in the image, used in legend detection.
+     * @param img1
+     * @return
+     */
     public Mat removeColorPixels(Mat img1) {
 
         Mat img = img1.clone();

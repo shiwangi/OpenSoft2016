@@ -9,6 +9,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * The Imagegrid class is used to display plots in the grid format.(resizable).
+ */
 
 public class ImageGrid extends JPanel {
     public static final String PATH = "./resources";
@@ -81,11 +84,6 @@ public class ImageGrid extends JPanel {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         return frame;
-    }
-
-    public void ChangepanelContent()
-    {
-
     }
 
 class ImageName {
