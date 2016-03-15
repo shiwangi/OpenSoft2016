@@ -214,6 +214,11 @@ public class AxisDetection {
             if(maxPatternmatch==Patternmatch[0]){
                 minV = Patternmatch[1];
                 maxV = Patternmatch[2];
+                if(r<0)
+                {
+                    minV = maxV;
+                    maxV = Patternmatch[1];
+                }
             }
         }
         double[] ans = {minV,maxV,r};

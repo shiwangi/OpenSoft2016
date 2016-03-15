@@ -99,7 +99,8 @@ public class DataExtractorUI {
                                     jFrame.setContentPane(bigPanel);
                                     jFrame.add(imagePanel[0].container);
                                     jFrame.pack();
-                                } else{
+}
+                                else {
                                     jFrame.dispose();
                                     PDFTableGenerator pdfTableGenerator = new PDFTableGenerator();
                                     try {

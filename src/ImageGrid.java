@@ -23,7 +23,7 @@ public class ImageGrid extends JPanel {
             String path = PATH + image;
             try {
                 Image img =ImageIO.read(new File(path));
-                img =  img.getScaledInstance(500,500,1);
+                img =  img.getScaledInstance(250,250,1);
                 ImageIcon icon = new ImageIcon(img);
                 String name = image;
                // name = name.substring(1, name.lastIndexOf("-"));

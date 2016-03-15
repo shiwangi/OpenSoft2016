@@ -4,6 +4,8 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 
 import javax.swing.*;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -128,7 +130,7 @@ public class DataExtractor {
                 legendMat = legendAndPlot.get(0);
                 graphImage = legendAndPlot.get(1);
 
-                imageUtils.displayImage(legendMat);
+                //imageUtils.displayImage(legendMat);
                 String[] label = legendDetection.detectLegend(legendMat).split("\n");
 
                 System.out.println(label);
@@ -146,7 +148,7 @@ public class DataExtractor {
             System.out.println("Could not find scale box ");
             //imageUtils.displayImage(graphImage);
             PlotValue plotValue = new PlotValue(graphImage, minmaxValues);
-            List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable(plotJframe).getValue().keySet());
+            //List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable(plotJframe).getValue().keySet());
             writeToTable(null, null, plotValue, null);
             // plotJframe = plotValue.jFrame;
         }
@@ -165,12 +167,10 @@ public class DataExtractor {
         if (label != null) {
             for (int i = 0; i < content.get(0).size(); i++) {
                 String colour = content.get(0).get(i);
-                if (colour.contains("Color")) {
-                    for (int j = 0; j < colourListFromPlot.size(); j++) {
-                        colour = colour.replaceAll("Color", " ");
-                        if (colour.equals(colourListFromPlot.get(j).toString())) {
-                            content.get(0).set(i, label[j]);
-                        }
+                for (int j = 0; j < colourListFromPlot.size(); j++) {
+                    colour = colour.replaceAll("Color", "");
+                    if (colour.equals(colourListFromPlot.get(j).toString())) {
+                        content.get(0).set(i, label[j]);
                     }
                 }
             }
@@ -183,8 +183,6 @@ public class DataExtractor {
 
                 }
             }
-
-
         }
         String[][] contentArray = new String[content.size()-1][content.get(0).size()];
 
@@ -204,9 +202,9 @@ public class DataExtractor {
         }
 
         }
-if(head.size()>0 && contentArray.length>0)
+        if(head.size()>0 && contentArray.length>0)
         tableList.add(pdfSample.createContent(head, contentArray));
-          //  create.drawpdf(content);
+
 
     }
 

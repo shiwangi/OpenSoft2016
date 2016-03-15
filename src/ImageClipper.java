@@ -145,14 +145,14 @@ public class ImageClipper {
         if(hasScalesInBox){
             roi = graphImage.submat(rect.y+5, (int) (rect.y + rect.height*.9), rect.x+ (int) (rect.width*.1), rect.x + rect.width-5);
             yscale = graphImage.submat(0, graphImage.height() - 1, 0,rect.x+ (int) (rect.width*.1));
-            xscale = graphImage.submat((int) (rect.y + rect.height*.9), graphImage.height() - 1, rect.x, graphImage.width() - 1);
+            xscale = graphImage.submat((int) (rect.y + rect.height*.9), graphImage.height() - 1, rect.x-3, graphImage.width() - 1);
             caption = graphImage.submat(0,rect.y,0,graphImage.cols()-1);
 
         }
         else{
             roi = graphImage.submat(rect.y+10, rect.y + rect.height-10, rect.x+10, rect.x + rect.width-10);
-            yscale = graphImage.submat(rect.y, rect.y+rect.height, 0, rect.x);
-            xscale = graphImage.submat(rect.y + rect.height, graphImage.height() - 1, rect.x, graphImage.width() - 1);
+            yscale = graphImage.submat(rect.y, rect.y+rect.height+3, 0, rect.x);
+            xscale = graphImage.submat(rect.y + rect.height, graphImage.height() - 1, 0 , graphImage.width() - 1);
             caption = graphImage.submat(0,rect.y,0,graphImage.cols()-1);
         }
 
