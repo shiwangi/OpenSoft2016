@@ -186,19 +186,25 @@ public class DataExtractor {
 
 
         }
-        String[][] contentArray = new String[content.size()][content.get(0).size()];
-        int j=0;
+        String[][] contentArray = new String[content.size()-1][content.get(0).size()];
+
         List<String> head = content.get(0);
-        for(int i=1;i<content.size();i++){
-            j=0;
+        for(int i=1;i<content.size();i++) {
+
             List<String> list = content.get(i);
-            for(String l: list){
-                contentArray[i][j] = l;
-                j++;
-            }
+            int sz = list.size();
+            for (int j = 0; j < contentArray[0].length; j++){
+                if(j>=sz){
+                    contentArray[i-1][j]="";
+                }
+                else{
+                    contentArray[i-1][j]=list.get(j);
+                }
 
         }
 
+        }
+if(head.size()>0 && contentArray.length>0)
         tableList.add(pdfSample.createContent(head, contentArray));
           //  create.drawpdf(content);
 

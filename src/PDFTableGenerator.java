@@ -72,12 +72,15 @@ public class PDFTableGenerator {
     private void writeContentLine(String[] lineContent, PDPageContentStream contentStream, float nextTextX, float nextTextY,
             Table table) throws IOException {
         for (int i = 0; i < table.getNumberOfColumns(); i++) {
-            String text = lineContent[i];
-            contentStream.beginText();
-            contentStream.moveTextPositionByAmount(nextTextX, nextTextY);
-            contentStream.drawString(text != null ? text : "");
-            contentStream.endText();
-            nextTextX += table.getColumns().get(i).getWidth();
+            if(lineContent!=null) {
+                String text = lineContent[i];
+                contentStream.beginText();
+                contentStream.moveTextPositionByAmount(nextTextX, nextTextY);
+                contentStream.drawString(text != null ? text : "");
+                contentStream.endText();
+                nextTextX += table.getColumns().get(i).getWidth();
+            }
+
         }
     }
 

@@ -39,7 +39,7 @@ public class PDFSample {
                 .setColumns(columns)
                 .setContent(content)
                 .setHeight(tableHeight)
-                .setNumberOfRows(content.length + 5)
+                .setNumberOfRows(content.length +2)
                 .setRowHeight(ROW_HEIGHT)
                 .setMargin(MARGIN)
                 .setPageSize(PAGE_SIZE)
