@@ -21,11 +21,13 @@ public class ImagePanel {
     private JTextField textFieldMinY;
     private JPanel variablePanel;
     static String xLabel,yLabel,captionLabel;
+    static GraphData graphData;
     static  Image img;
     static JFrame jFrame;
 
     public ImagePanel(String imageFile, GraphData graphData) {
 
+        this.graphData = graphData;
         textFieldXScale.setText(graphData.xLabel);
         //textFieldCaption.
         textFieldYScale.setText(graphData.yLabel);
@@ -75,6 +77,28 @@ public class ImagePanel {
     }
 
 
+    public GraphData getGraphData()
+    {
+        ArrayList<String> labels = new ArrayList<>();
+        labels.add(textFieldMinX.getText() + " " + textFieldMaxX.getText());
+        labels.add(textFieldXScale.getText());
+        labels.add(textFieldMinY.getText() + " " + textFieldMaxY.getText());
+        labels.add(textFieldYScale.getText());
+        labels.add(textFieldCaption.getText());
+
+        GraphData gdata = new GraphData( graphData.minmaxValues,labels,graphData.ScaleMat);
+
+        return gdata;
+    }
+
+    private static boolean isDouble(String s) {
+        try {
+            Double.parseDouble(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 
 
     private void createUIComponents() {

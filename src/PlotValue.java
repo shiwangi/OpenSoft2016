@@ -152,7 +152,6 @@ public class PlotValue {
         content.get(0).add(colour.h+" "+colour.s+" "+colour.v);
         for (int i = 0; i < graph.cols(); i += dx) {
             k++;
-
             Point point = new Point(0, i);
             double minDist = Double.MAX_VALUE;
 

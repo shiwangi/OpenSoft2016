@@ -35,13 +35,13 @@ public class PDFSample {
 
         float tableHeight = IS_LANDSCAPE ? PAGE_SIZE.getWidth() - (2 * MARGIN) : PAGE_SIZE.getHeight() - (2 * MARGIN);
 
-         final float ROW_HEIGHT = tableHeight/content.length;
+         final float ROW_HEIGHT = tableHeight/(content.length+10);
         Table table = new TableBuilder()
             .setCellMargin(CELL_MARGIN)
             .setColumns(columns)
             .setContent(content)
             .setHeight(tableHeight)
-            .setNumberOfRows(content.length)
+            .setNumberOfRows(content.length+5)
             .setRowHeight(ROW_HEIGHT)
             .setMargin(MARGIN)
             .setPageSize(PAGE_SIZE)

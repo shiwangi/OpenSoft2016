@@ -84,7 +84,7 @@ public class PdfCreator {
         }
 
         //now add the text
-        contentStream.setFont( PDType1Font.HELVETICA_BOLD , 12 );
+        contentStream.setFont( PDType1Font.HELVETICA_BOLD , 12);
 
         float textx = margin+cellMargin;
         float texty = y-15;
