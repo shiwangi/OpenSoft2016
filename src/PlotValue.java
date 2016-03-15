@@ -4,12 +4,9 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
-import java.io.IOException;
+import javax.swing.*;
 import java.util.*;
-import java.util.function.BooleanSupplier;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
 import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 import static org.opencv.imgproc.Imgproc.circle;
 import static org.opencv.imgproc.Imgproc.cvtColor;
@@ -30,6 +27,7 @@ public class PlotValue {
     Mat graph;
     double minX, minY;
     Map<Colour, Boolean> colourOfPlotsHSV;
+    public JFrame jframe;
 
 
     PlotValue(Mat graph, List<Double> minmaxValues) {
@@ -56,8 +54,9 @@ public class PlotValue {
      * Identifies the different colors and calls the findgraphvaues method for each color.
      * returns the datapoints found and the colors.
      * @return
+     * @param plotJframe
      */
-    public Pair<List<List<String>>, Map<Colour,Boolean>> populateTable() {
+    public Pair<List<List<String>>, Map<Colour,Boolean>> populateTable(JFrame plotJframe) {
         List<String> heading = new ArrayList<>();
         heading.add("Plot for blah");
         //heading.add("X-Y values");//heading
@@ -113,7 +112,7 @@ public class PlotValue {
             listofFilepath.add("/plot"+i+".png");
         }
         ImageGrid imageGrid = new ImageGrid(listofFilepath);
-        imageGrid.createAndShowGui(listofFilepath);
+        jframe = imageGrid.createAndShowGui(listofFilepath,plotJframe);
 
 
 

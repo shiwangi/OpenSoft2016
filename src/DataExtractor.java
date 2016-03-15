@@ -3,6 +3,7 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ public class DataExtractor {
     static RectangleDetection rectangleDetection;
     static String RPATH = "./resources";
     static ArrayList<String> imageFileList;
+    public JFrame plotJframe;
 
     /**
      * returns the arraylist of filepaths to the graph images extracted.
@@ -121,7 +123,7 @@ public class DataExtractor {
 
                 System.out.println(label);
                 PlotValue plotValue = new PlotValue(graphImage, minmaxValues);
-                Pair<List<List<String>>, Map<Colour,Boolean>> newPair = plotValue.populateTable();
+                Pair<List<List<String>>, Map<Colour,Boolean>> newPair = plotValue.populateTable(plotJframe);
                 List<Colour> colourListFromPlot = new ArrayList<Colour>(newPair.getValue().keySet());
                 colourListFromPlot = legendDetection.getColourSequence(legendMat, colourListFromPlot);
                 List<List<String>> content = newPair.getKey();
@@ -149,9 +151,11 @@ public class DataExtractor {
         } else {
             //so we ll image-match :)
             System.out.println("Could not find scale box ");
-            imageUtils.displayImage(graphImage);
+            //imageUtils.displayImage(graphImage);
             PlotValue plotValue = new PlotValue(graphImage, minmaxValues);
-            List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable().getValue().keySet());
+            List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable(plotJframe).getValue().keySet());
+            plotJframe = plotValue.jframe;
+            // plotJframe = plotValue.jFrame;
         }
 
     }

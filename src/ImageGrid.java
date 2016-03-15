@@ -3,8 +3,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.Dialog.ModalityType;
-import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,54 +34,34 @@ public class ImageGrid extends JPanel {
             }
         }
 
-        ShowGridAction showAction = new ShowGridAction("ImageName Grid", imageModel);
-        JButton showGridBtn = new JButton(showAction);
-        add(showGridBtn);
-        add(textField);
-    }
 
-    private class ShowGridAction extends AbstractAction {
-        private CarGridPanel carGridPanel;
+        CarGridPanel gridPanel = new CarGridPanel(imageModel);
+        add(gridPanel);
 
-        public ShowGridAction(String name, DefaultListModel<ImageName> carModel) {
-            super(name);
-            carGridPanel = new CarGridPanel(carModel);
-        }
-
-        public CarGridPanel getCarGridPanel() {
-            return carGridPanel;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Window win = SwingUtilities.getWindowAncestor((Component) e.getSource());
-            JPanel jPanel = new JPanel();
-            jPanel.add(carGridPanel);
-            JFrame jFrame = new JFrame("Images");
-
-            jFrame.setContentPane(jPanel);
-            jFrame.pack();
-            jFrame.setLocationRelativeTo(null);
-            int x = jFrame.getLocation().x;
-            int y = jFrame.getLocation().y -150;
-            jFrame.setLocation(x,y);
-            jFrame.setVisible(true);
-
-            ImageName selectedImageName = carGridPanel.getSelectedImageName();
-            if (selectedImageName != null) {
-                textField.setText(selectedImageName.getName());
-            }
-
+        ImageName selectedImageName = gridPanel.getSelectedImageName();
+        if (selectedImageName != null) {
+            textField.setText(selectedImageName.getName());
         }
     }
 
-    public static JFrame createAndShowGui(ArrayList<String> imagePathList) {
-        JFrame frame = new JFrame("ImageGrid");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+
+    public static JFrame createAndShowGui(ArrayList<String> imagePathList, JFrame frame) {
+        if(frame==null) {
+            frame = new JFrame("ImageGrid");
+            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+            int x = frame.getLocation().x;
+            int y = frame.getLocation().y -150;
+            frame.setLocation(x,y);
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+        } else {
+            frame.remove(frame.getContentPane());
+        }
+        //frame.setDefaultCloseOperation(JFra
+        // me.EXIT_ON_CLOSE);
         frame.getContentPane().add(new ImageGrid(imagePathList));
         frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
         return frame;
     }
 

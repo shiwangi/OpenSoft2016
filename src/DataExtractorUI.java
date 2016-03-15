@@ -36,7 +36,7 @@ public class DataExtractorUI {
                     ArrayList<String> imageFileList = dataExtractor.getGraphImages(selectedFile.getPath());
 
                     ImageGrid imageGrid = new ImageGrid(imageFileList);
-                    newOne = imageGrid.createAndShowGui(imageFileList);
+                    newOne = imageGrid.createAndShowGui(imageFileList, null);
                     final JFrame jFrame = new JFrame();
                     final JPanel bigPanel = new JPanel();
                     JPanel buttonPanel = new JPanel();
@@ -71,8 +71,9 @@ public class DataExtractorUI {
                             xScale = imagePanel[0].getTextFieldXScale().getText();
                             yScale = imagePanel[0].getTextFieldYScale().getText();
                             caption = imagePanel[0].getTextFieldCaption().getText();
-
-                            //Should actually be the the new values;
+//                            if(dataExtractor.plotJframe!=null)
+//                                .dispose();
+//                            //Should actually be the the new values;
                             dataExtractor.getPlotsAndLegend(graphData.ScaleMat, (ArrayList<Double>) graphData.minmaxValues);
 
                             if(!isDouble(minX) || !isDouble(maxX) ||!isDouble(minY) || !isDouble(maxY) )
