@@ -118,7 +118,7 @@ public class PdfToImage {
                 if (rect.height > 300 && rect.width > 300) {
                     j++;
                     if (isROI == true) {
-                        createRoi(contour, img, i, j, rect);
+                        createRoi(binary, img, i, j, rect);
                     }
                     //  }
                     largeones.add(contour);
@@ -132,7 +132,7 @@ public class PdfToImage {
         return largeones;
     }
 
-    private void createRoi(MatOfPoint contour, Mat img, int i, int j, Rect rect) {
+    private void createRoi(Mat binary, Mat img, int i, int j, Rect rect) {
 
         Mat roi = new Mat();
         int offsetX = rect.width / 4;
@@ -147,17 +147,23 @@ public class PdfToImage {
    //     imageUtils.displayImage(roi);
         Mat cropped = imageUtils.getCroppedImage(roi);
     //    imageUtils.displayImage(cropped);
-        if (isGraphImageValid(cropped, rect)) {
+        if(isTable( imageUtils.convertToBinary(roi,0))) {
+            System.out.println("Image invalid !");
+            return;
+        }
+       else if (isGraphImageValid(cropped, rect)) {
             String path="/roi" + i + j + ".png";
             imageFilePathList.add(path);
             imwrite(RPATH + path, roi);
             return;
-        } else {
+        }
+
+        else {
             countInvalid++;
 
                 //
                 // imageUtils.displayImage(roi);
-            if(countInvalid<4) {
+            if(countInvalid<3) {
                 roi = img.submat(rect.y+10, rect.y+rect.height-10, rect.x+10, rect.x+rect.width-10);
                 performImageMatching(roi, i);
             }
@@ -175,7 +181,21 @@ public class PdfToImage {
 
         if ((img.height + 100) >( mat.height() ) && (img.width + 100)> (mat.width()))
             return false;
+
         return true;
 
+    }
+
+    private static boolean isTable( Mat binary) {
+        List<MatOfPoint> contours = new ArrayList<>();
+        Imgproc.findContours(binary, contours, new Mat(), Imgproc.CHAIN_APPROX_SIMPLE, Imgproc.CHAIN_APPROX_SIMPLE);
+        RectangleDetection rectangleDetection = new RectangleDetection();
+       // rectangleDetection.
+        List<MatOfPoint> contoursSq = rectangleDetection.getSquareContours(contours);
+        if(contoursSq!=null && contoursSq.size()>4){
+            return true;
+        }
+
+        return false;
     }
 }

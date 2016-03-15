@@ -171,7 +171,7 @@ public class PlotValue {
                 img.put((int) point.x, i, newC);
                 content.get(k).add(String.valueOf(minY + point.x * rangeY / graph.rows()));
             } else {
-                content.get(k).add(String.valueOf(minY + point.x * rangeY / graph.rows()));
+                content.get(k).add("-");
             }
         }
 
