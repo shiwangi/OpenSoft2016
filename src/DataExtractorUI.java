@@ -1,8 +1,11 @@
+import org.apache.pdfbox.exceptions.COSVisitorException;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -78,7 +81,7 @@ public class DataExtractorUI {
 
                             if(!isDouble(minX) || !isDouble(maxX) ||!isDouble(minY) || !isDouble(maxY) )
                             {
-                                JOptionPane.showMessageDialog(new JFrame(),"give double values for min-max values");
+                                JOptionPane.showMessageDialog(new JFrame(), "give double values for min-max values");
                             }
                             System.out.println(imagePanel[0].getTextFieldXScale().getText());
                             if (iterator.hasNext()) {
@@ -90,6 +93,17 @@ public class DataExtractorUI {
                                 jFrame.setContentPane(bigPanel);
                                 jFrame.add(imagePanel[0].container);
                                 jFrame.pack();
+                            }
+                            else{
+                                jFrame.dispose();
+                                PDFTableGenerator pdfTableGenerator = new PDFTableGenerator();
+                                try {
+                                    pdfTableGenerator.generatePDF(dataExtractor.tableList);
+                                } catch (COSVisitorException e1) {
+                                    e1.printStackTrace();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
                             }
                         }
                     });

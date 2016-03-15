@@ -28,7 +28,7 @@ public class ImageUtils {
 
 
     /**
-     * This method is used to increase the saturation of an Image,generally scanned Pdfs have low quality.
+     * This method is used to increase the saturation of an Image, generally scanned Pdfs have low quality.
      * helps in identifying colors easily.
      * @param graph input Mat Object.
      * @return The saturted mat.

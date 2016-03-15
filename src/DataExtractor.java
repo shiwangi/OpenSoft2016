@@ -4,7 +4,6 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,22 +11,28 @@ import java.util.Map;
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 public class DataExtractor {
 
-    public PdfCreator create = new PdfCreator("./output/graphValues.pdf");
+    //public PdfCreator create = new PdfCreator("./output/graphValues.pdf");
     static ImageUtils imageUtils;
 
+    PDFSample pdfSample = new PDFSample();
 
     static PdfToImage pdfToImage;
     static RectangleDetection rectangleDetection;
     static String RPATH = "./resources";
     static ArrayList<String> imageFileList;
     public JFrame plotJframe;
+    public List<Table> tableList;
+    DataExtractor(){
+        tableList = new ArrayList<>();
+    }
 
     /**
      * returns the arraylist of filepaths to the graph images extracted.
+     *
      * @param name The filpath of the input pdf
      * @return
      */
-    public ArrayList<String> getGraphImages(String name){
+    public ArrayList<String> getGraphImages(String name) {
 
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
@@ -41,12 +46,13 @@ public class DataExtractor {
 
     /**
      * returns the basic graphdata given a imagefilepath.
+     *
      * @param fname the filepath to the input graphImage.
      * @return
      */
     public GraphData extractDataForImage(String fname) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        fname =RPATH+ fname;
+        fname = RPATH + fname;
         imageUtils = new ImageUtils();
 
         rectangleDetection = new RectangleDetection();
@@ -83,20 +89,21 @@ public class DataExtractor {
         minmaxValues = axisDetection.getMinMaxValues(labels);
         System.out.println(minmaxValues.toString());
         System.out.println(labels.toString());
-        String captionLabel = imageUtils.ocrOnImage(captionImage,2);
+        String captionLabel = imageUtils.ocrOnImage(captionImage, 2);
         labels.add(captionLabel);
 
 
-        GraphData graphData = new GraphData(minmaxValues,labels,graphImage);
+        GraphData graphData = new GraphData(minmaxValues, labels, graphImage);
         return graphData;
     }
 
     /**
      * Finds all the different colored plots in the image,corresponding datapoints and stores in Output.pdf
-     * @param graphImage The input graphImage
+     *
+     * @param graphImage   The input graphImage
      * @param minmaxValues The min,max values of the scale which are needed to assign values to datapoints
      */
-    void getPlotsAndLegend(Mat graphImage,ArrayList<Double> minmaxValues) {
+    void getPlotsAndLegend(Mat graphImage, ArrayList<Double> minmaxValues) {
         //Legend Detection
 
         graphImage = imageUtils.increaseSaturation(graphImage);
@@ -123,29 +130,7 @@ public class DataExtractor {
 
                 System.out.println(label);
                 PlotValue plotValue = new PlotValue(graphImage, minmaxValues);
-                Pair<List<List<String>>, Map<Colour,Boolean>> newPair = plotValue.populateTable(plotJframe);
-                List<Colour> colourListFromPlot = new ArrayList<Colour>(newPair.getValue().keySet());
-                colourListFromPlot = legendDetection.getColourSequence(legendMat, colourListFromPlot);
-                List<List<String>> content = newPair.getKey();
-                for(int i =0;i<content.get(0).size();i++)
-                {
-                    String colour = content.get(0).get(i);
-                    if(colour.contains("Color"))
-                    {
-                        for(int j =0;j<colourListFromPlot.size();j++)
-                        {
-                            colour = colour.replaceAll("Color"," ");
-                            if(colour.equals(colourListFromPlot.get(j).toString())) content.get(0).set(i,label[j]);
-                        }
-                    }
-                }
-
-                try {
-                    create.drawpdf(content);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+                writeToTable(legendDetection, legendMat, plotValue, label);
             }
 
         } else {
@@ -154,9 +139,61 @@ public class DataExtractor {
             //imageUtils.displayImage(graphImage);
             PlotValue plotValue = new PlotValue(graphImage, minmaxValues);
             List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable(plotJframe).getValue().keySet());
-            plotJframe = plotValue.jframe;
+            writeToTable(null, null, plotValue, null);
             // plotJframe = plotValue.jFrame;
         }
 
     }
+
+    private void writeToTable(LegendDetection legendDetection, Mat legendMat, PlotValue plotValue, String[] label) {
+
+        Pair<List<List<String>>, Map<Colour, Boolean>> newPair = plotValue.populateTable(plotJframe);
+        List<Colour> colourListFromPlot = new ArrayList<Colour>(newPair.getValue().keySet());
+        plotJframe = plotValue.jframe;
+        if (legendDetection != null)
+            colourListFromPlot = legendDetection.getColourSequence(legendMat, colourListFromPlot);
+
+        List<List<String>> content = newPair.getKey();
+        if (label != null) {
+            for (int i = 0; i < content.get(0).size(); i++) {
+                String colour = content.get(0).get(i);
+                if (colour.contains("Color")) {
+                    for (int j = 0; j < colourListFromPlot.size(); j++) {
+                        colour = colour.replaceAll("Color", " ");
+                        if (colour.equals(colourListFromPlot.get(j).toString())) {
+                            content.get(0).set(i, label[j]);
+                        }
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < content.get(0).size(); i++) {
+                String colour = content.get(0).get(i);
+                if (colour.contains("Color")) {
+                    colour = colour.replaceAll("Color", " ");
+                    content.get(0).set(i, colour.toString());
+
+                }
+            }
+
+
+        }
+        String[][] contentArray = new String[content.size()][content.get(0).size()];
+        int j=0;
+        List<String> head = content.get(0);
+        for(int i=1;i<content.size();i++){
+            j=0;
+            List<String> list = content.get(i);
+            for(String l: list){
+                contentArray[i][j] = l;
+                j++;
+            }
+
+        }
+
+        tableList.add(pdfSample.createContent(head, contentArray));
+          //  create.drawpdf(content);
+
+    }
+
 }
