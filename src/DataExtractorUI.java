@@ -13,9 +13,8 @@ import java.util.Iterator;
 public class DataExtractorUI {
     private JTextField textField1;
     private JButton browseButton;
-    private JButton okButton;
     private JPanel jpanel;
-    private JProgressBar progressBar1;
+    private JLabel picLabel;
 
     static JFrame newOne;
     static GraphData graphData;
@@ -32,6 +31,13 @@ public class DataExtractorUI {
 
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
+
+                    File f = new File(selectedFile.getPath());
+                    if(!f.exists())
+                    {
+                        JOptionPane.showMessageDialog(new JFrame(),"Select Existing file");
+                        return;
+                    }
                     System.out.println(selectedFile.getName());
                     final DataExtractor dataExtractor = new DataExtractor();
 
@@ -141,6 +147,17 @@ public class DataExtractorUI {
 
     public static void main(String[] args) {
 
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
         JFrame frame = new JFrame("DataExtractorUI");
         frame.setContentPane(new DataExtractorUI().jpanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
