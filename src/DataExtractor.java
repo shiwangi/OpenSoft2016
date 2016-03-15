@@ -93,12 +93,16 @@ public class DataExtractor {
 
     /**
      * Finds all the different colored plots in the image,corresponding datapoints and stores in Output.pdf
-     * @param graphImage The input graphImage
-     * @param minmaxValues The min,max values of the scale which are needed to assign values to datapoints
+     * @param graphData The input graphdata object
      */
-    void getPlotsAndLegend(Mat graphImage,ArrayList<Double> minmaxValues) {
+    void getPlotsAndLegend(GraphData graphData) {
         //Legend Detection
 
+        Mat graphImage = graphData.ScaleMat;
+        String xScaleLabel = graphData.xLabel;
+        String yScaleLabel = graphData.yLabel;
+        String captionLabel = graphData.caption;
+        ArrayList<Double> minmaxValues = (ArrayList<Double>) graphData.minmaxValues;
         graphImage = imageUtils.increaseSaturation(graphImage);
         LegendDetection legendDetection = new LegendDetection(graphImage);
 
@@ -123,6 +127,7 @@ public class DataExtractor {
 
                 System.out.println(label);
                 PlotValue plotValue = new PlotValue(graphImage, minmaxValues);
+                //Use the new labels in content.
                 Pair<List<List<String>>, Map<Colour,Boolean>> newPair = plotValue.populateTable(plotJframe);
                 List<Colour> colourListFromPlot = new ArrayList<Colour>(newPair.getValue().keySet());
                 colourListFromPlot = legendDetection.getColourSequence(legendMat, colourListFromPlot);

@@ -2,6 +2,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Arc2D;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -68,28 +69,34 @@ public class DataExtractorUI {
                             maxX = imagePanel[0].getTextFieldMaxX().getText();
                             minY = imagePanel[0].getTextFieldMinY().getText();
                             maxY = imagePanel[0].getTextFieldMaxY().getText();
-                            xScale = imagePanel[0].getTextFieldXScale().getText();
-                            yScale = imagePanel[0].getTextFieldYScale().getText();
-                            caption = imagePanel[0].getTextFieldCaption().getText();
-//                            if(dataExtractor.plotJframe!=null)
-//                                .dispose();
-//                            //Should actually be the the new values;
-                            dataExtractor.getPlotsAndLegend(graphData.ScaleMat, (ArrayList<Double>) graphData.minmaxValues);
-
-                            if(!isDouble(minX) || !isDouble(maxX) ||!isDouble(minY) || !isDouble(maxY) )
+                            if(!checkGoodValues(minX,maxX,minY,maxY))
                             {
-                                JOptionPane.showMessageDialog(new JFrame(),"give double values for min-max values");
+                                JOptionPane.showMessageDialog(new JFrame(),"Check values entered");
                             }
-                            System.out.println(imagePanel[0].getTextFieldXScale().getText());
-                            if (iterator.hasNext()) {
-                                System.out.println(imagePanel[0].container.getComponent(1));
-                                String imageFile = iterator.next().toString();
-                                graphData = dataExtractor.extractDataForImage(imageFile);
-                                jFrame.remove(imagePanel[0].container);
-                                imagePanel[0] = new ImagePanel("./resources" + imageFile, graphData);
-                                jFrame.setContentPane(bigPanel);
-                                jFrame.add(imagePanel[0].container);
-                                jFrame.pack();
+                            else {
+                                ArrayList<Double> minmaxValues = new ArrayList<Double>();
+                                minmaxValues.add(Double.parseDouble(minX));
+                                minmaxValues.add(Double.parseDouble(maxX));
+                                minmaxValues.add(Double.parseDouble(minY));
+                                minmaxValues.add(Double.parseDouble(maxY));
+                                Double rValue = (Double.parseDouble(maxX)-Double.parseDouble(minX))/5.0;
+                                minmaxValues.add(rValue);
+                                GraphData newGraphData = imagePanel[0].getGraphData();
+                                newGraphData.minmaxValues = minmaxValues;
+                                dataExtractor.getPlotsAndLegend(newGraphData);
+
+                                if (iterator.hasNext()) {
+                                    System.out.println(imagePanel[0].container.getComponent(1));
+                                    String imageFile = iterator.next().toString();
+                                    graphData = dataExtractor.extractDataForImage(imageFile);
+                                    jFrame.remove(imagePanel[0].container);
+                                    imagePanel[0] = new ImagePanel("./resources" + imageFile, graphData);
+                                    jFrame.setContentPane(bigPanel);
+                                    jFrame.add(imagePanel[0].container);
+                                    jFrame.pack();
+                                } else {
+                                    jFrame.dispose();
+                                }
                             }
                         }
                     });
@@ -99,7 +106,14 @@ public class DataExtractorUI {
         });
     }
 
-
+    private boolean checkGoodValues(String minX, String maxX, String minY, String maxY) {
+        if(!isDouble(minX) || !isDouble(maxX) ||!isDouble(minY) || !isDouble(maxY)) return false;
+        else {
+            if(Double.parseDouble(minX)>Double.parseDouble(maxX)) return false;
+            if(Double.parseDouble(minY)>Double.parseDouble(maxY)) return false;
+            else return true;
+        }
+    }
     private static boolean isDouble(String s) {
         try {
             Double.parseDouble(s);
