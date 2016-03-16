@@ -26,7 +26,7 @@ public class PlotValue {
 
     Mat graph;
     double minX, minY;
-    Map<Colour, Boolean> colourOfPlotsHSV;
+    Map<Colour, Boolean> colourOfPlotsHSV,RGBColorMap;
     public JFrame jframe;
 
 
@@ -46,6 +46,7 @@ public class PlotValue {
         dy = (dy == 0) ? 1 : dy;
 
         colourOfPlotsHSV = new TreeMap();
+        RGBColorMap = new TreeMap<>();
 
     }
 
@@ -58,7 +59,7 @@ public class PlotValue {
      */
     public Pair<List<List<String>>, Map<Colour,Boolean>> populateTable(JFrame plotJframe) {
         List<String> heading = new ArrayList<>();
-        heading.add("Plot for blah");
+        heading.add("Plot for Values");
         //heading.add("X-Y values");//heading
         content.add(heading);
         for(int i =0;i<graph.cols();i+=dx)
@@ -88,6 +89,7 @@ public class PlotValue {
             for (int j = 0; j < graph.rows(); j++) {
                 double[] colorHSV = hsvImage.get(j, i);
                 double[] color = graph.get(j, i);
+                Colour rgbColor = new Colour(color[0],color[1],color[2]);
                 Colour colour = new Colour(colorHSV[0], colorHSV[1], colorHSV[2]);
                 if (imageUtils.isPixelBlack(color)) {
                     continue;
@@ -96,9 +98,10 @@ public class PlotValue {
                     flag = 1;
                     continue;
                 } else if (flag == 1 && !colourOfPlotsHSV.containsKey(colour)){
-                    listOfMats.add(findGraphValues(colour));
+                    listOfMats.add(findGraphValues(colour,rgbColor));
                     flag = 0;
                     colourOfPlotsHSV.put(colour, true);
+                    RGBColorMap.put(rgbColor,true);
                 }
             }
         }
@@ -140,7 +143,7 @@ public class PlotValue {
      * @param colour
      * @return
      */
-    private Mat findGraphValues(Colour colour) {
+    private Mat findGraphValues(Colour colour,Colour rgbColour) {
 
         Mat hsvImage = graph.clone();
         //Content for PDF
@@ -149,7 +152,7 @@ public class PlotValue {
         System.out.println("Plot Points For Color " + colour.h + " " + colour.s + " " + colour.v);
         Mat img = graph.clone();
         int k = 0;
-        content.get(0).add(colour.h+" "+colour.s+" "+colour.v);
+        content.get(0).add(rgbColour.h+" "+rgbColour.s+" "+rgbColour.v);
         for (int i = 0; i < graph.cols(); i += dx) {
             k++;
             Point point = new Point(0, i);

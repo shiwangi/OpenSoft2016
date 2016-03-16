@@ -3,6 +3,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -13,7 +14,8 @@ public class PDFTableGenerator {
     public void generatePDF(List<Table> table, List<List<String>> captionList) throws IOException, COSVisitorException {
         PDDocument doc = null;
         try {
-            doc = new PDDocument();
+           doc = PDDocument.load("./resources/InitPage.pdf");
+           // doc = new PDDocument();
             int i=0;
             for(Table t:table) {
 
@@ -60,39 +62,91 @@ public class PDFTableGenerator {
         // Write column headers
         String[] arrayHeader = table.getColumnsNamesAsArray();
 
+        //x-label , y-label
         String[] caption = new String [arrayHeader.length];
-        caption[0]   =captions.get(2)+" for "+ captions.get(0)+" (X axis) vs"+captions.get(1)+" (Y Axis)";
-        writeContentLine(caption, contentStream, nextTextX, nextTextY, table);
+        caption[0]   = captions.get(0);
+        caption[1] = captions.get(1);
+        writeContentLine(caption, contentStream, nextTextX, nextTextY, table, 1);
 
-        arrayHeader[0] = captions.get(0);
+        //colours
+        arrayHeader[0] = "";
 
         nextTextY -= table.getRowHeight();
         nextTextX = table.getMargin() + table.getCellMargin();
-        writeContentLine(arrayHeader, contentStream, nextTextX, nextTextY, table);
+        writeContentLine(arrayHeader, contentStream, nextTextX, nextTextY, table, 3);
 
         nextTextY -= table.getRowHeight();
         nextTextX = table.getMargin() + table.getCellMargin();
 
         // Write content
         for (int i = 0; i < currentPageContent.length; i++) {
-            writeContentLine(currentPageContent[i], contentStream, nextTextX, nextTextY, table);
+            writeContentLine(currentPageContent[i], contentStream, nextTextX, nextTextY, table, 0);
             nextTextY -= table.getRowHeight();
             nextTextX = table.getMargin() + table.getCellMargin();
         }
+        String figCaption[] = new String[arrayHeader.length];
+        String figureCap = "Figure: " + captions.get(2);
+        figCaption[0]=figureCap;
 
+        writeContentLine(figCaption, contentStream, nextTextX, nextTextY, table, 2);
+//
+//        nextTextY -= table.getRowHeight();
+//        nextTextX = table.getMargin() + table.getCellMargin();
         contentStream.close();
     }
 
+    private boolean isColor(String s) {
+        String[] values = s.split(" ");
+        if(values.length==3){
+            for(int i=0;i<3;i++){
+                if(!isDouble(values[i])){
+                    return false;
+                }
+            }
+        }
+        else {
+            return false;
+        }
+        return true;
+
+    }
+    private static boolean isDouble(String s) {
+        try {
+            Double.parseDouble(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+
     // Writes the content for one line
     private void writeContentLine(String[] lineContent, PDPageContentStream contentStream, float nextTextX, float nextTextY,
-            Table table) throws IOException {
+                                  Table table, int isHeader) throws IOException {
         for (int i = 0; i < table.getNumberOfColumns(); i++) {
             if(lineContent!=null) {
                 String text = lineContent[i];
                 contentStream.beginText();
+                if(isHeader==1)
+                    contentStream.setNonStrokingColor(Color.BLUE);
+                if(isHeader==2)
+                    contentStream.setNonStrokingColor(Color.MAGENTA);
+                if(isHeader==3) {
+                    if(isColor(text)){
+                        String []tokens = text.split(" ");
+                        int []color = new int[3];
+                        int count=0;
+                        for(String c :tokens){
+                            color[count] =(int) Double.parseDouble(c);
+                            count++;
+                        }
+                        contentStream.setNonStrokingColor(color[0],color[1],color[2]);
+                    }
+                }
                 contentStream.moveTextPositionByAmount(nextTextX, nextTextY);
                 contentStream.drawString(text != null ? text : "");
                 contentStream.endText();
+                contentStream.setNonStrokingColor(Color.BLACK);
                 nextTextX += table.getColumns().get(i).getWidth();
             }
 
