@@ -111,6 +111,7 @@ public class PdfToImage {
                 Rect rect = Imgproc.boundingRect(contour);
                 if (rect.height > 300 && rect.width > 300) {
                     j++;
+
                     if (isROI == true) {
                         createRoi(binary, img, i, j, rect);
                     }

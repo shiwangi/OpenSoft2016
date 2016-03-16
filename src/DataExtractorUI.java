@@ -32,7 +32,7 @@ public class DataExtractorUI {
                 int returnValue = fileChooser.showOpenDialog(null);
 
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
+                    final File selectedFile = fileChooser.getSelectedFile();
 
                     File f = new File(selectedFile.getPath());
                     if(!f.exists())
@@ -44,7 +44,7 @@ public class DataExtractorUI {
 
 
                     //dataExtractor.extractDataTemp("./resources/try2.png");
-                    ArrayList<String> imageFileList = dataExtractor.getGraphImages(selectedFile.getPath());
+                    final ArrayList<String> imageFileList = dataExtractor.getGraphImages(selectedFile.getPath());
 
                     imageGrid = new ImageGrid(imageFileList);
                     newOne = imageGrid.createAndShowGui(imageFileList, null);
@@ -109,15 +109,16 @@ public class DataExtractorUI {
                                     jFrame.pack();
 }
                                 else {
-                                    jFrame.dispose();
 
                                     try {
-                                        pdfTableGenerator.generatePDF(dataExtractor.tableList,dataExtractor.captionList);
+                                        pdfTableGenerator.generatePDF(dataExtractor.tableList,dataExtractor.captionList, selectedFile.getPath(),imageFileList);
                                     } catch (COSVisitorException e1) {
                                         e1.printStackTrace();
                                     } catch (IOException e1) {
                                         e1.printStackTrace();
                                     }
+
+                                    jFrame.dispose();
                                 }
                             }
 

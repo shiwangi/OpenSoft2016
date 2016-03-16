@@ -11,15 +11,38 @@ import java.util.List;
 public class PDFTableGenerator {
 
     // Generates document from Table object
-    public void generatePDF(List<Table> table, List<List<String>> captionList) throws IOException, COSVisitorException {
+    public void generatePDF(List<Table> table, List<List<String>> captionList, String inputFilePath,List<String> imageFilePath) throws IOException, COSVisitorException {
         PDDocument doc = null;
+        PDDocument inputDoc = null;
         try {
            doc = PDDocument.load("./resources/InitPage.pdf");
+
+            inputDoc = PDDocument.load(inputFilePath);
+
+            List<PDPage> pages = inputDoc.getDocumentCatalog().getAllPages();
            // doc = new PDDocument();
-            int i=0;
+            int i=0,pageNumber=0,count=0;
             for(Table t:table) {
 
-                drawTable(doc, t,captionList.get(i));
+                if(count==0) {
+
+                    while (count == 0 && pageNumber<pages.size()) {
+                        count = getCountOfImages(pageNumber, imageFilePath);
+                        doc.addPage(pages.get(pageNumber));
+
+                        pageNumber++;
+                    }
+
+
+                }
+//                if(t.getNumberOfRows()<2 || t.getNumberOfColumns()<2){
+//
+//                    count--;
+//                    i++;
+//                    continue;
+//                }
+                drawTable(doc, t, captionList.get(i));
+                count--;
                 i++;
             }
             doc.save("./output/plot_data.pdf");
@@ -28,6 +51,21 @@ public class PDFTableGenerator {
                 doc.close();
             }
         }
+    }
+
+    private int getCountOfImages(int i, List<String> imageFilePath) {
+
+        String fileName = "/roi" + i;
+            int count=0;
+            for(String name: imageFilePath)
+            {
+                if(name.contains(fileName))
+                {
+                    count++;
+                }
+            }
+
+        return count;
     }
 
     // Configures basic setup for the table and draws it page by page
