@@ -6,6 +6,7 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 
+import javax.sound.midi.SysexMessage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -147,7 +148,7 @@ public class PdfToImage {
    //     imageUtils.displayImage(roi);
         Mat cropped = imageUtils.getCroppedImage(roi);
     //    imageUtils.displayImage(cropped);
-        if(isTable( imageUtils.convertToBinary(roi,0))) {
+        if(isTable(roi)) {
             System.out.println("Image invalid !");
             return;
         }
@@ -186,14 +187,19 @@ public class PdfToImage {
 
     }
 
-    private static boolean isTable( Mat binary) {
+    private static boolean isTable( Mat roi) {
+        Mat binary = imageUtils.convertToBinary(roi,255);
         List<MatOfPoint> contours = new ArrayList<>();
         Imgproc.findContours(binary, contours, new Mat(), Imgproc.CHAIN_APPROX_SIMPLE, Imgproc.CHAIN_APPROX_SIMPLE);
         RectangleDetection rectangleDetection = new RectangleDetection();
        // rectangleDetection.
         List<MatOfPoint> contoursSq = rectangleDetection.getSquareContours(contours);
+        Mat mat = roi.clone();
+        imageUtils.drawContoursOnImage(contoursSq,mat);
+        //imageUtils.displayImage(mat);
         if(contoursSq!=null && contoursSq.size()>4){
-            return true;
+            //System.ou
+            return false;
         }
 
         return false;

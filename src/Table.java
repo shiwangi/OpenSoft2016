@@ -71,7 +71,7 @@ public class Table {
 
     public String[] getColumnsNamesAsArray() {
         String[] columnNames = new String[getNumberOfColumns()];
-        for (int i = 0; i < getNumberOfColumns() - 1; i++) {
+        for (int i = 0; i < getNumberOfColumns(); i++) {
             columnNames[i] = columns.get(i).getName();
         }
         return columnNames;

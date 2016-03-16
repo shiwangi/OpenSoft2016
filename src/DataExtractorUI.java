@@ -18,6 +18,9 @@ public class DataExtractorUI {
 
     static JFrame newOne;
     static GraphData graphData;
+    final DataExtractor dataExtractor = new DataExtractor();
+    PDFTableGenerator pdfTableGenerator = new PDFTableGenerator();
+    ImageGrid imageGrid;
 
     public DataExtractorUI() {
         browseButton.addActionListener(new ActionListener() {
@@ -39,12 +42,12 @@ public class DataExtractorUI {
                         return;
                     }
                     System.out.println(selectedFile.getName());
-                    final DataExtractor dataExtractor = new DataExtractor();
+
 
                     //dataExtractor.extractDataTemp("./resources/try2.png");
                     ArrayList<String> imageFileList = dataExtractor.getGraphImages(selectedFile.getPath());
 
-                    ImageGrid imageGrid = new ImageGrid(imageFileList);
+                    imageGrid = new ImageGrid(imageFileList);
                     newOne = imageGrid.createAndShowGui(imageFileList, null);
                     final JFrame jFrame = new JFrame();
                     final JPanel bigPanel = new JPanel();
@@ -79,7 +82,7 @@ public class DataExtractorUI {
                             maxY = imagePanel[0].getTextFieldMaxY().getText();
                             if(!checkGoodValues(minX,maxX,minY,maxY))
                             {
-                                JOptionPane.showMessageDialog(new JFrame(), "give double values for min-max values");
+                                //JOptionPane.showMessageDialog(new JFrame(), "give double values for min-max values");
 
                                 JOptionPane.showMessageDialog(new JFrame(),"Check values entered");
 
@@ -108,7 +111,7 @@ public class DataExtractorUI {
 }
                                 else {
                                     jFrame.dispose();
-                                    PDFTableGenerator pdfTableGenerator = new PDFTableGenerator();
+
                                     try {
                                         pdfTableGenerator.generatePDF(dataExtractor.tableList);
                                     } catch (COSVisitorException e1) {
@@ -158,7 +161,7 @@ public class DataExtractorUI {
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
-        JFrame frame = new JFrame("DataExtractorUI");
+        JFrame frame = new JFrame("Graphito");
         frame.setContentPane(new DataExtractorUI().jpanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();

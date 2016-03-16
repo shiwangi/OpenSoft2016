@@ -160,15 +160,24 @@ public class DataExtractor {
         plotJframe = plotValue.jframe;
         if (legendDetection != null)
             colourListFromPlot = legendDetection.getColourSequence(legendMat, colourListFromPlot);
+        //remove empty lines from legend.
+        List<String> fineLabels = new ArrayList<>();
 
         List<List<String>> content = newPair.getKey();
         if (label != null) {
-            for (int i = 0; i < content.get(0).size(); i++) {
+            for(int i=0;i<label.length;i++)
+            {
+                label[i] = label[i].replaceAll("\\s+", " ").trim();
+                label[i] = label[i].replaceAll("[ ]+"," ").trim();
+                //System.
+                if(!label[i].isEmpty()) fineLabels.add(label[i]);
+            }
+            for (int i = 1; i < content.get(0).size(); i++) {
                 String colour = content.get(0).get(i);
                 for (int j = 0; j < colourListFromPlot.size(); j++) {
                     colour = colour.replaceAll("Color", "");
                     if (colour.equals(colourListFromPlot.get(j).toString())) {
-                        content.get(0).set(i, label[j]);
+                        if(j<fineLabels.size()) content.get(0).set(i, fineLabels.get(j));
                     }
                 }
             }
@@ -200,6 +209,7 @@ public class DataExtractor {
         }
 
         }
+
         if(head.size()>0 && contentArray.length>0)
         tableList.add(pdfSample.createContent(head, contentArray));
 

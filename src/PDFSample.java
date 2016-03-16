@@ -27,6 +27,7 @@ public class PDFSample {
         int colWidth = (int) ((PAGE_SIZE.getWidth() - 2 * MARGIN) / heading.size());
         for (String head : heading) {
 
+           // System.out.println("Heading "+head);
             columns.add(new Column(head, colWidth));
         }
 

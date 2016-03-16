@@ -4,6 +4,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.Arrays;
 import java.util.List;
 
@@ -55,6 +56,7 @@ public class PDFTableGenerator {
 
         // Write column headers
         writeContentLine(table.getColumnsNamesAsArray(), contentStream, nextTextX, nextTextY, table);
+
         nextTextY -= table.getRowHeight();
         nextTextX = table.getMargin() + table.getCellMargin();
 

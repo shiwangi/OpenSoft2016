@@ -10,9 +10,9 @@ import static org.junit.Assert.*;
  */
 public class PlotValueTest {
 
+
     @Test
     public void testPopulateTable() throws Exception {
-        Map<Colour, Boolean> aa=new TreeMap<>();
 
     }
 }
