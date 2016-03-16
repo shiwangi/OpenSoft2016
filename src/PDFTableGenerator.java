@@ -4,19 +4,22 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.util.Arrays;
 import java.util.List;
 
 public class PDFTableGenerator {
 
     // Generates document from Table object
-    public void generatePDF(List<Table> table) throws IOException, COSVisitorException {
+    public void generatePDF(List<Table> table, List<List<String>> captionList) throws IOException, COSVisitorException {
         PDDocument doc = null;
         try {
             doc = new PDDocument();
-            for(Table t:table)
-                drawTable(doc, t);
+            int i=0;
+            for(Table t:table) {
+
+                drawTable(doc, t,captionList.get(i));
+                i++;
+            }
             doc.save("./resources/sample.pdf");
         } finally {
             if (doc != null) {
@@ -26,7 +29,7 @@ public class PDFTableGenerator {
     }
 
     // Configures basic setup for the table and draws it page by page
-    public void drawTable(PDDocument doc, Table table) throws IOException {
+    public void drawTable(PDDocument doc, Table table, List<String> captions) throws IOException {
         // Calculate pagination
         Integer rowsPerPage = new Double(Math.floor(table.getHeight() / table.getRowHeight())).intValue() - 1; // subtract
         Integer numberOfPages = new Double(Math.ceil(table.getNumberOfRows().floatValue() / rowsPerPage)).intValue();
@@ -36,12 +39,12 @@ public class PDFTableGenerator {
             PDPage page = generatePage(doc, table);
             PDPageContentStream contentStream = generateContentStream(doc, page, table);
             String[][] currentPageContent = getContentForCurrentPage(table, rowsPerPage, pageCount);
-            drawCurrentPage(table, currentPageContent, contentStream);
+            drawCurrentPage(table, currentPageContent, contentStream,captions);
         }
     }
 
     // Draws current page table grid and border lines and content
-    private void drawCurrentPage(Table table, String[][] currentPageContent, PDPageContentStream contentStream)
+    private void drawCurrentPage(Table table, String[][] currentPageContent, PDPageContentStream contentStream, List<String> captions)
             throws IOException {
         float tableTopY = table.isLandscape() ? table.getPageSize().getWidth() - table.getMargin() : table.getPageSize().getHeight() - table.getMargin();
 
@@ -55,7 +58,17 @@ public class PDFTableGenerator {
                 - ((table.getTextFont().getFontDescriptor().getFontBoundingBox().getHeight() / 1000 * table.getFontSize()) / 4);
 
         // Write column headers
-        writeContentLine(table.getColumnsNamesAsArray(), contentStream, nextTextX, nextTextY, table);
+        String[] arrayHeader = table.getColumnsNamesAsArray();
+
+        String[] caption = new String [arrayHeader.length];
+        caption[0]   =captions.get(2)+" for "+ captions.get(0)+" (X axis) vs"+captions.get(1)+" (Y Axis)";
+        writeContentLine(caption, contentStream, nextTextX, nextTextY, table);
+
+        arrayHeader[0] = captions.get(0);
+
+        nextTextY -= table.getRowHeight();
+        nextTextX = table.getMargin() + table.getCellMargin();
+        writeContentLine(arrayHeader, contentStream, nextTextX, nextTextY, table);
 
         nextTextY -= table.getRowHeight();
         nextTextX = table.getMargin() + table.getCellMargin();

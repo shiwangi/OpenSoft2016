@@ -113,7 +113,7 @@ public class DataExtractorUI {
                                     jFrame.dispose();
 
                                     try {
-                                        pdfTableGenerator.generatePDF(dataExtractor.tableList);
+                                        pdfTableGenerator.generatePDF(dataExtractor.tableList,dataExtractor.captionList);
                                     } catch (COSVisitorException e1) {
                                         e1.printStackTrace();
                                     } catch (IOException e1) {

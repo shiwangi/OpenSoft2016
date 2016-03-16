@@ -13,7 +13,7 @@ public class DataExtractor {
 
     //public PdfCreator create = new PdfCreator("./output/graphValues.pdf");
     static ImageUtils imageUtils;
-
+static List<List<String>> captionList;
     PDFSample pdfSample = new PDFSample();
 
     static PdfToImage pdfToImage;
@@ -35,7 +35,7 @@ public class DataExtractor {
     public ArrayList<String> getGraphImages(String name) {
 
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-
+captionList = new ArrayList<>();
 //        System.loadLibrary("opencv_core");
 //        System.loadLibrary("opencv_java300");
         pdfToImage = new PdfToImage(name);
@@ -122,6 +122,8 @@ public class DataExtractor {
         MatOfPoint contour = rectangleDetection.detectRectangle(graphImage, imageUtils.convertToBinary(graphImage, 255));
         List<MatOfPoint> contours = new ArrayList<>();
         contours.add(contour);
+        List<String> captions = new ArrayList<>();
+        captions.add(xScaleLabel);captions.add(yScaleLabel);captions.add(captionLabel);
         if (contour != null) {
             legendAndPlot = imageClipper.clipContourM(graphImage, contour);
             if (legendAndPlot.size() == 2) {
@@ -133,8 +135,7 @@ public class DataExtractor {
 
                 System.out.println(label);
                 PlotValue plotValue = new PlotValue(graphImage, minmaxValues);
-
-                writeToTable(legendDetection, legendMat, plotValue, label);
+                writeToTable(legendDetection, legendMat, plotValue, label, captions);
 
 
 
@@ -147,13 +148,13 @@ public class DataExtractor {
             //imageUtils.displayImage(graphImage);
             PlotValue plotValue = new PlotValue(graphImage, minmaxValues);
             //List<Colour> colourListFromPlot = new ArrayList<Colour>(plotValue.populateTable(plotJframe).getValue().keySet());
-            writeToTable(null, null, plotValue, null);
+            writeToTable(null, null, plotValue, null, captions);
             // plotJframe = plotValue.jFrame;
         }
 
     }
 
-    private void writeToTable(LegendDetection legendDetection, Mat legendMat, PlotValue plotValue, String[] label) {
+    private void writeToTable(LegendDetection legendDetection, Mat legendMat, PlotValue plotValue, String[] label, List<String> captions) {
 
         Pair<List<List<String>>, Map<Colour, Boolean>> newPair = plotValue.populateTable(plotJframe);
         List<Colour> colourListFromPlot = new ArrayList<Colour>(newPair.getValue().keySet());
@@ -209,9 +210,10 @@ public class DataExtractor {
         }
 
         }
-
+        captionList.add(captions);
         if(head.size()>0 && contentArray.length>0)
         tableList.add(pdfSample.createContent(head, contentArray));
+
 
 
     }
