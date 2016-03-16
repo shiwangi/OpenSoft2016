@@ -20,7 +20,7 @@ public class PDFTableGenerator {
                 drawTable(doc, t,captionList.get(i));
                 i++;
             }
-            doc.save("./resources/sample.pdf");
+            doc.save("./output/plot_data.pdf");
         } finally {
             if (doc != null) {
                 doc.close();

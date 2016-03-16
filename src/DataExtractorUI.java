@@ -11,7 +11,6 @@ import java.util.Iterator;
 
 
 public class DataExtractorUI {
-    private JTextField textField1;
     private JButton browseButton;
     private JPanel jpanel;
     private JLabel picLabel;

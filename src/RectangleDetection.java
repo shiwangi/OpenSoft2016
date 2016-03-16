@@ -108,7 +108,7 @@ public class RectangleDetection {
 
         for (MatOfPoint c : contours) {
 
-            if ((isContourSquare(c)) && Imgproc.contourArea(c)>2000) {
+            if ((isContourSquare(c)) && Imgproc.contourArea(c)>10000) {
 
                 if (squares == null)
                     squares = new ArrayList<MatOfPoint>();

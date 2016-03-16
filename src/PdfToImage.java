@@ -6,7 +6,6 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 
-import javax.sound.midi.SysexMessage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +56,7 @@ public class PdfToImage {
                     m.setYResolution(20);
 
                     m.setFileName(fName);
-                    System.out.println(i);
+                    System.out.println((i+1)+"th page converted to image");
                     i++;
                     m.writeImage(imageinfo);
                 }
@@ -72,10 +71,6 @@ public class PdfToImage {
 
             System.out.print("done");
             return imageFilePathList;
-//        MagickImage image = new MagickImage(info);
-//        image.setFileName(p_outFile);
-//        image.setCompression(CompressionType.FaxCompression);
-//        image.writeImage(info);
         } catch (MagickException e) {
             e.printStackTrace();
         }
@@ -101,8 +96,6 @@ public class PdfToImage {
        // imageUtils.displayImage(binary);
         getLargeContours(binary, img, i, true);
 
-//        imageUtils.drawContoursOnImage(largeones, img);
-//        imwrite("./resources/contour_large"+i+".png",img);
 
     }
 
@@ -197,7 +190,7 @@ public class PdfToImage {
         Mat mat = roi.clone();
         imageUtils.drawContoursOnImage(contoursSq,mat);
         //imageUtils.displayImage(mat);
-        if(contoursSq!=null && contoursSq.size()>4){
+        if(contoursSq!=null && contoursSq.size()>5){
             //System.ou
             return false;
         }
